@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Mestra da Documentos</title>
+  <link rel="stylesheet" href="{{reportCSS}}">
+</head>
+<body>
+  <header class="header">
+    <h1 class="h1">Lista Mestra de Documentos</h1>
+    <div class="logo">
+      <img class="img-logo" src="{{logo}}"/>
+    </div>
+  </header>
+  <table>
+    <thead>
+      <tr><td><div class="header-space">&nbsp;</div></td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{!-- Report content --}}
+          <table class="table">
+            <thead>
+              <tr class="table-header">
+                <th>Referência</th>
+                <th>Título</th>
+                <th>Edição</th>
+                <th>Efetivado em:</th>
+                <th>Próxima revisão:</th>
+              </tr>
+            </thead>
+            <tbody class="table-line">
+              {{#each data}}
+                <tr>
+                  <td>{{ref}}</td>
+                  <td class="td-title">{{title}}</td>
+                  <td>{{edition}}</td>
+                  <td>{{implementationDate}}</td>
+                  <td>{{expirationDate}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr><td><div class="footer-space">&nbsp;</div></td></tr>
+    </tfoot>
+  </table>
+  <footer class="footer">
+    <!-- <img class="img-logo" src="http://localhost:21109/iso1-logo.png"/> -->
+    <span>Solução em Garantia da Qualidade</span>
+    <p>Gerado por {{username}} em {{emissionDate}}</p>
+  </footer>
+</body>
+</html>

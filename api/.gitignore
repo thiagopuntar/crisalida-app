@@ -1,0 +1,6 @@
+node_modules
+.vscode
+coverege
+# infra/config/dev.js
+.env
+logs
