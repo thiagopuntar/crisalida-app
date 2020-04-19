@@ -1,13 +1,17 @@
-const mongoose = require('mongoose');
-const { MONGO_CONNECTION_STRING } = process.env;
+const { DB_NAME, DB_USER, DB_HOST, DB_PASSWORD } = process.env;
+const Sequelize = require('sequelize');
 
-function connect() {
-    mongoose.connection
-        .on('error', console.log)
-        .on('disconnected', connect)
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+    host: DB_HOST,
+    dialect: 'mysql'
+});
 
-    return mongoose.connect( MONGO_CONNECTION_STRING, 
-        { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false });
-}
+sequelize
+    .authenticate()
+    .then(() => console.log('Connection has been established successfully.'))
+    .catch(err => {
+        console.error(`Unable to connect to the database: ${err}`);
+    });
+    
+module.exports = sequelize;
 
-module.exports = connect;

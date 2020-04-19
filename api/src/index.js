@@ -5,8 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const routes = require('./infra/routes/routes');
 
-
-const connect = require('./infra/database/connection');
+require('./infra/database');
 
 // require('./infra/cache');
 
@@ -16,9 +15,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 routes(app);
-
-
-connect();
 
 
 const PORT = process.env.API_PORT || 3000;

@@ -24,7 +24,8 @@ export default function ({ store }) {
 
   Router.beforeEach((to, from, next) => {
     const isPublic = to.matched.some(x => x.meta.public);
-    const isLogged = store.getters['auth/isAuthenticated'];
+    // const isLogged = store.getters['auth/isAuthenticated'];
+    const isLogged = true;
 
     if (!isPublic && !isLogged) {
       next({ path: '/login' });
