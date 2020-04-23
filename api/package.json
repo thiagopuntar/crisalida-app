@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha --exit --timeout 15000",
     "dev": "nodemon --exec babel-node ./src/index.js",
+    "syncDb": "node ./src/infra/database/sync.js",
     "devtest": "node server-test.js"
   },
   "author": "",

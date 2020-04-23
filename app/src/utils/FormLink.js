@@ -10,7 +10,7 @@ export default class FormLink {
     this._record = record;
   }
 
-  update(recordList, updateFn = r => r._id === this._record._id) {
+  update(recordList, updateFn = r => r.id === this._record.id) {
     if (this._action === 'add') {
       this._addRecord(recordList);
 

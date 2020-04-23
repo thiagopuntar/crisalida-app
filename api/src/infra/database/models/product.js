@@ -1,7 +1,7 @@
 module.exports = (sequelize, dataTypes) => {
-  const Product = sequelize.define('Product', {
+  const product = sequelize.define('product', {
     description: dataTypes.STRING,
-    unity: dataTypes.STRING,
+    unit: dataTypes.STRING,
     cost: dataTypes.DECIMAL(10, 2),
     price: dataTypes.DECIMAL(10,2),
     productionQty: dataTypes.DOUBLE,
@@ -10,5 +10,9 @@ module.exports = (sequelize, dataTypes) => {
     isActive: dataTypes.INTEGER
   });
 
-  return Product;
+  product.associate = function(models) {
+    product.belongsToMany(models.supplier, { through: 'productSupplier' });
+  }
+
+  return product;
 }

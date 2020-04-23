@@ -36,7 +36,7 @@ export default class Service {
   }
 
   update(data) {
-    const { _id: id } = data;
+    const { id } = data;
 
     return this._axios.put(`${this._url}/${id}`, JSON.parse(JSON.stringify(data)))
       .then(res => res.data)

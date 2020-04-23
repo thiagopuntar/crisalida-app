@@ -1,5 +1,5 @@
 <template>
-  <q-dialog persistent :value="value" @input="input" :maximized="$q.screen.lt.sm">
+  <q-dialog persistent :value="value" @input="input" :maximized="maximized">
     <q-layout view="Lhh lpR fff" container class="bg-grey-3 layout-dialog">
       <q-header class="bg-primary">
         <q-toolbar class="glossy">
@@ -33,11 +33,14 @@ export default {
     cancelBtnDisabled: {
       type: Boolean,
       default: false
+    },
+    maximized: {
+      type: Boolean
     }
   },
-  data () {
-    return {
-
+  computed: {
+    isMaximized() {
+      return !this.maximized ? this.$q.screen.lt : this.maximized;
     }
   },
   methods: {

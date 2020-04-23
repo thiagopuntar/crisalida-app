@@ -22,7 +22,38 @@ const routes = [
         name: 'home',
         title: 'Início',
         icon: 'home',
-      }
+      },
+      { 
+        path: '/order/new', 
+        component: () => import('pages/OrderForm.vue'),
+        name: 'newOrder',
+        title: 'Novo Pedido',
+        children: [
+          { 
+            path: '/order/new/newCustomer',
+            component: () => import('pages/CustomerForm.vue'),
+            name: 'orderNewCustomer',
+          }
+        ]
+      },
+      { 
+        path: '/customers', 
+        component: () => import('pages/CustomerList.vue'),
+        name: 'customers',
+        title: 'Clientes',
+        children: [
+          { 
+            path: '/customer/new', 
+            component: () => import('pages/CustomerForm.vue'),
+            name: 'newCustomer'
+          },
+          { 
+            path: '/customer/:id', 
+            component: () => import('pages/CustomerForm.vue'),
+            name: 'editCustomer'
+          },
+        ]
+      },
     ]
   }
 ]

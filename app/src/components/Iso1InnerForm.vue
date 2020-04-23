@@ -1,7 +1,7 @@
 <template>
   <q-card flat>
     <q-card-section class="flex row">
-      <h2 class="text-h3">{{ title }}</h2>
+      <h2 class="text-h4">{{ title }}</h2>
       <q-item>
         <q-item-section avatar>
           <q-btn round icon="add" color="primary" @click="add"/>
@@ -10,8 +10,8 @@
     </q-card-section>
     
     <q-card-section>
-      <q-list bordered separator v-ripple v-if="records.length">
-        <q-item v-for="item in records" :key="item._id">
+      <q-list bordered separator v-ripple v-if="actualRecords.length">
+        <q-item v-for="item in actualRecords" :key="item.id">
           <slot name="item">
             <slot name="item-section" :item="item">
             </slot>
@@ -80,6 +80,13 @@ export default {
       formMode: 'new' //Can be 'new' or 'edit'
     }
   },
+
+  computed: {
+    actualRecords() {
+      return this.records.filter(r => !(r.deleted));
+    }
+  },
+
   methods: {
     add() {
       this.formMode = 'new';
@@ -107,8 +114,12 @@ export default {
         message: `Tem certeza que deseja apagar o registro?`,
         cancel: true
       }).onOk(() => {
-        this.records.splice(this.records.indexOf(record), 1);
-        this.$emit('change');
+        if (record.id) {
+          this.$set(record, 'deleted', true);
+          this.$emit('change');
+        } else {
+          this.records.splice(this.records.indexOf(record), 1);
+        }
       });
     },
     cancel() {

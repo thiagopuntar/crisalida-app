@@ -24,6 +24,25 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-sequelize.sync();
+db.setNestedArray = async (addMethod, newData, NestedModel, ParentInstance) => {
+
+  for (let i = 0; i < newData.length; i++) {
+    const currentData = newData[i];
+
+    if (!currentData.id) {
+      const data = await NestedModel.create(currentData);
+      ParentInstance[addMethod](data);
+    }
+
+    else if (currentData.deleted) {
+      await NestedModel.destroy({ where: { id: currentData.id }});
+    }
+
+    else {
+      const actualData = await NestedModel.findByPk(currentData.id);
+      await actualData.update(currentData);
+    }
+  }
+}
 
 module.exports = db;
