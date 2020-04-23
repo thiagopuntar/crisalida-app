@@ -1,7 +1,8 @@
 module.exports = (sequelize, dataTypes) => {
   const product = sequelize.define('product', {
-    description: dataTypes.STRING,
+    name: dataTypes.STRING,
     unit: dataTypes.STRING,
+    type: dataTypes.STRING,
     cost: dataTypes.DECIMAL(10, 2),
     price: dataTypes.DECIMAL(10,2),
     productionQty: dataTypes.DOUBLE,
@@ -11,7 +12,7 @@ module.exports = (sequelize, dataTypes) => {
   });
 
   product.associate = function(models) {
-    product.belongsToMany(models.supplier, { through: 'productSupplier' });
+    product.suppliers = product.belongsToMany(models.supplier, { through: 'productSupplier', as: 'suppliers' });
   }
 
   return product;

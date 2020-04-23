@@ -8,6 +8,7 @@
     :option-label="optionLabel"
     :option-value="optionValue"
     v-bind="$attrs"
+    ref="select"
   >
     <template v-slot:no-option>
       <q-item>
@@ -47,6 +48,9 @@ export default {
     },
     newOption() {
       this.$emit('newOption');
+    },
+    focus() {
+      this.$refs.select.focus();
     }
   }
 }

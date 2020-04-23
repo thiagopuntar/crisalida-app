@@ -191,7 +191,7 @@ export default {
             return;
           }
 
-          this.$emit('updateList', new FormLink('add', customer));
+          this.$emit('updateList', new FormLink('add', new Customer(customer)));
           this.customer = new Customer();
           this.$refs.customerForm.reset();
           this.$refs.inputName.focus();
@@ -200,7 +200,7 @@ export default {
     edit() {
       return this.customerService.update(this.customer)
         .then(customer => {
-          this.$emit('updateList', new FormLink('edit', customer));
+          this.$emit('updateList', new FormLink('edit', new Customer(customer)));
           this.$router.go(-1);
         });
     },

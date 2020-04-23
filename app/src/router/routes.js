@@ -36,21 +36,39 @@ const routes = [
           }
         ]
       },
-      { 
+      {
         path: '/customers', 
         component: () => import('pages/CustomerList.vue'),
         name: 'customers',
         title: 'Clientes',
         children: [
           { 
-            path: '/customer/new', 
+            path: '/customers/new', 
             component: () => import('pages/CustomerForm.vue'),
             name: 'newCustomer'
           },
           { 
-            path: '/customer/:id', 
+            path: '/customers/:id', 
             component: () => import('pages/CustomerForm.vue'),
             name: 'editCustomer'
+          },
+        ]
+      },
+      {
+        path: '/products', 
+        component: () => import('pages/ProductList.vue'),
+        name: 'products',
+        title: 'Produtos',
+        children: [
+          { 
+            path: '/products/new', 
+            component: () => import('pages/ProductForm.vue'),
+            name: 'newProduct'
+          },
+          { 
+            path: '/products/:id', 
+            component: () => import('pages/ProductForm.vue'),
+            name: 'editProduct'
           },
         ]
       },

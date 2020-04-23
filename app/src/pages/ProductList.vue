@@ -8,9 +8,9 @@
     </iso1-collapsible-filter>
 
     <iso1-table
-      :data="customers"
+      :data="products"
       :columns="columns"
-      title="Clientes"
+      title="Produtos"
     >
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
@@ -20,15 +20,15 @@
         </q-td>
       </template>
     </iso1-table>
-    <router-view @updateList="f => f.update(customers)" />
+    <router-view @updateList="f => f.update(products)" />
   </q-page>
 </template>
 
 <script>
 import Iso1Table from '../components/Iso1Table';
 import Iso1CollapsibleFilter from '../components/Iso1CollapsibleFilter';
-import CustomerService from '../services/CustomerService';
-import Customer from '../models/Customer';
+import ProductService from '../services/ProductService';
+import Product from '../models/Product';
 
 export default {
   components: {
@@ -38,14 +38,16 @@ export default {
 
   data() {
     return {
-      customers: [],
+      products: [],
       columns: [
-        { name: 'name', field: 'name', label: 'Nome' },
-        { name: 'phone', field: 'phone', label: 'Telefone' },
-        { name: 'address', field: 'mainAddress', label: 'Endereço' },
+        { name: 'id', field: 'id', label: 'ID' },
+        { name: 'name', field: 'name', label: 'Descrição' },
+        { name: 'type', field: 'type', label: 'Tipo' },
+        { name: 'cost', field: 'cost', label: 'Custo' },
+        { name: 'price', field: 'price', label: 'Preço' },
         { name: 'btnDetails' },
       ],
-      customerService: new CustomerService()
+      productService: new ProductService()
     }
   },
 
@@ -55,14 +57,14 @@ export default {
 
   methods: {
     async updateList() {
-      const customers = await this.customerService.list();
-      this.customers = customers.map(c => new Customer(c));
+      const products = await this.productService.list();
+      this.products = products.map(p => new Product(p));
     },
     add() {
-      this.$router.push({ name: 'newCustomer' });
+      this.$router.push({ name: 'newProduct' });
     },
     edit(row) {
-      this.$router.push({ name: 'editCustomer', params: {id: row.id} });
+      this.$router.push({ name: 'editProduct', params: {id: row.id} });
     },
     deleteRecord(row) {
       this.$q.dialog({
@@ -71,13 +73,13 @@ export default {
         cancel: true
       })
       .onOk(() => {
-        this.customerService.delete(row.id)
+        this.productService.delete(row.id)
           .then(() => {
             this.$q.notify({
               message: 'Registro removido com sucesso.',
               color: 'positive'
             });
-            this.customers.splice(this.customers.indexOf(row), 1);
+            this.products.splice(this.products.indexOf(row), 1);
           })
           .catch(err => {
             console.log(err);
