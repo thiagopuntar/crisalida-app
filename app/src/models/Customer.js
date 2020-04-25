@@ -5,7 +5,6 @@ export default class Customer {
       this.name = customer.name;
       this.phone = customer.phone;
       this.instagram = customer.instagram;
-      this.deliveryTax = customer.deliveryTax;
       this.addresses = customer.addresses || [];
 
     } else {

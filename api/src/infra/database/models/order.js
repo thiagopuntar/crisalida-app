@@ -13,6 +13,7 @@ module.exports = (sequelize, dataTypes) => {
     order.customer = order.belongsTo(models.customer);
     order.address = order.belongsTo(models.customerAddress, { as: 'address' });
     order.details = order.hasMany(models.orderDetails, { as: 'details' });
+    order.payments = order.hasMany(models.payment, { as: 'payments' });
   }
 
   return order;

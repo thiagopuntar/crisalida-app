@@ -12,6 +12,7 @@
     @input-value="setCustomerName"
     input-debounce="0"
     class="q-mb-sm col-6"
+    ref="select"
   >
     <template #option="scope">
       <q-item
@@ -49,8 +50,7 @@ export default {
       required: true
     },
     value: {
-      type: Object,
-      required: true
+      type: Object
     }
   },
 
@@ -84,6 +84,9 @@ export default {
     },
     newCustomer() {
       this.$emit('newCustomer', this.customerName);
+    },
+    focus() {
+      this.$refs.select.focus();
     }
   }
 }

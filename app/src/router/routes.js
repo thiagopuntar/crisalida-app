@@ -23,17 +23,31 @@ const routes = [
         title: 'Início',
         icon: 'home',
       },
-      { 
-        path: '/order/new', 
-        component: () => import('pages/OrderForm.vue'),
-        name: 'newOrder',
-        title: 'Novo Pedido',
+      {
+        path: '/orders', 
+        component: () => import('pages/OrderList.vue'),
+        name: 'orders',
+        title: 'Pedidos',
+        icon: 'list',
         children: [
           { 
-            path: '/order/new/newCustomer',
-            component: () => import('pages/CustomerForm.vue'),
-            name: 'orderNewCustomer',
-          }
+            path: '/orders/new', 
+            component: () => import('pages/OrderForm.vue'),
+            name: 'newOrder',
+            children: [
+              { 
+                path: '/order/new/newCustomer/:customerName',
+                component: () => import('pages/CustomerForm.vue'),
+                name: 'orderNewCustomer',
+                props: true
+              }
+            ]
+          },
+          { 
+            path: '/orders/edit/:id', 
+            component: () => import('pages/OrderForm.vue'),
+            name: 'editOrder'
+          },
         ]
       },
       {
@@ -41,6 +55,7 @@ const routes = [
         component: () => import('pages/CustomerList.vue'),
         name: 'customers',
         title: 'Clientes',
+        icon: 'contacts',
         children: [
           { 
             path: '/customers/new', 
@@ -59,6 +74,7 @@ const routes = [
         component: () => import('pages/ProductList.vue'),
         name: 'products',
         title: 'Produtos',
+        icon: 'kitchen',
         children: [
           { 
             path: '/products/new', 
