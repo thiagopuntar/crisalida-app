@@ -4,6 +4,22 @@
       @action="add"
       @submit="updateList"
     >
+      <template #inputForms>
+        <iso1-input 
+          label="Cliente"
+          v-model="filter.name"
+        />
+
+        <iso1-input 
+          label="Endereço/Bairro"
+          v-model="filter.address"
+        />
+
+        <q-checkbox 
+          label="Somente pendentes de entrega"
+          v-model="filter.isPending"
+        />
+      </template>
 
     </iso1-collapsible-filter>
 
@@ -17,6 +33,8 @@
           <q-btn class="q-mx-md" size="sm" color="secondary" icon="edit" round @click="edit(props.row)" />
 
           <q-btn class="q-mx-md" size="sm" color="negative" icon="delete" round @click="deleteRecord(props.row)" />
+
+          <q-btn class="q-mx-md" size="sm" color="accent" icon="report" round @click="openReport(props.row)" />
         </q-td>
       </template>
     </iso1-table>
@@ -27,13 +45,18 @@
 <script>
 import Iso1Table from '../components/Iso1Table';
 import Iso1CollapsibleFilter from '../components/Iso1CollapsibleFilter';
+import Iso1Input from '../components/Iso1Input';
+import Iso1DateInput from '../components/Iso1DateInput';
 import OrderService from '../services/OrderService';
 import Order from '../models/Order';
+import { formatCurrency } from '../utils/currencyHelper';
 
 export default {
   components: {
     Iso1Table,
-    Iso1CollapsibleFilter
+    Iso1CollapsibleFilter,
+    Iso1Input,
+    Iso1DateInput
   },
 
   data() {
@@ -48,10 +71,18 @@ export default {
         { name: 'address', field: x => x.address && x.address.address, label: 'Endereço' },
         { name: 'district', field: x => x.address && x.address.district, label: 'Bairro' },
         { name: 'deliveryType', field: 'deliveryType', label: 'Tipo entrega' },
-        { name: 'total', field: 'total', label: 'Total' },
+        { name: 'total', field: 'total', label: 'Total', format: formatCurrency },
+        { name: 'remainingPayment', field: 'remainingPayment', label: 'Restante', format: formatCurrency },
         { name: 'btnDetails' },
       ],
-      orderService: new OrderService()
+      orderService: new OrderService(),
+      filter: {
+        name: '',
+        address: '',
+        isPending: true,
+        initialDeliveryDate: null,
+        finalDeliveryDate: null
+      }
     }
   },
 
@@ -93,6 +124,9 @@ export default {
             });
           });
       })
+    },
+    openReport(row) {
+      this.orderService.openReport(row.id);
     }
   }
 }

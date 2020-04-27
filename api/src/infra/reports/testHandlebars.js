@@ -6,8 +6,8 @@ const port = 3005;
 
 const app = express();
 
-const moduleReport = path.resolve('C:\\_PROJETOS\\iso1\\workers\\mail\\templates'); //Pasta do módulo do relatório!
-const report = 'supplierDocuments'; //Nome do arquivo de relatório
+const moduleReport = path.resolve('C:\\_PROJETOS\\crisalida\\api\\src\\infra\\reports\\orders'); //Pasta do módulo do relatório!
+const report = 'order.report.hbs'; //Nome do arquivo de relatório
 const dataPath = path.resolve(__dirname, './teste.json') //Caminho pro arquivo de data.json
 
 

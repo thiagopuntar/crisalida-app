@@ -62,67 +62,162 @@
         </q-card-section>
 
         <q-card-section>
-          <h2 class="text-h5 text-primary">Itens</h2>
-
-          <div v-for="(detail, index) in order.details" :key="detail.id" class="flex row q-col-gutter-sm">
-            <order-product-select 
-              :products="products"
-              v-model="detail.product"
-              @newProduct="newProduct"
-              class="col-4"
-              ref="inputProduct"
-            />
-
+          <div class="flex row justify-end q-col-gutter-sm">
             <iso1-input 
-              type="number"
-              label="Quantidade *"
-              v-model="detail.qty"
-              class="col-2"
-            />
-
-            <iso1-input 
-              disable
-              :value="detail.unit"
-              class="col-1"
-            />
-
-            <iso1-input 
-              label="Preço *"
-              v-model="detail.vl"
+              label="Desconto"
+              v-model="order.discount"
               class="col-2"
               mask="#.##"
               reverse-fill-mask
               fill-mask="0"
-              @keydown.tab.exact.native="addDetail"
             />
 
-            <iso1-input
+            <iso1-input 
               label="Total"
-              :value="detail.total"
-              class="col-2"
               disable
+              :value="order.total | formatCurrency"
+              class="col-2"
             />
 
-            <div class="col-1 q-pa-md">
-              <q-btn 
-                v-if="index > 0" 
-                size="sm" 
-                round 
-                icon="delete" 
-                color="negative" 
-                @click="removeDetail(index)"
-                tabindex="-1"
-              />
-              
-            </div>
+            <iso1-input 
+              label="Total Pago"
+              disable
+              :value="order.totalPaid  | formatCurrency"
+              class="col-2"
+            />
+            <iso1-input 
+              label="A pagar"
+              disable
+              :value="order.remainingPayment  | formatCurrency"
+              class="col-2"
+            />
           </div>
-          <q-btn 
-            size="sm" 
-            round 
-            icon="add" 
-            color="secondary" 
-            @click="addDetail"
-          />
+          <q-splitter :value="10" disable>
+            <template #before>
+              <q-tabs
+                v-model="tab"
+                vertical
+                class="text-teal"
+              >
+                <q-tab name="itens" label="Items"/>
+                <q-tab name="payment" label="Pagamento"/>
+              </q-tabs>
+            </template>
+
+            <template #after>
+              <q-tab-panels 
+                v-model="tab" 
+                animated
+                swipeable
+                vertical
+                transition-prev="jump-up"
+                transition-next="jump-up"
+              >
+                <q-tab-panel name="itens" keep-alive>
+                  <h2 class="text-h5 text-primary">Itens</h2>
+                  <!-- Itens -->
+                  <div v-for="(detail, index) in order.details" :key="detail.id" class="flex row q-col-gutter-sm">
+                    <order-product-select 
+                      :products="products"
+                      v-model="detail.product"
+                      @newProduct="newProduct"
+                      class="col-4"
+                      ref="inputProduct"
+                      accesskey="p"
+                    />
+
+                    <iso1-input 
+                      type="number"
+                      label="Quantidade *"
+                      v-model="detail.qty"
+                      class="col-2"
+                    />
+
+                    <iso1-input 
+                      disable
+                      :value="detail.unit"
+                      class="col-1"
+                    />
+
+                    <iso1-input 
+                      label="Preço *"
+                      v-model="detail.vl"
+                      class="col-2"
+                      mask="#.##"
+                      reverse-fill-mask
+                      fill-mask="0"
+                      @keydown.tab.exact.native="addDetail"
+                    />
+
+                    <iso1-input
+                      label="Total"
+                      :value="detail.total | formatCurrency"
+                      class="col-2"
+                      disable
+                    />
+
+                    <div class="col-1 q-pa-md">
+                      <q-btn 
+                        v-if="index > 0" 
+                        size="sm" 
+                        round 
+                        icon="delete" 
+                        color="negative" 
+                        @click="removeDetail(index)"
+                        tabindex="-1"
+                      />
+                      
+                    </div>
+                  </div>
+                  <q-btn 
+                    size="sm" 
+                    round 
+                    icon="add" 
+                    color="secondary" 
+                    @click="addDetail"
+                  />
+                </q-tab-panel>
+
+                <q-tab-panel name="payment" keep-alive>
+                  <h2 class="text-h5 text-primary">Pagamentos</h2>
+
+                  <div v-for="payment in order.payments" :key="payment.id"
+                    class="flex row q-col-gutter-sm"
+                  >
+                    <iso1-input 
+                      v-model="payment.vl"
+                      label="Valor R$"
+                      @keydown.enter.native="setPaymentValue(payment, $event)"
+                      class="col-2"
+                      ref="inputPayment"
+                    />
+
+                    <iso1-select 
+                      label="Forma de pagamento *"
+                      :options="paymentTypes"
+                      v-model="payment.paymentType"
+                      :rules="[val => !!val || 'Campo obrigatório']"
+                      class="col-5"
+                    />
+
+                    <iso1-date-input 
+                      label="Data pagamento *"
+                      v-model="payment.date"
+                      :rules="[val => !!val || 'Campo obrigatório']"
+                    />
+                  </div>
+
+                  <q-btn 
+                    size="sm" 
+                    round 
+                    icon="add" 
+                    color="secondary" 
+                    @click="addPayment"
+                  />
+                </q-tab-panel>
+              </q-tab-panels>
+            </template>
+          </q-splitter>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -153,10 +248,12 @@ import OrderProductSelect from '../components/OrderProductSelect';
 import CustomerService from '../services/CustomerService';
 import OrderService from '../services/OrderService';
 import ProductService from '../services/ProductService';
+import PaymentTypeService from '../services/PaymentTypeService';
 import Order from '../models/Order';
 import Customer from '../models/Customer';
 import Product from '../models/Product';
 import FormLink from '../utils/FormLink';
+import { formatCurrency } from '../utils/currencyHelper';
 
 export default {
   components: {
@@ -173,11 +270,14 @@ export default {
       order: new Order(),
       customers: [],
       products: [],
+      paymentTypes: [],
       deliveryType: ['Agendada', 'Pronta Entrega', 'Retirada'],
       orderService: new OrderService(),
       productService: new ProductService(),
       customerService: new CustomerService(),
-      loading: false
+      paymentTypeService: new PaymentTypeService(),
+      loading: false,
+      tab: 'itens'
     }
   },
 
@@ -194,13 +294,15 @@ export default {
   async created() {
     const { id } = this.$route.params;
 
-    const [ products, customers ] = await Promise.all([
+    const [ products, customers, paymentTypes ] = await Promise.all([
       this.productService.listForSaleProducts(),
-      this.customerService.list()
+      this.customerService.list(),
+      this.paymentTypeService.list()
     ]);
 
     this.products = products.map(p => new Product(p));
     this.customers = customers.map(c => new Customer(c));
+    this.paymentTypes = paymentTypes;
 
     if (id) {
       const order = await this.orderService.getById(id);
@@ -211,19 +313,32 @@ export default {
     }
   },
 
+  filters: {
+    formatCurrency
+  },
+
   methods: {
     save() {
       // this.loading = true;
+      if (this.order.details.length === 1 && this.order.details[0].product === null) {
+        this.$q.notify({
+          message: 'Insira pelo menos um item para salvar um pedido de vendas',
+          color: 'negative'
+        });
+
+        return;
+      }
 
       const promise = this.order.id 
         ? this.edit() 
         : this.saveNew();
 
-      promise.then(() => {
+      promise.then((id) => {
         this.$q.notify({
           message: 'Registro salvo com sucesso.',
           color: 'positive'
         });
+        this.orderService.openReport(id);
       })
 
       promise.finally(() => {
@@ -233,18 +348,20 @@ export default {
     saveNew() {
       return this.orderService.post(this.order)
         .then(order => {
-          this.$emit('updateList', new FormLink('add', new Order(order)));
+          this.order.id = order.id;
+          this.$emit('updateList', new FormLink('add', this.order));
           this.order = new Order();
           this.$refs.orderForm.reset();
           this.$refs.inputName.focus();
-          return order;
+          return order.id;
         });
     },
     edit() {
       return this.orderService.update(this.order)
         .then(order => {
-          this.$emit('updateList', new FormLink('edit', new Order(order)));
+          this.$emit('updateList', new FormLink('edit', this.order));
           this.$router.replace({ name: 'orders' });
+          return this.order.id;
         });
     },
     newCustomer(customerName) {
@@ -266,6 +383,16 @@ export default {
     },
     removeDetail(index) {
       this.order.details.splice(index, 1);
+    },
+    addPayment() {
+      this.order.addPayment();
+      this.$nextTick(() => {
+        this.$refs.inputPayment[this.order.payments.length - 1].focus();
+      });
+    },
+    setPaymentValue(payment, event) {
+      event.preventDefault();
+      payment.vl = this.order.remainingPayment;
     },
     close() {
       this.$router.replace({ name: 'orders' });

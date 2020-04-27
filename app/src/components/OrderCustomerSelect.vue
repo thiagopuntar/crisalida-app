@@ -3,7 +3,7 @@
     outlined
     :value="value"
     @input="input"
-    label="Cliente"
+    label="Cliente *"
     use-input
     :options="filteredCustomers"
     option-value="id"
@@ -13,6 +13,8 @@
     input-debounce="0"
     class="q-mb-sm col-6"
     ref="select"
+    :rules="[val => !!val || 'Campo obrigatório']"
+    hide-bottom-space
   >
     <template #option="scope">
       <q-item

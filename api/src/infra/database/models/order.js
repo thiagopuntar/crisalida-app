@@ -6,14 +6,16 @@ module.exports = (sequelize, dataTypes) => {
     deliveryDate: dataTypes.DATE,
     deliveryType: dataTypes.STRING,
     deliveryTax: dataTypes.DECIMAL(10,2),
-    discount: dataTypes.DECIMAL(10,2)
+    discount: dataTypes.DECIMAL(10,2),
+    isSeparated: dataTypes.BOOLEAN,
+    isDelivered: dataTypes.BOOLEAN
   });
 
   order.associate = function(models) {
     order.customer = order.belongsTo(models.customer);
     order.address = order.belongsTo(models.customerAddress, { as: 'address' });
-    order.details = order.hasMany(models.orderDetails, { as: 'details' });
-    order.payments = order.hasMany(models.payment, { as: 'payments' });
+    order.details = order.hasMany(models.orderDetails, { as: 'details', onDelete: 'CASCADE' });
+    order.payments = order.hasMany(models.payment, { as: 'payments', onDelete: 'CASCADE' });
   }
 
   return order;

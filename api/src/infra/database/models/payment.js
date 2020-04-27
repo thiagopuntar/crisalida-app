@@ -5,7 +5,7 @@ module.exports = (sequelize, dataTypes) => {
   });
 
   payment.associate = function(models) {
-    payment.belongsTo(models.paymentType);
+    payment.type = payment.belongsTo(models.paymentType);
     payment.belongsTo(models.order);
   }
 

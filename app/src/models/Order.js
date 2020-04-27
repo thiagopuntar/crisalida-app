@@ -1,5 +1,5 @@
 import { date } from 'quasar';
-import { dateBuilder } from '../utils/dateHelper'
+import Date2, { dateBuilder } from '../utils/dateHelper'
 
 class Detail {
   constructor(detail) {
@@ -53,6 +53,29 @@ class Detail {
   }
 }
 
+class Payment {
+  constructor(payment) {
+    if (payment) {
+      this.id = payment.id
+      this.vl = parseFloat(payment.vl);
+      this.date = date.formatDate(payment.date, "DD/MM/YYYY");
+      this.paymentType = payment.paymentType;
+    } else {
+      this.vl = 0.0;
+      this.date = date.formatDate(new Date(), "DD/MM/YYYY");
+      this.paymentType = null;
+    }
+  }
+
+  toJSON() {
+    const { date, paymentType, ...obj } = this;
+    obj.date = dateBuilder(date);
+    obj.paymentTypeId = paymentType && paymentType.id;
+
+    return obj;
+  }
+}
+
 export default class Order {
   constructor(order) {
     if (order) {
@@ -67,14 +90,22 @@ export default class Order {
       this._customer = order.customer;
       this._address = order.address;
       this.details = order.details ? order.details.map(d => new Detail(d)) : [];
-      this.totalItens = order.totalItens;
+      this.payments = order.payments ? order.payments.map(p => new Payment(p)) : [];
+      this.isSeparated = order.isSeparated;
+      this.isDelivered = order.isDelivered;
+      this._totalItens = order.totalItens;
+      this._totalPaid = order.totalPaid;
     } else {
       this._customer = null;
       this._address = null;
       this.deliveryTax = 0.0;
+      this._deliveryType = null;
       this.discount = 0.0;
       this.orderDate = date.formatDate(new Date(), "DD/MM/YYYY");
       this.details = [ new Detail() ];
+      this.payments = [ new Payment() ];
+      this.isSeparated = false;
+      this.isDelivered = false;
     }
   }
 
@@ -129,22 +160,39 @@ export default class Order {
   }
 
   get total() {
-    const totalItens = this.totalItens || this.details.reduce((total, item) => {
+    const totalItens = this._totalItens || this.details.reduce((total, item) => {
       total += item.total;
       return total;
     }, 0.0);
 
-    return totalItens + parseFloat(this.deliveryTax) - parseFloat(this.discount);
+    return parseFloat(totalItens) + parseFloat(this.deliveryTax) - parseFloat(this.discount);
+  }
+
+  get totalPaid() {
+    return this._totalPaid === undefined 
+      ? parseFloat(this.payments.reduce((total, payment) => {
+        total += parseFloat(payment.vl);
+        return total;
+      }, 0.0))
+      : parseFloat(this._totalPaid);
+  }
+
+  get remainingPayment() {
+    return this.total - this.totalPaid;
   }
 
   addDetail() {
     this.details.push(new Detail());
   }
 
+  addPayment() {
+    this.payments.push(new Payment());
+  }
+
   toJSON() {
     const { _address, _customer, _deliveryType, orderDate, deliveryDate, ...obj } = this;
     obj.addressId = _address ? _address.id : null;
-    obj.customerId = _customer.id;
+    obj.customerId = _customer &&_customer.id;
     obj.orderDate = dateBuilder(orderDate);
     obj.deliveryDate = dateBuilder(deliveryDate);
     obj.deliveryType = _deliveryType;

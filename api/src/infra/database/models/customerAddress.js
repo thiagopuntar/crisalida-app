@@ -8,7 +8,8 @@ module.exports = (sequelize, dataTypes) => {
     state: dataTypes.STRING,
     zipCode: dataTypes.STRING,
     type: dataTypes.STRING,
-    deliveryTax: dataTypes.DECIMAL(10, 2)
+    deliveryTax: dataTypes.DECIMAL(10, 2),
+    contact: dataTypes.STRING
   });
 
   customerAddress.associate = function(models) {

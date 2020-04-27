@@ -8,7 +8,7 @@ module.exports = (sequelize, dataTypes) => {
     productionQty: dataTypes.DOUBLE,
     minStock: dataTypes.DOUBLE,
     initialStock: dataTypes.DOUBLE,
-    isActive: dataTypes.INTEGER
+    isActive: dataTypes.BOOLEAN
   });
 
   product.associate = function(models) {
