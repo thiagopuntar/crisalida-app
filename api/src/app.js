@@ -15,8 +15,8 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 
-app.use(appRoute);
 app.use('/api/v1', apiRoutes);
 app.use('/reports', reportRoutes);
+app.use(appRoute);
 
 module.exports = app;

@@ -4,9 +4,9 @@ const path = require('path');
 
 const router = new Router();
 
-router.use(history())
+router.use(history());
 
 const distPath = path.resolve(process.cwd(), '../app/dist/spa');
-router.use('/', express.static(distPath));
+router.use(express.static(distPath));
 
 module.exports = router;
