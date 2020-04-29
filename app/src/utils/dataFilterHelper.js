@@ -1,4 +1,4 @@
-export const isName = (filterName) => 
+export const isLikeName = (filterName) => 
   (name) => 
     filterName ? new RegExp(filterName, 'i').test(name) : true;
 
