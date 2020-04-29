@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const apiRoutes = require('./infra/routes/api');
 const reportRoutes = require('./infra/routes/reports');
+const appRoute = require('./infra/routes/app');
 
 require('./infra/database');
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 
+app.use(appRoute);
 app.use('/api/v1', apiRoutes);
 app.use('/reports', reportRoutes);
 
