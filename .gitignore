@@ -26,3 +26,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 .development.env
+
+api/dist
