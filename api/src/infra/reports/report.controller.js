@@ -18,8 +18,6 @@ exports.order = async (req, res) => {
   res.send(reportCompiled);
 }
 
-exports.test = getOrder;
-
 async function getOrder(id) {
 
   const data = await order.findByPk(id, { 
@@ -90,12 +88,16 @@ function formatDate(val) {
 }
 
 function formatAddress(val) {
+  if (!val) {
+    return '';
+  }
+
   const { address, number, complement, district, contact } = val;
 
   let formated = address;
-  formated += number && `, ${number}`;
-  formated += complement && ` ${complement}`;
-  formated += district && ` - ${district}`;
+  formated += number ? `, ${number}` : '';
+  formated += complement ? ` ${complement}` : '';
+  formated += district ? ` - ${district}` : '';
 
   return formated;
 }

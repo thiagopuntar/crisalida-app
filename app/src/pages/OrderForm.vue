@@ -59,6 +59,20 @@
             type="textarea"
             rows="2"
           />
+          <div class="flex row justify-end">
+            <div class="flex column col-6">
+              <h2 class="text-h4">Status</h2>
+              <q-slider 
+                v-model="order.status"
+                :min="0"
+                :max="3"
+                markers
+                label
+                label-always
+                :label-value="status"
+              />
+            </div>
+          </div>
         </q-card-section>
 
         <q-card-section>
@@ -163,7 +177,7 @@
                         round 
                         icon="delete" 
                         color="negative" 
-                        @click="removeDetail(index)"
+                        @click="removeDetail(detail)"
                         tabindex="-1"
                       />
                       
@@ -233,6 +247,7 @@
 
     <router-view 
       @updateCustomers="updateCustomers" 
+      @updateProduts="updateProducts"
       isFromOrder
     />
   </iso1-dialog>
@@ -288,6 +303,9 @@ export default {
       }
 
       return [];
+    },
+    status() {
+      return Order.status[this.order.status];
     }
   },
 
@@ -319,7 +337,7 @@ export default {
 
   methods: {
     save() {
-      // this.loading = true;
+      this.loading = true;
       if (this.order.details.length === 1 && this.order.details[0].product === null) {
         this.$q.notify({
           message: 'Insira pelo menos um item para salvar um pedido de vendas',
@@ -333,12 +351,11 @@ export default {
         ? this.edit() 
         : this.saveNew();
 
-      promise.then((id) => {
+      promise.then(() => {
         this.$q.notify({
           message: 'Registro salvo com sucesso.',
           color: 'positive'
         });
-        this.orderService.openReport(id);
       })
 
       promise.finally(() => {
@@ -353,7 +370,7 @@ export default {
           this.order = new Order();
           this.$refs.orderForm.reset();
           this.$refs.inputName.focus();
-          return order.id;
+          this.orderService.openReport(order.id);
         });
     },
     edit() {
@@ -371,8 +388,11 @@ export default {
       this.customers.push(customer);
       this.$set(this.order, 'customer', customer);
     },
+    updateProducts(product) {
+      this.products.push(product);
+    },
     newProduct(productName) {
-      console.log(productName);
+      this.$router.push({ name: 'orderNewCustomer', params: { productName } });
     },
     addDetail(event) {
       event.preventDefault();
@@ -381,8 +401,8 @@ export default {
         this.$refs.inputProduct[this.order.details.length - 1].focus();
       });
     },
-    removeDetail(index) {
-      this.order.details.splice(index, 1);
+    removeDetail(detail) {
+      this.$set(detail, 'deleted', true);
     },
     addPayment() {
       this.order.addPayment();

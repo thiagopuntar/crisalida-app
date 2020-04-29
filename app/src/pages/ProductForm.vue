@@ -90,7 +90,7 @@ export default {
       product: new Product(),
       productService: new ProductService(),
       unitService: new UnitService(),
-      types: ['Insumo', 'Consumo', 'Embalagem', 'Produto', 'Outros'],
+      types: Product.types,
       units: [],
       loading: false,
       hasInnerChanges: false

@@ -11,7 +11,8 @@ exports.list = async (req, res) => {
     LEFT JOIN orderDetails d ON o.id = d.orderId
     JOIN customers c ON c.id = o.customerId
     LEFT JOIN customerAddresses a ON a.id = o.addressId
-    GROUP BY o.id, orderDate, status, comments, deliveryDate, deliveryType, deliveryTax, discount`;
+    GROUP BY o.id, orderDate, status, comments, deliveryDate, deliveryType, deliveryTax, discount
+    ORDER BY o.deliveryDate`;
 
   const data = await sequelize.query(query, {
     type: sequelize.QueryTypes.SELECT,

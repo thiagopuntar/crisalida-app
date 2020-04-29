@@ -1,9 +1,6 @@
 <template>
   <q-table
     v-bind="$attrs"
-    :pagination.sync="pagination"
-    :pagination-label="paginationLabel"
-    :rows-per-page-options="[0]"
   >
     <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope"/>

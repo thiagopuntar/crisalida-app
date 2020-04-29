@@ -12,7 +12,7 @@ module.exports = (sequelize, dataTypes) => {
   });
 
   product.associate = function(models) {
-    product.suppliers = product.belongsToMany(models.supplier, { through: 'productSupplier', as: 'suppliers' });
+    product.suppliers = product.belongsToMany(models.supplier, { through: 'productSuppliers', as: 'suppliers' });
   }
 
   return product;

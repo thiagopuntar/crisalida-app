@@ -40,6 +40,12 @@ const routes = [
                 component: () => import('pages/CustomerForm.vue'),
                 name: 'orderNewCustomer',
                 props: true
+              },
+              { 
+                path: '/order/new/newProduct/:productName',
+                component: () => import('pages/ProductForm.vue'),
+                name: 'orderNewProduct',
+                props: true
               }
             ]
           },

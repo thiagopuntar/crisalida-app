@@ -4,13 +4,27 @@
       @action="add"
       @submit="updateList"
     >
+      <template #inputForms>
+        <iso1-input 
+          v-model="filter.name"
+          label="Descrição"
+        />
+
+        <iso1-select 
+          v-model="filter.types"
+          :options="types"
+          label="Tipo de produto"
+          multiple
+        />
+      </template>
 
     </iso1-collapsible-filter>
 
     <iso1-table
-      :data="products"
+      :data="filteredData"
       :columns="columns"
       title="Produtos"
+      :loading="loading"
     >
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
@@ -27,18 +41,24 @@
 <script>
 import Iso1Table from '../components/Iso1Table';
 import Iso1CollapsibleFilter from '../components/Iso1CollapsibleFilter';
+import Iso1Input from '../components/Iso1Input';
+import Iso1Select from '../components/Iso1Select';
 import ProductService from '../services/ProductService';
 import Product from '../models/Product';
+import { isLikeName, isInArray } from '../utils/dataFilterHelper';
 
 export default {
   components: {
     Iso1Table,
-    Iso1CollapsibleFilter
+    Iso1CollapsibleFilter,
+    Iso1Input,
+    Iso1Select
   },
 
   data() {
     return {
       products: [],
+      types: Product.types,
       columns: [
         { name: 'id', field: 'id', label: 'ID' },
         { name: 'name', field: 'name', label: 'Descrição' },
@@ -47,7 +67,22 @@ export default {
         { name: 'price', field: 'price', label: 'Preço' },
         { name: 'btnDetails' },
       ],
-      productService: new ProductService()
+      productService: new ProductService(),
+      filter: {
+        name: '',
+        types: []
+      },
+      loading: true
+    }
+  },
+
+  computed: {
+    filteredData() {
+      return this.products.
+        filter(p => 
+          isLikeName(this.filter.name)(p.name) &&
+          isInArray(this.filter.types)(p.type)
+        );
     }
   },
 
@@ -59,6 +94,7 @@ export default {
     async updateList() {
       const products = await this.productService.list();
       this.products = products.map(p => new Product(p));
+      this.loading = false;
     },
     add() {
       this.$router.push({ name: 'newProduct' });

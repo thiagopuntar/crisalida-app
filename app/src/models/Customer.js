@@ -19,10 +19,21 @@ export default class Customer {
     if (!main) 
       return ' - ';
     
-    return `${main.address} ${main.number} - ${main.district}`;
+      const { address, number, complement, district } = main;
+
+      let formated = address;
+      formated += number ? `, ${number}` : '';
+      formated += complement ? ` ${complement}` : '';
+      formated += district ? ` - ${district}` : '';
+    
+      return formated;
   }
 
   get phoneClean() {
+    if (!this.phone) {
+      return '';
+    }
+
     return this.phone.replace(/[\(\)\-\s+]/g, '');
   }
 }

@@ -17,4 +17,13 @@ export default class Product {
       this.isActive = true;
     }
   }
+
+  static types = [
+    'Insumo', 
+    'Consumo', 
+    'Embalagem', 
+    'Produto', 
+    'Outros'
+  ]
+    
 }

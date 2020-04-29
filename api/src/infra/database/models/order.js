@@ -1,14 +1,12 @@
 module.exports = (sequelize, dataTypes) => {
   const order = sequelize.define('order', {
     orderDate: dataTypes.DATE,
-    status: dataTypes.STRING,
+    status: dataTypes.INTEGER,
     comments: dataTypes.STRING,
     deliveryDate: dataTypes.DATE,
     deliveryType: dataTypes.STRING,
     deliveryTax: dataTypes.DECIMAL(10,2),
-    discount: dataTypes.DECIMAL(10,2),
-    isSeparated: dataTypes.BOOLEAN,
-    isDelivered: dataTypes.BOOLEAN
+    discount: dataTypes.DECIMAL(10,2)
   });
 
   order.associate = function(models) {

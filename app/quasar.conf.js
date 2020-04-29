@@ -86,7 +86,8 @@ module.exports = function (ctx) {
         'QFab',
         'QFabAction',
         'QFile',
-        'QSplitter'
+        'QSplitter',
+        'QSlider'
       ],
 
       directives: [

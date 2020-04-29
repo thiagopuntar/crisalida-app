@@ -42,8 +42,9 @@ exports.listForSaleProducts = async (req, res) => {
     where: { 
       type: { [Op.in]: ['Produto', 'Outros'] }, 
       isActive: true 
-    }
-  })
+    },
+    order: [ 'name' ]
+  });
 
   res.json(data);
 }

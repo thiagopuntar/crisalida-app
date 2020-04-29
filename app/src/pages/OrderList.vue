@@ -8,25 +8,43 @@
         <iso1-input 
           label="Cliente"
           v-model="filter.name"
+          clearable
         />
 
         <iso1-input 
           label="Endereço/Bairro"
           v-model="filter.address"
+          clearable
         />
 
         <q-checkbox 
           label="Somente pendentes de entrega"
-          v-model="filter.isPending"
+          v-model="filter.isNotDelivered"
+        />
+
+        <q-checkbox 
+          label="Somente pendentes de confirmação"
+          v-model="filter.isNotConfirmed"
+        />
+
+        <q-checkbox 
+          label="Somente pendentes de pagamento"
+          v-model="filter.isNotPaid"
+        />
+
+        <q-checkbox 
+          label="Hoje"
+          v-model="filter.today"
         />
       </template>
 
     </iso1-collapsible-filter>
 
     <iso1-table
-      :data="orders"
+      :data="filteredData"
       :columns="columns"
       title="Pedidos"
+      :loading="loading"
     >
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
@@ -36,6 +54,14 @@
 
           <q-btn class="q-mx-md" size="sm" color="accent" icon="report" round @click="openReport(props.row)" />
         </q-td>
+      </template>
+
+      <template #bottom-row>
+        <q-tr>
+          <q-td colspan="20%">
+            Total: {{ totalValue }}
+          </q-td>
+        </q-tr>
       </template>
     </iso1-table>
     <router-view @updateList="f => f.update(orders)" />
@@ -50,6 +76,7 @@ import Iso1DateInput from '../components/Iso1DateInput';
 import OrderService from '../services/OrderService';
 import Order from '../models/Order';
 import { formatCurrency } from '../utils/currencyHelper';
+import { isLikeName, isValue } from '../utils/dataFilterHelper';
 
 export default {
   components: {
@@ -64,7 +91,6 @@ export default {
       orders: [],
       columns: [
         { name: 'id', field: 'id', label: 'ID' },
-        { name: 'orderDate', field: 'orderDate', label: 'Data Pedido' },
         { name: 'deliveryDate', field: 'deliveryDate', label: 'Data Entrega' },
         { name: 'customerName', field: x => x.customer.name, label: 'Cliente' },
         { name: 'customerPhone', field: x => x.customer.phone, label: 'Telefone' },
@@ -79,10 +105,50 @@ export default {
       filter: {
         name: '',
         address: '',
-        isPending: true,
+        isNotDelivered: true,
+        isNotConfirmed: false,
+        isNotPaid: false,
         initialDeliveryDate: null,
-        finalDeliveryDate: null
-      }
+        finalDeliveryDate: null,
+        today: true
+      },
+      isLoading: true
+    }
+  },
+
+  computed: {
+    filteredData() {
+      return this.orders.filter(o => 
+        (
+          isLikeName(this.filter.name)(o.customer.name) ||
+        isLikeName(this.filter.name)(o.customer.phone)
+        ) &&
+        (
+          isLikeName(this.filter.address)(o.address.address) ||
+          isLikeName(this.filter.address)(o.address.district)
+        ) && 
+        (
+          this.filter.isNotDelivered ? o.status <= 2 : true
+        ) && 
+        (
+          this.filter.isNotConfirmed ? o.status === 0 : true
+        ) &&
+        (
+          this.filter.isNotPaid ? o.remainingPayment > 0.0 : true
+        ) && 
+        (
+          this.filter.today ? o.isToday : true
+        )
+      )
+    },
+
+    totalValue() {
+      const value = this.filteredData.reduce((total, order) => {
+        total += order.total;
+        return total;
+      }, 0.0);
+
+      return formatCurrency(value);
     }
   },
 
@@ -92,8 +158,10 @@ export default {
 
   methods: {
     async updateList() {
+      this.loading = true;
       const orders = await this.orderService.list();
       this.orders = orders.map(o => new Order(o));
+      this.loading = false;
     },
     add() {
       this.$router.push({ name: 'newOrder' });
