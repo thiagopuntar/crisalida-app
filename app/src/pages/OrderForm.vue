@@ -325,6 +325,7 @@ export default {
     if (id) {
       const order = await this.orderService.getById(id);
       this.order = new Order(order);
+      console.log(JSON.stringify(this.order));
       this.isOpen = true;
     } else {
       this.isOpen = true;

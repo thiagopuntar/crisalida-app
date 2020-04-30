@@ -65,6 +65,7 @@ class Payment {
       this.vl = 0.0;
       this.date = date.formatDate(new Date(), "DD/MM/YYYY");
       this.paymentType = null;
+      this.deleted = false;
     }
   }
 
@@ -91,7 +92,7 @@ export default class Order {
       this._customer = order.customer;
       this._address = order.address;
       this._details = order.details ? order.details.map(d => new Detail(d)) : [];
-      this.payments = order.payments ? order.payments.map(p => new Payment(p)) : [];
+      this._payments = order.payments ? order.payments.map(p => new Payment(p)) : [];
       this._totalItens = order.totalItens;
       this._totalPaid = order.totalPaid;
     } else {
@@ -102,7 +103,7 @@ export default class Order {
       this.discount = 0.0;
       this.orderDate = date.formatDate(new Date(), "DD/MM/YYYY");
       this._details = [ new Detail() ];
-      this.payments = [ new Payment() ];
+      this._payments = [ new Payment() ];
       this.status = 1;
     }
   }
@@ -115,8 +116,8 @@ export default class Order {
     return this._details.filter(d => !d.deleted);
   }
 
-  set details(details) {
-    this._details = details;
+  get payments() {
+    return this._payments.filter(p => !p.deleted);
   }
 
   get customer() {
@@ -185,7 +186,7 @@ export default class Order {
 
   get totalPaid() {
     return this._totalPaid === undefined 
-      ? parseFloat(this.payments.reduce((total, payment) => {
+      ? parseFloat(this._payments.reduce((total, payment) => {
         total += parseFloat(payment.vl);
         return total;
       }, 0.0))
@@ -201,18 +202,18 @@ export default class Order {
   }
 
   addPayment() {
-    this.payments.push(new Payment());
+    this._payments.push(new Payment());
   }
 
   toJSON() {
-    const { _address, _customer, _deliveryType, orderDate, deliveryDate, _details, payments, ...obj } = this;
+    const { _address, _customer, _deliveryType, orderDate, deliveryDate, _details, _payments, ...obj } = this;
     obj.addressId = _address ? _address.id : null;
     obj.customerId = _customer &&_customer.id;
     obj.orderDate = dateBuilder(orderDate);
     obj.deliveryDate = dateBuilder(deliveryDate);
     obj.deliveryType = _deliveryType;
     obj.details = _details.filter(x => x.product);
-    obj.payments = payments.filter(x => x.vl);
+    obj.payments = _payments.filter(x => !!x.vl);
 
     return obj;
   }

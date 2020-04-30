@@ -94,8 +94,8 @@ export default {
         { name: 'deliveryDate', field: 'deliveryDate', label: 'Data Entrega' },
         { name: 'customerName', field: x => x.customer.name, label: 'Cliente' },
         { name: 'customerPhone', field: x => x.customer.phone, label: 'Telefone' },
-        { name: 'address', field: x => x.address && x.address.address, label: 'Endereço' },
-        { name: 'district', field: x => x.address && x.address.district, label: 'Bairro' },
+        { name: 'address', field: x => x.address ? x.address.address : '', label: 'Endereço' },
+        { name: 'district', field: x => x.address ? x.address.district : '', label: 'Bairro' },
         { name: 'deliveryType', field: 'deliveryType', label: 'Tipo entrega' },
         { name: 'total', field: 'total', label: 'Total', format: formatCurrency },
         { name: 'remainingPayment', field: 'remainingPayment', label: 'Restante', format: formatCurrency },
@@ -124,8 +124,11 @@ export default {
         isLikeName(this.filter.name)(o.customer.phone)
         ) &&
         (
-          isLikeName(this.filter.address)(o.address.address) ||
-          isLikeName(this.filter.address)(o.address.district)
+          o.address &&
+          (
+            isLikeName(this.filter.address)(o.address.address) ||
+            isLikeName(this.filter.address)(o.address.district)
+          )
         ) && 
         (
           this.filter.isNotDelivered ? o.status <= 2 : true

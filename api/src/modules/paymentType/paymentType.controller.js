@@ -2,7 +2,7 @@ const { paymentType } = require('../../infra/database');
 
 exports.list = async (req, res) => {
   const data = await paymentType.findAll();
-  res.json(data.map(x => x.name));
+  res.json(data);
 }
 
 exports.insert = async (req, res) => {
