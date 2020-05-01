@@ -9,6 +9,7 @@ class Detail {
       this.qty = detail.qty;
       this.vl = detail.vl;
       this.comments = detail.comments;
+      this.deleted = false;
     } else {
       this.product = null;
       this.qty = 0.0;
@@ -26,9 +27,7 @@ class Detail {
 
     if (!product) {
       this.vl = 0.0;
-    }
-
-    if (product && this.vl === 0.0) {
+    } else {
       this.vl = product.price;
     }
   }
@@ -61,6 +60,7 @@ class Payment {
       this.vl = parseFloat(payment.vl);
       this.date = date.formatDate(payment.date, "DD/MM/YYYY");
       this.paymentType = payment.paymentType;
+      this.deleted = false;
     } else {
       this.vl = 0.0;
       this.date = date.formatDate(new Date(), "DD/MM/YYYY");
@@ -201,8 +201,24 @@ export default class Order {
     this._details.push(new Detail());
   }
 
+  removeDetail(detail) {
+    if (detail.id) {
+      detail.deleted = true;
+    } else {
+      this._details.splice(this._details.indexOf(detail), 1);
+    }
+  }
+
   addPayment() {
     this._payments.push(new Payment());
+  }
+
+  removePayment(payment) {
+    if (payment.id) {
+      payment.deleted = true;
+    } else {
+      this._payments.splice(this._payments.indexOf(payment), 1);
+    }
   }
 
   toJSON() {

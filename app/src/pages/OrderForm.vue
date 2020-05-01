@@ -195,7 +195,7 @@
                 <q-tab-panel name="payment" keep-alive>
                   <h2 class="text-h5 text-primary">Pagamentos</h2>
 
-                  <div v-for="payment in order.payments" :key="payment.id"
+                  <div v-for="(payment, index) in order.payments" :key="payment.id"
                     class="flex row q-col-gutter-sm"
                   >
                     <iso1-input 
@@ -219,6 +219,19 @@
                       v-model="payment.date"
                       :rules="[val => !!val || 'Campo obrigatório']"
                     />
+
+                    <div class="col-1 q-pa-md">
+                      <q-btn 
+                        v-if="index > 0" 
+                        size="sm" 
+                        round 
+                        icon="delete" 
+                        color="negative" 
+                        @click="removePayment(payment)"
+                        tabindex="-1"
+                      />
+                      
+                    </div>
                   </div>
 
                   <q-btn 
@@ -325,7 +338,6 @@ export default {
     if (id) {
       const order = await this.orderService.getById(id);
       this.order = new Order(order);
-      console.log(JSON.stringify(this.order));
       this.isOpen = true;
     } else {
       this.isOpen = true;
@@ -403,13 +415,16 @@ export default {
       });
     },
     removeDetail(detail) {
-      this.$set(detail, 'deleted', true);
+      this.order.removeDetail(detail);
     },
     addPayment() {
       this.order.addPayment();
       this.$nextTick(() => {
         this.$refs.inputPayment[this.order.payments.length - 1].focus();
       });
+    },
+    removePayment(payment) {
+      this.order.removePayment(payment);
     },
     setPaymentValue(payment, event) {
       event.preventDefault();
