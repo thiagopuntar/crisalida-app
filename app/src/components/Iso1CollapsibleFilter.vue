@@ -62,7 +62,7 @@ export default {
 <style scoped>
   .layer {
     width: 100%;
-    border: 2px solid #F2C037;
+    border: 2px solid #FF0000;
     padding: 1.5rem;
     padding-bottom: 3rem;
     margin-bottom: 2.5rem;

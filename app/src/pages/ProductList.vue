@@ -28,7 +28,7 @@
     >
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
-          <q-btn class="q-mx-md" size="sm" color="secondary" icon="edit" round @click="edit(props.row)" />
+          <q-btn class="q-mx-md" size="sm" color="primary" icon="edit" round @click="edit(props.row)" />
 
           <q-btn class="q-mx-md" size="sm" color="negative" icon="delete" round @click="deleteRecord(props.row)" />
         </q-td>
