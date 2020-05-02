@@ -59,23 +59,11 @@
                 v-model="record.district"
               />
 
-              <iso1-input 
-                label="Cidade"
-                v-model="record.city"
+              <iso1-input
+                label="Contato"
+                v-model="record.contact"
               />
 
-              <iso1-input 
-                label="Estado"
-                v-model="record.state"
-                mask="AA"
-              />
-
-              <iso1-input 
-                label="CEP"
-                v-model="record.zipCode"
-                mask="######-###"
-              />
-              
               <iso1-input
                 label="Taxa Delivery"
                 v-model="record.deliveryTax"
@@ -83,6 +71,28 @@
                 mask="#,##"
                 fill-mask="0"
               />
+
+              <div class="flex row q-col-gutter-sm">
+                <iso1-input 
+                  label="Cidade"
+                  v-model="record.city"
+                  class="col-7"
+                />
+
+                <iso1-input 
+                  label="Estado"
+                  v-model="record.state"
+                  mask="AA"
+                  class="col-2"
+                />
+
+                <iso1-input 
+                  label="CEP"
+                  v-model="record.zipCode"
+                  mask="######-###"
+                  class="col-3"
+                />
+              </div>
 
             </template>
           </iso1-inner-form>
@@ -200,6 +210,13 @@ export default {
     edit() {
       return this.customerService.update(this.customer)
         .then(customer => {
+
+          if (this.isFromOrder) {
+            this.$emit('updateCustomers', this.customer);
+            this.$router.go(-1);
+            return;
+          }
+
           this.$emit('updateList', new FormLink('edit', new Customer(customer)));
           this.$router.go(-1);
         });
@@ -207,7 +224,8 @@ export default {
     close() {
       if (this.hasInnerChanges) {
         this.$q.dialog({
-          message: 'Há alterações não salvas. Tem certeza que deseja fechar o formulário?'
+          message: 'Há alterações não salvas. Tem certeza que deseja fechar o formulário?',
+          cancel: true
         })
         .onOk(() => this.$router.go(-1));
       } else {

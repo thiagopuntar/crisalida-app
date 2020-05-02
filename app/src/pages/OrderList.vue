@@ -58,8 +58,11 @@
 
       <template #bottom-row>
         <q-tr>
-          <q-td colspan="20%">
+          <q-td>
             Total: {{ totalValue }}
+          </q-td>
+          <q-td>
+            Total de taxa de entrega: {{ totalDeliveryTax }}
           </q-td>
         </q-tr>
       </template>
@@ -152,6 +155,14 @@ export default {
       }, 0.0);
 
       return formatCurrency(value);
+    },
+    totalDeliveryTax() {
+      const value = this.filteredData.reduce((total, order) => {
+        total += parseFloat(order.deliveryTax);
+        return total;
+      }, 0.0);
+
+      return formatCurrency(value);
     }
   },
 
@@ -170,7 +181,7 @@ export default {
       this.$router.push({ name: 'newOrder' });
     },
     edit(row) {
-      this.$router.push({ name: 'editOrder', params: {id: row.id} });
+      this.$router.push({ name: 'editOrder', params: { orderId: row.id } });
     },
     deleteRecord(row) {
       this.$q.dialog({

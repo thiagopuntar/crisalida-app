@@ -15,6 +15,7 @@
     ref="select"
     :rules="[val => !!val || 'Campo obrigatório']"
     hide-bottom-space
+    @dblclick.native="edit"
   >
     <template #option="scope">
       <q-item
@@ -89,6 +90,11 @@ export default {
     },
     focus() {
       this.$refs.select.focus();
+    },
+    edit() {
+      if (this.value) {
+        this.$emit('editCustomer', this.value.id);
+      }
     }
   }
 }

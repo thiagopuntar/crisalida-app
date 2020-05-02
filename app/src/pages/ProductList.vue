@@ -8,6 +8,7 @@
         <iso1-input 
           v-model="filter.name"
           label="Descrição"
+          clearable
         />
 
         <iso1-select 
@@ -15,6 +16,7 @@
           :options="types"
           label="Tipo de produto"
           multiple
+          clearable
         />
       </template>
 

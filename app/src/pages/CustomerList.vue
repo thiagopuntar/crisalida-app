@@ -4,11 +4,23 @@
       @action="add"
       @submit="updateList"
     >
+      <template #inputForms>
+        <iso1-input 
+          label="Nome/Telefone"
+          v-model="filter.name"
+          clearable
+        />
 
+        <iso1-input 
+          label="Bairro"
+          v-model="filter.district"
+          clearable
+        />
+      </template>
     </iso1-collapsible-filter>
 
     <iso1-table
-      :data="customers"
+      :data="filteredData"
       :columns="columns"
       title="Clientes"
     >
@@ -27,13 +39,16 @@
 <script>
 import Iso1Table from '../components/Iso1Table';
 import Iso1CollapsibleFilter from '../components/Iso1CollapsibleFilter';
+import Iso1Input from '../components/Iso1Input';
 import CustomerService from '../services/CustomerService';
 import Customer from '../models/Customer';
+import { isLikeName } from '../utils/dataFilterHelper';
 
 export default {
   components: {
     Iso1Table,
-    Iso1CollapsibleFilter
+    Iso1CollapsibleFilter,
+    Iso1Input
   },
 
   data() {
@@ -45,7 +60,23 @@ export default {
         { name: 'address', field: 'mainAddress', label: 'Endereço' },
         { name: 'btnDetails' },
       ],
-      customerService: new CustomerService()
+      customerService: new CustomerService(),
+      filter: {
+        name: '',
+        district: ''
+      }
+    }
+  },
+
+  computed: {
+    filteredData() {
+      return this.customers.filter(x => 
+        (
+          isLikeName(this.filter.name)(x.name) ||
+          isLikeName(this.filter.name)(x.phoneClean)
+        ) &&
+        isLikeName(this.filter.district)(x.mainAddress)
+      );
     }
   },
 

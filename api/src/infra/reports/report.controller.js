@@ -63,9 +63,9 @@ async function getOrder(id) {
   formatedData.total = formatCurrency(total);
   formatedData.remainingPayment = formatCurrency(total - totalPaid);
   formatedData.details = details.map(d => {
-    const { product: { name }, vl, ...obj } = d;
+    const { product: { name }, comments, vl, ...obj } = d;
 
-    obj.product = name;
+    obj.product = comments ? `${name} (${comments})` : name;
     obj.total = vl * obj.qty;
     obj.vl = vl;
     return obj;

@@ -15,6 +15,7 @@ class Detail {
       this.qty = 0.0;
       this.vl = 0.0;
       this.deleted = false;
+      this.comments = '';
     }
   }
 

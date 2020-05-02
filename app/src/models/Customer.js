@@ -8,6 +8,7 @@ export default class Customer {
       this.addresses = customer.addresses || [];
 
     } else {
+      this.name = '';
       this.phone = '';
       this.addresses = [];
     }

@@ -16,6 +16,7 @@
               :customers="customers"
               autofocus
               @newCustomer="newCustomer"
+              @editCustomer="editCustomer"
               ref="inputName"
             />
 
@@ -138,6 +139,8 @@
                       class="col-4"
                       ref="inputProduct"
                       accesskey="p"
+                      :comments="detail.comments"
+                      @addComment="val => detail.comments = val"
                     />
 
                     <iso1-input 
@@ -260,7 +263,7 @@
 
     <router-view 
       @updateCustomers="updateCustomers" 
-      @updateProduts="updateProducts"
+      @updateProducts="updateProducts"
       isFromOrder
     />
   </iso1-dialog>
@@ -319,11 +322,14 @@ export default {
     },
     status() {
       return Order.status[this.order.status];
+    },
+    route() {
+      return this.$route.params.orderId ? 'order': 'newOrder';
     }
   },
 
   async created() {
-    const { id } = this.$route.params;
+    const { orderId: id } = this.$route.params;
 
     const [ products, customers, paymentTypes ] = await Promise.all([
       this.productService.listForSaleProducts(),
@@ -395,7 +401,10 @@ export default {
         });
     },
     newCustomer(customerName) {
-      this.$router.push({ name: 'orderNewCustomer', params: { customerName } });
+      this.$router.push({ name: `${this.route}NewCustomer`, params: { customerName } });
+    },
+    editCustomer(id) {
+      this.$router.push({ name: `${this.route}EditCustomer`, params: { id } });
     },
     updateCustomers(customer) {
       this.customers.push(customer);
@@ -403,9 +412,10 @@ export default {
     },
     updateProducts(product) {
       this.products.push(product);
+      this.order.details[this.order.details.length - 1].product = product;
     },
     newProduct(productName) {
-      this.$router.push({ name: 'orderNewCustomer', params: { productName } });
+      this.$router.push({ name: `${this.route}NewProduct`, params: { productName } });
     },
     addDetail(event) {
       event.preventDefault();

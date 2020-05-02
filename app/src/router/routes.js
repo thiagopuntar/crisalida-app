@@ -31,28 +31,52 @@ const routes = [
         icon: 'list',
         children: [
           { 
-            path: '/orders/new', 
+            path: 'new', 
             component: () => import('pages/OrderForm.vue'),
             name: 'newOrder',
             children: [
               { 
-                path: '/order/new/newCustomer/:customerName',
+                path: 'newCustomer/:customerName',
                 component: () => import('pages/CustomerForm.vue'),
-                name: 'orderNewCustomer',
+                name: 'newOrderNewCustomer',
                 props: true
               },
               { 
-                path: '/order/new/newProduct/:productName',
+                path: 'customers/:id',
+                component: () => import('pages/CustomerForm.vue'),
+                name: 'newOrderEditCustomer'
+              },
+              { 
+                path: 'newProduct/:productName',
                 component: () => import('pages/ProductForm.vue'),
-                name: 'orderNewProduct',
+                name: 'newOrderNewProduct',
                 props: true
               }
             ]
           },
           { 
-            path: '/orders/edit/:id', 
+            path: ':orderId', 
             component: () => import('pages/OrderForm.vue'),
-            name: 'editOrder'
+            name: 'editOrder',
+            children: [
+              { 
+                path: 'newCustomer/:customerName',
+                component: () => import('pages/CustomerForm.vue'),
+                name: 'orderNewCustomer',
+                props: true
+              },
+              { 
+                path: 'customers/:id',
+                component: () => import('pages/CustomerForm.vue'),
+                name: 'orderEditCustomer'
+              },
+              { 
+                path: 'newProduct/:productName',
+                component: () => import('pages/ProductForm.vue'),
+                name: 'orderNewProduct',
+                props: true
+              }
+            ]
           },
         ]
       },
@@ -64,12 +88,12 @@ const routes = [
         icon: 'contacts',
         children: [
           { 
-            path: '/customers/new', 
+            path: 'new', 
             component: () => import('pages/CustomerForm.vue'),
             name: 'newCustomer'
           },
           { 
-            path: '/customers/:id', 
+            path: ':id', 
             component: () => import('pages/CustomerForm.vue'),
             name: 'editCustomer'
           },

@@ -17,7 +17,7 @@
             </slot>
 
             <q-item-section avatar>
-              <q-btn round size="sm" color="secondary" icon="edit" @click="edit(item)"/>
+              <q-btn round size="sm" color="primary" icon="edit" @click="edit(item)"/>
             </q-item-section>
 
             <q-item-section avatar>
