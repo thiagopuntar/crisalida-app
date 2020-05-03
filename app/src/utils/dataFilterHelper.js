@@ -8,4 +8,4 @@ export const isInArray = (filterArray) =>
 
 export const isValue = (filterValue) => 
   (value) => 
-    filterValue == null ? true : value == filterValue;
+    (filterValue == null || filterValue == '') ? true : value == filterValue;

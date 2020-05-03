@@ -5,11 +5,22 @@
       @submit="updateList"
     >
       <template #inputForms>
-        <iso1-input 
-          label="Cliente"
-          v-model="filter.name"
-          clearable
-        />
+        <div class="flex row q-col-gutter-sm">
+          <iso1-input
+            label="Cliente"
+            v-model="filter.name"
+            clearable
+            class="col-9"
+          />
+
+          <iso1-input 
+            label="ID"
+            v-model="filter.id"
+            class="col-3"
+            clearable
+          />
+
+        </div>
 
         <iso1-input 
           label="Endereço/Bairro"
@@ -36,6 +47,20 @@
           label="Hoje"
           v-model="filter.today"
         />
+
+        <div class="flex row q-col-gutter-sm">
+          <iso1-date-input 
+            :value="filter.initialDeliveryDate"
+            @change="$event => filter.initialDeliveryDate = $event.target.value"
+            label="Data inicial"
+          />
+          
+          <iso1-date-input 
+            :value="filter.finalDeliveryDate"
+            @change="$event => filter.finalDeliveryDate = $event.target.value"
+            label="Data final"
+          />
+        </div>
       </template>
 
     </iso1-collapsible-filter>
@@ -46,15 +71,51 @@
       title="Pedidos"
       :loading="loading"
     >
-      <template #body-cell-btnDetails="props">
-        <q-td :props="props">
-          <q-btn class="q-mx-md" size="sm" color="primary" icon="edit" round @click="edit(props.row)" />
+      <template #body="props">
+        <q-tr :props="props" :style="itemStyle(props.row)">
+          <q-td key="id" :props="props">
+            {{ props.row.id }}
+          </q-td>
+          <q-td key="deliveryDate" :props="props">
+            {{ props.row.deliveryDate }}
+          </q-td>
+          <q-td key="customerName" :props="props">
+            {{ props.row.customer.name }}
+          </q-td>
+          <q-td key="customerPhone" :props="props">
+            {{ props.row.customer.phone }}
+          </q-td>
+          <q-td key="address" :props="props">
+            {{ props.row.address.address }}
+          </q-td>
+          <q-td key="district" :props="props">
+            {{ props.row.address.district }}
+          </q-td>
+          <q-td key="deliveryType" :props="props">
+            {{ props.row.deliveryType }}
+          </q-td>
+          <q-td key="total" :props="props">
+            {{ props.row.total | formatCurrency }}
+          </q-td>
+          <q-td key="remainingPayment" :props="props">
+            {{ props.row.remainingPayment | formatCurrency }}
+          </q-td>
 
-          <q-btn class="q-mx-md" size="sm" color="negative" icon="delete" round @click="deleteRecord(props.row)" />
+          <q-td key="btnDetails" :props="props">
+            <q-btn class="q-mx-md" size="sm" color="primary" icon="edit" round @click="edit(props.row)" />
 
-          <q-btn class="q-mx-md" size="sm" color="accent" icon="report" round @click="openReport(props.row)" />
-        </q-td>
+            <q-btn class="q-mx-md" size="sm" color="negative" icon="delete" round @click="deleteRecord(props.row)" />
+
+            <q-btn class="q-mx-md" size="sm" color="accent" icon="report" round @click="openReport(props.row)" />
+          </q-td>
+        </q-tr>
       </template>
+    
+      <!-- <template #body-cell-btnDetails="props">
+        <q-td :props="props">
+          
+        </q-td>
+      </template> -->
 
       <template #bottom-row>
         <q-tr>
@@ -80,6 +141,7 @@ import OrderService from '../services/OrderService';
 import Order from '../models/Order';
 import { formatCurrency } from '../utils/currencyHelper';
 import { isLikeName, isValue } from '../utils/dataFilterHelper';
+import { dateBuilder } from '../utils/dateHelper';
 
 export default {
   components: {
@@ -106,6 +168,7 @@ export default {
       ],
       orderService: new OrderService(),
       filter: {
+        id: null,
         name: '',
         address: '',
         isNotDelivered: true,
@@ -121,10 +184,29 @@ export default {
 
   computed: {
     filteredData() {
+      const filterDate = (order) => {
+        const { initialDeliveryDate, finalDeliveryDate }  = this.filter;
+
+        if (!initialDeliveryDate || !finalDeliveryDate) {
+          return true;
+        }
+
+        const initialDate = dateBuilder(initialDeliveryDate);
+        const finalDate = dateBuilder(finalDeliveryDate);
+        const deliveryDate = dateBuilder(order.deliveryDate);
+
+        if (deliveryDate >= initialDate && deliveryDate <= finalDate) {
+          return true;
+        }
+
+        return false;
+      }
+
       return this.orders.filter(o => 
+        isValue(this.filter.id)(o.id) &&
         (
           isLikeName(this.filter.name)(o.customer.name) ||
-        isLikeName(this.filter.name)(o.customer.phone)
+          isLikeName(this.filter.name)(o.customer.phone)
         ) &&
         (
           o.address &&
@@ -144,7 +226,7 @@ export default {
         ) && 
         (
           this.filter.today ? o.isToday : true
-        )
+        ) && filterDate(o)
       )
     },
 
@@ -164,6 +246,21 @@ export default {
 
       return formatCurrency(value);
     }
+  },
+
+  watch: {
+    filter: {
+      deep: true,
+      handler(newVal) {
+        if (newVal && (newVal.initialDeliveryDate || newVal.finalDeliveryDate)) {
+          this.filter.today = false;
+        }
+      }
+    }
+  },
+
+  filters: {
+    formatCurrency
   },
 
   async created() {
@@ -209,6 +306,16 @@ export default {
     },
     openReport(row) {
       this.orderService.openReport(row.id);
+    },
+    itemStyle(row) {
+      const colors = [
+        'rgba(239, 67, 67, 0.68)',
+        'rgba(211, 167, 188, 0.82)',
+        'rgba(128, 249, 140, 0.82)',
+        'rgba(135, 143, 207, 0.65)'
+      ];
+
+      return `background-color: ${colors[row.status]}`;
     }
   }
 }

@@ -3,6 +3,9 @@
     v-bind="$attrs"
     mask="##/##/####"
     hide-bottom-space
+    @change="change"
+    error-message="Insira uma data válida"
+    :error="hasError"
   >
     <template v-slot:append>
       <q-icon name="event" class="cursor-pointer">
@@ -24,7 +27,9 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      hasError: false
+    }
   },
   methods: {
     input(val) {
@@ -33,6 +38,21 @@ export default {
     inputDate(val) {
       this.input(val);
       this.$refs.inputDate.hide();
+    },
+    change(val) {
+      const { value } = val.target;
+
+      if(value) {
+        const pattern = /\d{2}\/\d{2}\/\d{4}/;
+  
+        if (!pattern.test(value)) {
+          this.hasError = true;
+          return;
+        }
+      }
+      
+      this.hasError = false;
+      this.$emit('change', val);
     }
   }
 }
