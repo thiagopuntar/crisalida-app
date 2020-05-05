@@ -58,7 +58,7 @@ class Payment {
   constructor(payment) {
     if (payment) {
       this.id = payment.id
-      this.vl = parseFloat(payment.vl);
+      this.vl = payment.vl;
       this.date = date.formatDate(payment.date, "DD/MM/YYYY");
       this.paymentType = payment.paymentType;
       this.deleted = false;

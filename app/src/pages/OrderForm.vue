@@ -205,6 +205,9 @@
                       v-model="payment.vl"
                       label="Valor R$"
                       @keydown.enter.native="setPaymentValue(payment, $event)"
+                      mask="#.##"
+                      reverse-fill-mask
+                      fill-mask="0"
                       class="col-2"
                       ref="inputPayment"
                     />
