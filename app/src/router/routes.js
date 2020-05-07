@@ -107,17 +107,36 @@ const routes = [
         icon: 'kitchen',
         children: [
           { 
-            path: '/products/new', 
+            path: 'new', 
             component: () => import('pages/ProductForm.vue'),
             name: 'newProduct'
           },
           { 
-            path: '/products/:id', 
+            path: ':id', 
             component: () => import('pages/ProductForm.vue'),
             name: 'editProduct'
           },
         ]
       },
+      {
+        path: '/suppliers',
+        component: () => import('pages/SupplierForm.vue'),
+        name: 'suppliers',
+        title: 'Fornecedores',
+        icon: 'data',
+        children: [
+          { 
+            path: 'new', 
+            component: () => import('pages/SupplierForm.vue'),
+            name: 'newSupplier'
+          },
+          { 
+            path: ':id', 
+            component: () => import('pages/SupplierForm.vue'),
+            name: 'editSupplier'
+          },
+        ]
+      }
     ]
   }
 ]

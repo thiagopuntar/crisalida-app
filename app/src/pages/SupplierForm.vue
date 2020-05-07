@@ -1,50 +1,42 @@
 <template>
-  <iso1-dialog v-model="isOpen" title="Produto" @close="close">
-    <q-form @submit="save" ref="productForm">
+  <iso1-dialog v-model="isOpen" title="Fornecedor" @close="close">
+    <q-form @submit="save" ref="supplierForm">
       <q-card flat>
         <q-card-section>
-          <iso1-select
-            label="Tipo *"
-            :options="types"
-            v-model="product.type"
-            :rules="[(val) => !!val || 'Campo obrigatório']"
-            autofocus
-            ref="inputType"
+          <iso1-input 
+            label="Nome"
+            v-model="supplier.name"
           />
 
           <iso1-input 
-            label="Descrição *"
-            v-model="product.name"
-            :rules="[(val) => !!val || 'Campo obrigatório']"
+            label="Telefone"
+            v-model="supplier.phone"
+            mask="(##) #####-####"
+          />
+
+          <iso1-input 
+            label="Endereço"
+            v-model="supplier.address"
           />
 
           <div class="flex row q-col-gutter-sm">
-            <iso1-select 
-              label="Unidade *"
-              v-model="product.unit"
-              :options="units"
-              :rules="[(val) => !!val || 'Campo obrigatório']"
-              class="col-4"
+            <iso1-input 
+              label="Bairro"
+              v-model="supplier.address"
             />
 
             <iso1-input 
-              label="Custo"
-              v-model="product.cost"
-              mask="#.##"
-              reverse-fill-mask
-              fill-mask="0"
-              class="col-4"
+              label="Cidade"
+              v-model="supplier.address"
             />
 
-            <iso1-input
-              label="Preço"
-              v-model="product.price"
-              mask="#.##"
-              reverse-fill-mask
-              fill-mask="0"
-              class="col-4"
+            <iso1-input 
+              label="UF"
+              v-model="supplier.address"
             />
+            
           </div>
+
         </q-card-section>
 
         <q-card-actions align="right">
@@ -63,21 +55,18 @@
 <script>
 import Iso1Dialog from '../components/Iso1Dialog';
 import Iso1Input from '../components/Iso1Input';
-import Iso1Select from '../components/Iso1Select';
-import Product from '../models/Product';
-import ProductService from '../services/ProductService';
-import UnitService from '../services/UnitService';
+import Supplier from '../models/Supplier';
+import SupplierService from '../services/SupplierService';
 import FormLink from '../utils/FormLink';
 
 export default {
   components: {
     Iso1Dialog,
-    Iso1Input,
-    Iso1Select
+    Iso1Input
   },
 
   props: {
-    productName: String,
+    supplierName: String,
     isFromOrder: {
       type: Boolean,
       default: false
@@ -87,11 +76,8 @@ export default {
   data() {
     return {
       isOpen: false,
-      product: new Product(),
-      productService: new ProductService(),
-      unitService: new UnitService(),
-      types: Product.types,
-      units: [],
+      supplier: new Supplier(),
+      supplierService: new SupplierService(),
       loading: false,
       hasInnerChanges: false
     }
@@ -100,16 +86,13 @@ export default {
   async created() {
     const { id } = this.$route.params;
 
-    if (this.productName) {
-      this.product.name = this.productName;
+    if (this.supplierName) {
+      this.supplier.name = this.supplierName;
     }
 
-    this.unitService.list()
-      .then(units => this.units = units);
-
     if (id) {
-      const product = await this.productService.getById(id);
-      this.product = new Product(product);
+      const supplier = await this.supplierService.getById(id);
+      this.supplier = new Supplier(supplier);
       this.isOpen = true;
     } else {
       this.isOpen = true;
@@ -166,7 +149,8 @@ export default {
     close() {
       if (this.hasInnerChanges) {
         this.$q.dialog({
-          message: 'Há alterações não salvas. Tem certeza que deseja fechar o formulário?'
+          message: 'Há alterações não salvas. Tem certeza que deseja fechar o formulário?',
+          cancel: true
         })
         .onOk(() => this.$router.go(-1));
       } else {
