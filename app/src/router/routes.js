@@ -120,10 +120,10 @@ const routes = [
       },
       {
         path: '/suppliers',
-        component: () => import('pages/SupplierForm.vue'),
+        component: () => import('pages/SupplierList.vue'),
         name: 'suppliers',
         title: 'Fornecedores',
-        icon: 'data',
+        icon: 'business',
         children: [
           { 
             path: 'new', 

@@ -4,8 +4,11 @@
       <q-card flat>
         <q-card-section>
           <iso1-input 
-            label="Nome"
+            label="Nome *"
             v-model="supplier.name"
+            autofocus
+            ref="inputName"
+            :rules="[(val) => !!val || 'Campo obrigatório']"
           />
 
           <iso1-input 
@@ -21,18 +24,13 @@
 
           <div class="flex row q-col-gutter-sm">
             <iso1-input 
-              label="Bairro"
-              v-model="supplier.address"
-            />
-
-            <iso1-input 
               label="Cidade"
-              v-model="supplier.address"
+              v-model="supplier.city"
             />
 
             <iso1-input 
               label="UF"
-              v-model="supplier.address"
+              v-model="supplier.state"
             />
             
           </div>
@@ -62,7 +60,7 @@ import FormLink from '../utils/FormLink';
 export default {
   components: {
     Iso1Dialog,
-    Iso1Input
+    Iso1Input 
   },
 
   props: {
@@ -102,10 +100,10 @@ export default {
   methods: {
     save() {
       this.loading = true;
-      const promise = this.product.id ? this.edit() : this.saveNew();
+      const promise = this.supplier.id ? this.edit() : this.saveNew();
 
       promise
-        .then((product) => {
+        .then((supplier) => {
           this.$q.notify({
             message: 'Registro salvo com sucesso.',
             color: "positive"
@@ -124,25 +122,25 @@ export default {
         })
     },
     saveNew() {
-      return this.productService.post(this.product)
-        .then(product => {
+      return this.supplierService.post(this.supplier)
+        .then(supplier => {
           
           if (this.isFromOrder) {
-            this.$emit('updateProducts', product);
+            this.$emit('updateSuppliers', supplier);
             this.$router.go(-1);
             return;
           }
 
-          this.$emit('updateList', new FormLink('add', product));
-          this.product = new Product();
-          this.$refs.productForm.reset();
-          this.$refs.inputType.focus();
+          this.$emit('updateList', new FormLink('add', supplier));
+          this.supplier = new Supplier();
+          this.$refs.supplierForm.reset();
+          this.$refs.inputName.focus();
         })
     },
     edit() {
-      return this.productService.update(this.product)
-        .then(product => {
-          this.$emit('updateList', new FormLink('edit', product));
+      return this.supplierService.update(this.supplier)
+        .then(supplier => {
+          this.$emit('updateList', new FormLink('edit', supplier));
           this.$router.go(-1);
         });
     },

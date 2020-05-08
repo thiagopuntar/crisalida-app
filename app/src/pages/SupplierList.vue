@@ -7,15 +7,7 @@
       <template #inputForms>
         <iso1-input 
           v-model="filter.name"
-          label="Descrição"
-          clearable
-        />
-
-        <iso1-select 
-          v-model="filter.types"
-          :options="types"
-          label="Tipo de produto"
-          multiple
+          label="Nome"
           clearable
         />
       </template>
@@ -25,7 +17,7 @@
     <iso1-table
       :data="filteredData"
       :columns="columns"
-      title="Produtos"
+      title="Fornecedores"
       :loading="loading"
     >
       <template #body-cell-btnDetails="props">
@@ -36,7 +28,7 @@
         </q-td>
       </template>
     </iso1-table>
-    <router-view @updateList="f => f.update(products)" />
+    <router-view @updateList="f => f.update(suppliers)" />
   </q-page>
 </template>
 
@@ -45,8 +37,8 @@ import Iso1Table from '../components/Iso1Table';
 import Iso1CollapsibleFilter from '../components/Iso1CollapsibleFilter';
 import Iso1Input from '../components/Iso1Input';
 import Iso1Select from '../components/Iso1Select';
-import ProductService from '../services/ProductService';
-import Product from '../models/Product';
+import SupplierService from '../services/SupplierService';
+import Supplier from '../models/Supplier';
 import { isLikeName, isInArray } from '../utils/dataFilterHelper';
 
 export default {
@@ -59,20 +51,15 @@ export default {
 
   data() {
     return {
-      products: [],
-      types: Product.types,
+      suppliers: [],
       columns: [
         { name: 'id', field: 'id', label: 'ID' },
-        { name: 'name', field: 'name', label: 'Descrição' },
-        { name: 'type', field: 'type', label: 'Tipo' },
-        { name: 'cost', field: 'cost', label: 'Custo' },
-        { name: 'price', field: 'price', label: 'Preço' },
+        { name: 'name', field: 'name', label: 'Nome' },
         { name: 'btnDetails' },
       ],
-      productService: new ProductService(),
+      supplierService: new SupplierService(),
       filter: {
-        name: '',
-        types: []
+        name: ''
       },
       loading: true
     }
@@ -80,10 +67,9 @@ export default {
 
   computed: {
     filteredData() {
-      return this.products.
+      return this.suppliers.
         filter(p => 
-          isLikeName(this.filter.name)(p.name) &&
-          isInArray(this.filter.types)(p.type)
+          isLikeName(this.filter.name)(p.name)
         );
     }
   },
@@ -94,15 +80,15 @@ export default {
 
   methods: {
     async updateList() {
-      const products = await this.productService.list();
-      this.products = products.map(p => new Product(p));
+      const suppliers = await this.supplierService.list();
+      this.suppliers = suppliers.map(s => new Supplier(s));
       this.loading = false;
     },
     add() {
-      this.$router.push({ name: 'newProduct' });
+      this.$router.push({ name: 'newSupplier' });
     },
     edit(row) {
-      this.$router.push({ name: 'editProduct', params: {id: row.id} });
+      this.$router.push({ name: 'editSupplier', params: {id: row.id} });
     },
     deleteRecord(row) {
       this.$q.dialog({
@@ -111,13 +97,13 @@ export default {
         cancel: true
       })
       .onOk(() => {
-        this.productService.delete(row.id)
+        this.supplierService.delete(row.id)
           .then(() => {
             this.$q.notify({
               message: 'Registro removido com sucesso.',
               color: 'positive'
             });
-            this.products.splice(this.products.indexOf(row), 1);
+            this.suppliers.splice(this.suppliers.indexOf(row), 1);
           })
           .catch(err => {
             console.log(err);

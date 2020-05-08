@@ -8,6 +8,7 @@ const customer = require('../../modules/customer/customer.route');
 const unit = require('../../modules/unit/unit.route');
 const order = require('../../modules/order/order.route');
 const paymentType = require('../../modules/paymentType/paymentType.route');
+const supplier = require('../../modules/supplier/supplier.route');
 
 
 // app.use(`${apiRoute}/login`, Login);
@@ -17,5 +18,6 @@ router.use('/customers', customer);
 router.use('/units', unit);
 router.use('/orders', order);
 router.use('/paymentTypes', paymentType);
+router.use('/suppliers', supplier);
 
 module.exports = router;
