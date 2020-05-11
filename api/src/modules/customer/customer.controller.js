@@ -18,8 +18,9 @@ exports.update = async (req, res) => {
   }
 
   await setNestedArray('addAddress', req.body.addresses, customerAddress, data);
+  await data.update(req.body);
 
-  const newData = await data.update(req.body);
+  const newData = await customer.findByPk(req.params.id, { include: [ customer.addresses ]});
   res.json(newData);
 }
 

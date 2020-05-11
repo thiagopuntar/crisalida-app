@@ -412,8 +412,15 @@ export default {
     editCustomer(id) {
       this.$router.push({ name: `${this.route}EditCustomer`, params: { id } });
     },
-    updateCustomers(customer) {
-      this.customers.push(customer);
+    updateCustomers(payload) {
+      const { data: customer, type } = payload;
+
+      if (type === 'add') {
+        this.customers.push(customer);
+      } else {
+        this.customers.splice(this.customers.find(c => c.id === customer.id), 1);
+      }
+
       this.$set(this.order, 'customer', customer);
     },
     updateProducts(product) {
