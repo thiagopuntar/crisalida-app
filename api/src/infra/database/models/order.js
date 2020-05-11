@@ -1,10 +1,16 @@
 module.exports = (sequelize, dataTypes) => {
   const order = sequelize.define('order', {
     orderDate: dataTypes.DATE,
-    status: dataTypes.INTEGER,
+    status: {
+      type: dataTypes.INTEGER,
+      allowNull: false
+    },
     comments: dataTypes.STRING,
     deliveryDate: dataTypes.DATE,
-    deliveryType: dataTypes.STRING,
+    deliveryType: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
     deliveryTax: dataTypes.DECIMAL(10,2),
     discount: dataTypes.DECIMAL(10,2)
   });

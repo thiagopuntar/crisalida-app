@@ -209,10 +209,9 @@ export default {
     },
     edit() {
       return this.customerService.update(this.customer)
-        .then(customer => {
-
+        .then(customer => {          
           if (this.isFromOrder) {
-            this.$emit('updateCustomers', this.customer);
+            this.$emit('updateCustomers', customer);
             this.$router.go(-1);
             return;
           }

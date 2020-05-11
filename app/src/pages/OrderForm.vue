@@ -23,8 +23,9 @@
             <iso1-select 
               :options="deliveryType"
               v-model="order.deliveryType"
-              label="Tipo de entrega"
+              label="Tipo de entrega *"
               class="col-3"
+              :rules="[val => !!val || 'Campo obrigatório']"
             />
 
             <iso1-date-input 
@@ -42,6 +43,7 @@
               option-value="id"
               option-label="address"
               class="col-8"
+              :rules="[val => !!val || 'Campo obrigatório']"
             />
 
             <iso1-input 
@@ -366,6 +368,7 @@ export default {
           color: 'negative'
         });
 
+        this.loading = false;
         return;
       }
 
