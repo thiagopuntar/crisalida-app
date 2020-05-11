@@ -79,14 +79,12 @@
     </div>
   {{/if}}
   <table>
-    <thead>
-      <tr>
-        <th>Qtd</th>
-        <th>Item</th>
-        <th>Vl unit.</th>
-        <th>Vl total</th>
-      </tr>
-    </thead>
+    <tr>
+      <th>Qtd</th>
+      <th>Item</th>
+      <th>Vl unit.</th>
+      <th>Vl total</th>
+    </tr>
     <tbody>
       {{#each details}}
         <tr>
@@ -97,25 +95,23 @@
         </tr>
       {{/each}}
     </tbody>
-    <tfoot>
-      <tr class="separator"></tr>
-      <tr>
-        <td class="total" colspan="1">Taxa de entrega:</td>
-        <td id="total">{{deliveryTax}}</td>
-      </tr>
-      <tr>
-        <td class="total" colspan="1">Total:</td>
-        <td id="total">{{total}}</td>
-      </tr>
-      <tr>
-        <td class="total" colspan="1">Valor pago:</td>
-        <td>{{totalPaid}}</td>
-      </tr>
-      <tr>
-        <td class="total super-total" colspan="1">Restante:</td>
-        <td class="super-total">{{remainingPayment}}</td>
-      </tr>
-    </tfoot>
+    <tr class="separator"></tr>
+    <tr>
+      <td class="total" colspan="1">Taxa de entrega:</td>
+      <td id="total">{{deliveryTax}}</td>
+    </tr>
+    <tr>
+      <td class="total" colspan="1">Total:</td>
+      <td id="total">{{total}}</td>
+    </tr>
+    <tr>
+      <td class="total" colspan="1">Valor pago:</td>
+      <td>{{totalPaid}}</td>
+    </tr>
+    <tr>
+      <td class="total super-total" colspan="1">Restante:</td>
+      <td class="super-total">{{remainingPayment}}</td>
+    </tr>
   </table>
 </body>
 <script>
