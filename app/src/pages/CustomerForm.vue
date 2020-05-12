@@ -55,8 +55,9 @@
               </div>
 
               <iso1-input 
-                label="Bairro"
+                label="Bairro *"
                 v-model="record.district"
+                :rules="[(val) => !!val || 'Campo obrigatório']"
               />
 
               <iso1-input
@@ -74,22 +75,24 @@
 
               <div class="flex row q-col-gutter-sm">
                 <iso1-input 
-                  label="Cidade"
+                  label="Cidade *"
                   v-model="record.city"
                   class="col-7"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
                 />
 
                 <iso1-input 
-                  label="Estado"
+                  label="Estado *"
                   v-model="record.state"
                   mask="AA"
                   class="col-2"
+                  :rules="[(val) => !!val || 'Campo obrigatório']"
                 />
 
                 <iso1-input 
                   label="CEP"
                   v-model="record.zipCode"
-                  mask="######-###"
+                  mask="#####-###"
                   class="col-3"
                 />
               </div>
