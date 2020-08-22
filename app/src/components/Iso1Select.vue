@@ -12,9 +12,7 @@
   >
     <template v-slot:no-option>
       <q-item>
-        <q-item-section @click="newOption" class="text-italic text-grey">
-          {{ noOption }}
-        </q-item-section>
+        <q-item-section @click="newOption" class="text-italic text-grey">{{ noOption }}</q-item-section>
       </q-item>
     </template>
   </q-select>
@@ -25,35 +23,35 @@ export default {
   props: {
     noOption: {
       type: String,
-      default: 'Nenhum registro disponível'
+      default: "Nenhum registro disponível",
     },
     value: {
-      type: [String, Number, Array, Object]
+      type: [String, Number, Array, Object],
     },
     optionValue: {
       type: String,
-      default: '_id'
+      default: "_id",
     },
     optionLabel: {
       type: String,
-      default: 'name'
+      default: "name",
     },
   },
-  data () {
-    return {}
+  data() {
+    return {};
   },
   methods: {
     input(val) {
-      this.$emit('input', val);
+      this.$emit("input", val);
     },
     newOption() {
-      this.$emit('newOption');
+      this.$emit("newOption");
     },
     focus() {
       this.$refs.select.focus();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
