@@ -212,7 +212,7 @@ export default {
             isLikeName(this.filter.address)(o.address.district)) &&
           (this.filter.isNotDelivered ? o.status <= 2 : true) &&
           (this.filter.isNotConfirmed ? o.status === 0 : true) &&
-          (this.filter.isNotPicked ? o.status === 0 : true) &&
+          (this.filter.isNotPicked ? o.status <= 1 : true) &&
           (this.filter.isNotPaid ? o.remainingPayment > 0.0 : true) &&
           filterDate(o)
       );
