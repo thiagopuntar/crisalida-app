@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Crisálida Café</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @page {
+      margin: 0px 0px 0px 0px
+    }
+
+    body {
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 30px;
+    }
+
+    .div-header {
+      margin: 5px;
+    }
+
+    #titulo {
+      text-align: center;
+    }
+
+    .total {
+      text-align: right;
+      font-weight: bolder;
+    }
+
+    .footer {
+      margin-top: 6px;
+    }
+
+    .super-total {
+      font-size: 1.0rem;
+    }
+
+    .separator {
+      height: 10px;
+    }
+
+    #total {
+      font-weight: bolder;
+    }
+
+    .produto {
+      width: 150px;
+      text-align: left;
+    }
+
+    .preco {
+      text-align: right;
+    }
+
+    .separator {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  {{#each orders}}
+  <div class="div-header">
+    <span>Cliente:</span>
+    <span id="nome-cliente">{{customer.name}}</span>
+  </div>
+  <div class="div-header">
+    <span>Telefone:</span>
+    <span>{{customer.phone}}</span>
+  </div>
+  <div class="div-header">
+    <span>Endereço:</span>
+    <span>{{address}}</span>
+  </div>
+  <div class="div-header">
+    <span>Desconto: </span>
+    <span>{{discount}}</span>
+  </div>
+  <div class="div-header">
+    <span>Taxa de entrega: </span>
+    <span>{{deliveryTax}}</span>
+  </div>
+  <div class="div-header">
+    <span>Total a pagar: </span>
+    <span>{{remainingPayment}}</span>
+  </div>
+  {{#if comments}}
+  <div class="div-header">
+    <span>{{comments}}</span>
+  </div>
+  {{/if}}
+  <div class="separator">
+  </div>
+  {{/each}}
+</body>
+
+</html>

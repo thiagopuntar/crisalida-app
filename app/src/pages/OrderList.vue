@@ -40,6 +40,7 @@
             label="Data final"
           />
         </div>
+        <q-btn label="LISTA DE PEDIDOS" @click="openOrderList" />
       </template>
     </iso1-collapsible-filter>
 
@@ -290,6 +291,19 @@ export default {
     },
     openReport(row) {
       this.orderService.openReport(row.id);
+    },
+    openOrderList() {
+      const ids = this.filteredData.map((x) => x.id);
+
+      if (!ids || !ids.length) {
+        this.$q.notify({
+          message: "Não há pedidos para serem listados",
+          color: "warning",
+        });
+        return;
+      }
+
+      this.orderService.openOrderList(ids);
     },
     itemStyle(row) {
       const colors = [
