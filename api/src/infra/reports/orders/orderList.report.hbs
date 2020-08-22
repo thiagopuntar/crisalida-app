@@ -64,27 +64,27 @@
 <body>
   {{#each orders}}
   <div class="div-header">
-    <span>Cliente:</span>
+    <span>*Cliente:*</span>
     <span id="nome-cliente">{{customer.name}}</span>
   </div>
   <div class="div-header">
-    <span>Telefone:</span>
+    <span>*Telefone:*</span>
     <span>{{customer.phone}}</span>
   </div>
   <div class="div-header">
-    <span>Endereço:</span>
+    <span>*Endereço:*</span>
     <span>{{address}}</span>
   </div>
   <div class="div-header">
-    <span>Desconto: </span>
+    <span>*Desconto:*</span>
     <span>{{discount}}</span>
   </div>
   <div class="div-header">
-    <span>Taxa de entrega: </span>
+    <span>*Taxa de entrega:*</span>
     <span>{{deliveryTax}}</span>
   </div>
   <div class="div-header">
-    <span>Total a pagar: </span>
+    <span>*Total a pagar:* </span>
     <span>{{remainingPayment}}</span>
   </div>
   {{#if comments}}
@@ -93,6 +93,8 @@
   </div>
   {{/if}}
   <div class="separator">
+    <br />
+    <br />
   </div>
   {{/each}}
 </body>
