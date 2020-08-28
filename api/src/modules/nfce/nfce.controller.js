@@ -5,8 +5,6 @@ const { NF_DOMAIN, NF_TOKEN, NF_CNPJ_EMITENTE, NF_API_DOMAIN } = process.env;
 const { order, orderDetails, payment } = require("../../infra/database");
 
 async function getOrder(id) {
-  const { id } = req.params;
-
   const data = await order.findByPk(id, {
     include: [
       order.customer,
