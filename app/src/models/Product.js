@@ -19,11 +19,13 @@ export default class Product {
   }
 
   static types = [
-    'Insumo', 
-    'Consumo', 
-    'Embalagem', 
-    'Produto', 
-    'Outros'
-  ]
-    
+    "Insumo",
+    "Consumo",
+    "Embalagem",
+    "Granel",
+    "Produto",
+    "Kit",
+    "Revenda",
+    "Outros"
+  ];
 }
