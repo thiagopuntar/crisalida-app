@@ -18,6 +18,8 @@ module.exports = (sequelize, dataTypes) => {
       through: "productSuppliers",
       as: "suppliers",
     });
+
+    product.family = product.belongsTo(models.family);
   };
 
   return product;

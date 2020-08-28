@@ -10,6 +10,7 @@ const order = require("../../modules/order/order.route");
 const paymentType = require("../../modules/paymentType/paymentType.route");
 const supplier = require("../../modules/supplier/supplier.route");
 const nfce = require("../../modules/nfce/nfce.route");
+const family = require("../../modules/family/family.route");
 
 // app.use(`${apiRoute}/login`, Login);
 
@@ -20,5 +21,6 @@ router.use("/orders", order);
 router.use("/paymentTypes", paymentType);
 router.use("/suppliers", supplier);
 router.use("/nfce", nfce);
+router.use("/families", family);
 
 module.exports = router;

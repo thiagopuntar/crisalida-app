@@ -3,6 +3,9 @@
     <q-form @submit="save" ref="productForm">
       <q-card flat>
         <q-card-section>
+          <div class="flex justify-end">
+            <q-toggle tab-index="-1" v-model="product.isActive" label="Ativo" />
+          </div>
           <iso1-select
             label="Tipo *"
             :options="types"
@@ -12,14 +15,14 @@
             ref="inputType"
           />
 
-          <iso1-input 
+          <iso1-input
             label="Descrição *"
             v-model="product.name"
             :rules="[(val) => !!val || 'Campo obrigatório']"
           />
 
           <div class="flex row q-col-gutter-sm">
-            <iso1-select 
+            <iso1-select
               label="Unidade *"
               v-model="product.unit"
               :options="units"
@@ -27,7 +30,7 @@
               class="col-4"
             />
 
-            <iso1-input 
+            <iso1-input
               label="Custo"
               v-model="product.cost"
               mask="#.##"
@@ -45,15 +48,21 @@
               class="col-4"
             />
           </div>
+          <div class="flex row q-col-gutter-sm">
+            <iso1-select
+              label="Família"
+              :options="families"
+              v-model="product.family"
+              class="col-4"
+            />
+
+            <iso1-input label="NCM" v-model="product.ncm" class="col-4" />
+            <iso1-input label="CFOP" v-model="product.cfop" class="col-4" />
+          </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn
-            color="primary"
-            label="Salvar"
-            type="submit"
-            :loading="loading"
-          />
+          <q-btn color="primary" label="Salvar" type="submit" :loading="loading" />
         </q-card-actions>
       </q-card>
     </q-form>
@@ -61,27 +70,28 @@
 </template>
 
 <script>
-import Iso1Dialog from '../components/Iso1Dialog';
-import Iso1Input from '../components/Iso1Input';
-import Iso1Select from '../components/Iso1Select';
-import Product from '../models/Product';
-import ProductService from '../services/ProductService';
-import UnitService from '../services/UnitService';
-import FormLink from '../utils/FormLink';
+import Iso1Dialog from "../components/Iso1Dialog";
+import Iso1Input from "../components/Iso1Input";
+import Iso1Select from "../components/Iso1Select";
+import Product from "../models/Product";
+import ProductService from "../services/ProductService";
+import UnitService from "../services/UnitService";
+import FamilyService from "../services/ProductFamilyService";
+import FormLink from "../utils/FormLink";
 
 export default {
   components: {
     Iso1Dialog,
     Iso1Input,
-    Iso1Select
+    Iso1Select,
   },
 
   props: {
     productName: String,
     isFromOrder: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data() {
@@ -90,11 +100,13 @@ export default {
       product: new Product(),
       productService: new ProductService(),
       unitService: new UnitService(),
+      familyService: new FamilyService(),
       types: Product.types,
       units: [],
+      families: [],
       loading: false,
-      hasInnerChanges: false
-    }
+      hasInnerChanges: false,
+    };
   },
 
   async created() {
@@ -104,8 +116,8 @@ export default {
       this.product.name = this.productName;
     }
 
-    this.unitService.list()
-      .then(units => this.units = units);
+    this.unitService.list().then((units) => (this.units = units));
+    this.familyService.list().then((families) => (this.families = families));
 
     if (id) {
       const product = await this.productService.getById(id);
@@ -124,55 +136,54 @@ export default {
       promise
         .then((product) => {
           this.$q.notify({
-            message: 'Registro salvo com sucesso.',
-            color: "positive"
+            message: "Registro salvo com sucesso.",
+            color: "positive",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           this.$q.notify({
-            message: 'Erro ao salvar registro. Consulte o log',
-            color: "negative"
+            message: "Erro ao salvar registro. Consulte o log",
+            color: "negative",
           });
         })
         .finally(() => {
           this.loading = false;
           this.hasInnerChanges = false;
-        })
+        });
     },
     saveNew() {
-      return this.productService.post(this.product)
-        .then(product => {
-          
-          if (this.isFromOrder) {
-            this.$emit('updateProducts', product);
-            this.$router.go(-1);
-            return;
-          }
+      return this.productService.post(this.product).then((product) => {
+        if (this.isFromOrder) {
+          this.$emit("updateProducts", product);
+          this.$router.go(-1);
+          return;
+        }
 
-          this.$emit('updateList', new FormLink('add', product));
-          this.product = new Product();
-          this.$refs.productForm.reset();
-          this.$refs.inputType.focus();
-        })
+        this.$emit("updateList", new FormLink("add", product));
+        this.product = new Product();
+        this.$refs.productForm.reset();
+        this.$refs.inputType.focus();
+      });
     },
     edit() {
-      return this.productService.update(this.product)
-        .then(product => {
-          this.$emit('updateList', new FormLink('edit', product));
-          this.$router.go(-1);
-        });
+      return this.productService.update(this.product).then((product) => {
+        this.$emit("updateList", new FormLink("edit", product));
+        this.$router.go(-1);
+      });
     },
     close() {
       if (this.hasInnerChanges) {
-        this.$q.dialog({
-          message: 'Há alterações não salvas. Tem certeza que deseja fechar o formulário?'
-        })
-        .onOk(() => this.$router.go(-1));
+        this.$q
+          .dialog({
+            message:
+              "Há alterações não salvas. Tem certeza que deseja fechar o formulário?",
+          })
+          .onOk(() => this.$router.go(-1));
       } else {
-        this.$router.go(-1)
+        this.$router.go(-1);
       }
-    } 
-  }
-}
+    },
+  },
+};
 </script>
