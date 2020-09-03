@@ -1,152 +1,180 @@
 const routes = [
   {
-    path: '/login',
-    component: () => import('layouts/LoginLayout.vue'),
+    path: "/login",
+    component: () => import("layouts/LoginLayout.vue"),
     children: [
-      { 
-        path: '', 
-        component: () => import('pages/Login.vue'),
+      {
+        path: "",
+        component: () => import("pages/Login.vue"),
         meta: { public: true },
-        name: 'login'
+        name: "login"
       }
     ]
   },
   {
-    path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
     // Rotas da aplicação logada!!!
     children: [
-      { 
-        path: '/home', 
-        component: () => import('pages/Index.vue'),
-        name: 'home',
-        title: 'Início',
-        icon: 'home',
+      {
+        path: "/home",
+        component: () => import("pages/Index.vue"),
+        name: "home",
+        title: "Início",
+        icon: "home"
       },
       {
-        path: '/orders', 
-        component: () => import('pages/OrderList.vue'),
-        name: 'orders',
-        title: 'Pedidos',
-        icon: 'list',
+        path: "/orders",
+        component: () => import("pages/OrderList.vue"),
+        name: "orders",
+        title: "Pedidos",
+        icon: "list",
         children: [
-          { 
-            path: 'new', 
-            component: () => import('pages/OrderForm.vue'),
-            name: 'newOrder',
+          {
+            path: "new",
+            component: () => import("pages/OrderForm.vue"),
+            name: "newOrder",
             children: [
-              { 
-                path: 'newCustomer/:customerName',
-                component: () => import('pages/CustomerForm.vue'),
-                name: 'newOrderNewCustomer',
+              {
+                path: "newCustomer/:customerName",
+                component: () => import("pages/CustomerForm.vue"),
+                name: "newOrderNewCustomer",
                 props: true
               },
-              { 
-                path: 'customers/:id',
-                component: () => import('pages/CustomerForm.vue'),
-                name: 'newOrderEditCustomer'
+              {
+                path: "customers/:id",
+                component: () => import("pages/CustomerForm.vue"),
+                name: "newOrderEditCustomer"
               },
-              { 
-                path: 'newProduct/:productName',
-                component: () => import('pages/ProductForm.vue'),
-                name: 'newOrderNewProduct',
+              {
+                path: "newProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "newOrderNewProduct",
                 props: true
               }
             ]
           },
-          { 
-            path: ':orderId', 
-            component: () => import('pages/OrderForm.vue'),
-            name: 'editOrder',
+          {
+            path: ":orderId",
+            component: () => import("pages/OrderForm.vue"),
+            name: "editOrder",
             children: [
-              { 
-                path: 'newCustomer/:customerName',
-                component: () => import('pages/CustomerForm.vue'),
-                name: 'orderNewCustomer',
+              {
+                path: "newCustomer/:customerName",
+                component: () => import("pages/CustomerForm.vue"),
+                name: "orderNewCustomer",
                 props: true
               },
-              { 
-                path: 'customers/:id',
-                component: () => import('pages/CustomerForm.vue'),
-                name: 'orderEditCustomer'
+              {
+                path: "customers/:id",
+                component: () => import("pages/CustomerForm.vue"),
+                name: "orderEditCustomer"
               },
-              { 
-                path: 'newProduct/:productName',
-                component: () => import('pages/ProductForm.vue'),
-                name: 'orderNewProduct',
+              {
+                path: "newProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "orderNewProduct",
+                props: true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        path: "/customers",
+        component: () => import("pages/CustomerList.vue"),
+        name: "customers",
+        title: "Clientes",
+        icon: "contacts",
+        children: [
+          {
+            path: "new",
+            component: () => import("pages/CustomerForm.vue"),
+            name: "newCustomer"
+          },
+          {
+            path: ":id",
+            component: () => import("pages/CustomerForm.vue"),
+            name: "editCustomer"
+          }
+        ]
+      },
+      {
+        path: "/products",
+        component: () => import("pages/ProductList.vue"),
+        name: "products",
+        title: "Produtos",
+        icon: "kitchen",
+        children: [
+          {
+            path: "new",
+            component: () => import("pages/ProductForm.vue"),
+            name: "newProduct",
+            children: [
+              {
+                path: "newProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "productNewProduct",
+                props: true
+              },
+              {
+                path: "editProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "productEditProduct",
                 props: true
               }
             ]
           },
+          {
+            path: ":id",
+            component: () => import("pages/ProductForm.vue"),
+            name: "editProduct",
+            children: [
+              {
+                path: "newProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "productNewProduct",
+                props: true
+              },
+              {
+                path: "editProduct/:productName",
+                component: () => import("pages/ProductForm.vue"),
+                name: "productEditProduct",
+                props: true
+              }
+            ]
+          }
         ]
       },
       {
-        path: '/customers', 
-        component: () => import('pages/CustomerList.vue'),
-        name: 'customers',
-        title: 'Clientes',
-        icon: 'contacts',
+        path: "/suppliers",
+        component: () => import("pages/SupplierList.vue"),
+        name: "suppliers",
+        title: "Fornecedores",
+        icon: "business",
         children: [
-          { 
-            path: 'new', 
-            component: () => import('pages/CustomerForm.vue'),
-            name: 'newCustomer'
+          {
+            path: "new",
+            component: () => import("pages/SupplierForm.vue"),
+            name: "newSupplier"
           },
-          { 
-            path: ':id', 
-            component: () => import('pages/CustomerForm.vue'),
-            name: 'editCustomer'
-          },
-        ]
-      },
-      {
-        path: '/products', 
-        component: () => import('pages/ProductList.vue'),
-        name: 'products',
-        title: 'Produtos',
-        icon: 'kitchen',
-        children: [
-          { 
-            path: 'new', 
-            component: () => import('pages/ProductForm.vue'),
-            name: 'newProduct'
-          },
-          { 
-            path: ':id', 
-            component: () => import('pages/ProductForm.vue'),
-            name: 'editProduct'
-          },
-        ]
-      },
-      {
-        path: '/suppliers',
-        component: () => import('pages/SupplierList.vue'),
-        name: 'suppliers',
-        title: 'Fornecedores',
-        icon: 'business',
-        children: [
-          { 
-            path: 'new', 
-            component: () => import('pages/SupplierForm.vue'),
-            name: 'newSupplier'
-          },
-          { 
-            path: ':id', 
-            component: () => import('pages/SupplierForm.vue'),
-            name: 'editSupplier'
-          },
+          {
+            path: ":id",
+            component: () => import("pages/SupplierForm.vue"),
+            name: "editSupplier"
+          }
         ]
       }
     ]
   }
-]
+];
 
 // Always leave this as last one
-if (process.env.MODE !== 'ssr') {
+if (process.env.MODE !== "ssr") {
   routes.push({
-    path: '*',
-    component: () => import('pages/Error404.vue')
-  })
+    path: "*",
+    component: () => import("pages/Error404.vue")
+  });
 }
 
-export default routes
+export default routes;

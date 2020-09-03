@@ -1,15 +1,25 @@
-import Service from './Service';
+import Service from "./Service";
 
 export default class ProductService extends Service {
   constructor() {
-    super('products');
+    super("products");
   }
 
   listForSaleProducts() {
-    return this._axios.get(`${this._url}/forSale`)
+    return this._axios
+      .get(`${this._url}/forSale`)
       .then(res => res.data)
       .catch(err => {
         throw err;
-      })
+      });
+  }
+
+  listMaterials() {
+    return this._axios
+      .get(`${this._url}/materials`)
+      .then(res => res.data)
+      .catch(err => {
+        throw err;
+      });
   }
 }

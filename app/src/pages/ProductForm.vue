@@ -1,5 +1,5 @@
 <template>
-  <iso1-dialog v-model="isOpen" title="Produto" @close="close">
+  <iso1-dialog v-model="isOpen" maximized title="Produto" @close="close">
     <q-form @submit="save" ref="productForm">
       <q-card flat>
         <q-card-section>
@@ -61,6 +61,37 @@
           </div>
         </q-card-section>
 
+        <q-card-section>
+          <q-splitter :value="10" disable>
+            <template #before>
+              <q-tabs v-model="tab" vertical class="text-teal">
+                <q-tab v-if="product.hasComposition" name="composition" label="Composição" />
+                <q-tab name="units" label="Unidades" />
+              </q-tabs>
+            </template>
+
+            <template #after>
+              <q-tab-panels
+                v-model="tab"
+                animated
+                swipeable
+                vertical
+                transition-prev="jump-up"
+                transition-next="jump-up"
+              >
+                <!-- Composição -->
+                <q-tab-panel name="composition" keep-alive>
+                  <product-composition :product="product" />
+                </q-tab-panel>
+
+                <!-- Unidades -->
+                <q-tab-panel name="units" keep-alive>
+                  <product-units :units="units" :product="product" />
+                </q-tab-panel>
+              </q-tab-panels>
+            </template>
+          </q-splitter>
+        </q-card-section>
         <q-card-actions align="right">
           <q-btn color="primary" label="Salvar" type="submit" :loading="loading" />
         </q-card-actions>
@@ -73,17 +104,20 @@
 import Iso1Dialog from "../components/Iso1Dialog";
 import Iso1Input from "../components/Iso1Input";
 import Iso1Select from "../components/Iso1Select";
+import ProductComposition from "../components/ProductComposition";
+import ProductUnits from "../components/ProductUnits";
 import Product from "../models/Product";
 import ProductService from "../services/ProductService";
 import UnitService from "../services/UnitService";
 import FamilyService from "../services/ProductFamilyService";
-import FormLink from "../utils/FormLink";
 
 export default {
   components: {
     Iso1Dialog,
     Iso1Input,
     Iso1Select,
+    ProductComposition,
+    ProductUnits,
   },
 
   props: {
@@ -106,7 +140,17 @@ export default {
       families: [],
       loading: false,
       hasInnerChanges: false,
+      tab: "units",
     };
+  },
+
+  watch: {
+    product: {
+      deep: true,
+      handler(val) {
+        val.hasComposition ? (this.tab = "composition") : (this.tab = "units");
+      },
+    },
   },
 
   async created() {
@@ -183,6 +227,9 @@ export default {
       } else {
         this.$router.go(-1);
       }
+    },
+    addUnit() {
+      this.product.addUnit();
     },
   },
 };

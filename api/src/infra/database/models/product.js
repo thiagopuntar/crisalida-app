@@ -20,6 +20,10 @@ module.exports = (sequelize, dataTypes) => {
     });
 
     product.family = product.belongsTo(models.family);
+    product.units = product.hasMany(models.productUnit, { as: "units" });
+    product.composition = product.hasMany(models.material, {
+      as: "composition",
+    });
   };
 
   return product;
