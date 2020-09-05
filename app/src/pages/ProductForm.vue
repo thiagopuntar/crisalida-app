@@ -110,6 +110,7 @@ import Product from "../models/Product";
 import ProductService from "../services/ProductService";
 import UnitService from "../services/UnitService";
 import FamilyService from "../services/ProductFamilyService";
+import FormLink from "../utils/FormLink";
 
 export default {
   components: {
