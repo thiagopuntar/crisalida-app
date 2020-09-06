@@ -2,25 +2,13 @@ const axios = require("axios");
 const moment = require("moment");
 const { NF_DOMAIN, NF_TOKEN, NF_CNPJ_EMITENTE, NF_API_DOMAIN } = process.env;
 
-const { order, orderDetails, payment } = require("../../infra/database");
+const OrderDao = require("../../modules/order/order.dao");
+const CustomerDao = require("../../modules/customer/customer.dao");
+const customerDao = new CustomerDao();
+const orderDao = new OrderDao(customerDao);
 
 async function getOrder(id) {
-  const data = await order.findByPk(id, {
-    include: [
-      order.customer,
-      {
-        association: order.details,
-        as: "details",
-        include: [orderDetails.product],
-      },
-      {
-        association: order.payments,
-        as: "payments",
-        include: [payment.type],
-      },
-    ],
-  });
-
+  const data = await orderDao.findByPk(id);
   return data;
 }
 
