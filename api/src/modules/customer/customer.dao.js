@@ -8,7 +8,7 @@ module.exports = class CustomerDao extends BaseDao {
   get addressSchema() {
     return {
       name: "addresses",
-      schema: [
+      fields: [
         { addressId: "id" },
         "address",
         "number",
@@ -28,13 +28,7 @@ module.exports = class CustomerDao extends BaseDao {
     return {
       type: "object",
       name: "customer",
-      customer: [
-        { customerId: "id" },
-        "name",
-        "phone",
-        "instagram",
-        "cpf_cnpj",
-      ],
+      fields: [{ customerId: "id" }, "name", "phone", "instagram", "cpf_cnpj"],
     };
   }
 
@@ -49,13 +43,13 @@ module.exports = class CustomerDao extends BaseDao {
 
   async findAll() {
     const data = await this.customerJoined;
-    const transformed = this.structureNestedData(data, addressSchema);
+    const transformed = this.structureNestedData(data, this.addressSchema);
     return transformed;
   }
 
   async findByPk(id) {
     const data = await this.customerJoined.where("c.id", id);
-    return this.structureNestedData(data, addressSchema);
+    return this.structureNestedData(data, this.addressSchema);
   }
 
   async insert(data) {

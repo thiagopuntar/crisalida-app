@@ -1,5 +1,25 @@
 const db = require("./db");
 
+class Schema {
+  constructor(schema) {
+    this.name = schema.name;
+    this.type = schema.type || "array";
+    this._fields = schema.fields;
+  }
+
+  get fields() {
+    return this._fields.map((x) =>
+      typeof x === "object" ? Object.keys(x)[0] : x
+    );
+  }
+
+  get aliasMap() {
+    return this._fields
+      .filter((x) => typeof x === "object")
+      .reduce((acc, x) => Object.assign(acc, x), {});
+  }
+}
+
 module.exports = class BaseDao {
   constructor(tableName) {
     this.db = db;
@@ -56,45 +76,53 @@ module.exports = class BaseDao {
     return Promise.all(promises);
   }
 
-  _nestData(item, objSchema, fieldSchema) {
-    const { type, ...arraySchema } = objSchema;
+  structureNestedData(data, ...nestedSchemas) {
+    nestedSchemas = nestedSchemas.map((x) => new Schema(x));
 
-    const aliasMap = arraySchema
-      .filter((x) => typeof x === "object")
-      .reduce((acc, x) => Object.assign(acc, x), {});
-
-    const schema = arraySchema.map((x) =>
-      typeof x === "object" ? Object.keys(x)[0] : x
-    );
-
-    return Object.keys(item).reduce(
-      (acc, key) => {
-        if (schema.includes(key)) {
-          if (item[key] != null) {
-            !acc[fieldSchema].length && acc[fieldSchema].push({});
-            const alias = aliasMap[key] || key;
-            acc[fieldSchema][0][alias] = item[key];
-          }
-        } else {
-          acc[key] = item[key];
-        }
-        return acc;
-      },
-      { [fieldSchema]: [] }
-    );
-  }
-
-  structureNestedData(data, ...nestedSchema) {
     return data.reduce((newData, item) => {
       const existentData = newData.find((x) => x.id === item.id);
 
-      for (const schema of nestedSchema) {
-        const [nestedField] = Object.keys(schema);
-        item = this._nestData(item, schema[nestedField], nestedField);
-        existentData && existentData[nestedField].push(item[nestedField][0]);
+      const nestedObject = Object.keys(item).reduce((newObj, key) => {
+        const schema = nestedSchemas.find((schema) =>
+          schema.fields.some((field) => field === key)
+        );
+
+        if (!schema) {
+          newObj[key] = item[key];
+          return newObj;
+        }
+
+        const aliasKey = schema.aliasMap[key] || key;
+
+        if (!newObj[schema.name]) {
+          newObj[schema.name] = schema.type === "array" ? [] : {};
+        }
+
+        const prop = newObj[schema.name];
+
+        if (item[key] != null) {
+          if (schema.type === "array") {
+            !prop.length && prop.push({});
+            prop[0][aliasKey] = item[key];
+          } else {
+            // object
+            prop[aliasKey] = item[key];
+          }
+        }
+
+        return newObj;
+      }, {});
+
+      if (!existentData) {
+        newData.push(nestedObject);
+        return newData;
       }
 
-      !existentData && newData.push(item);
+      const arraySchemas = nestedSchemas.filter((x) => x.type === "array");
+      arraySchemas.forEach((schema) => {
+        existentData[schema.name].push(nestedObject[schema.name][0]);
+      });
+
       return newData;
     }, []);
   }
