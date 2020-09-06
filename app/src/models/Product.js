@@ -20,19 +20,13 @@ class Unit {
   constructor(unit) {
     if (unit) {
       this.id = unit.id;
+      this.unitId = unit.unitId;
       this.conversion = unit.conversion;
     } else {
-      this.id = null;
+      this.unitId = null;
       this.conversion = 0;
     }
     this.deleted = false;
-  }
-
-  toJSON() {
-    const { id, ...obj } = this;
-    obj.unitId = id;
-
-    return obj;
   }
 }
 
@@ -48,11 +42,12 @@ export default class Product {
       this.productionQty = product.productionQty;
       this.minStock = product.minStock;
       this.initialStock = product.initialStock;
-      this.isActive = product.isActive;
+      this.isActive = !!product.isActive;
       this.cfop = product.cfop;
       this.ncm = product.ncm;
       this._family = product.family;
-      this._composition = product.composition;
+      this._composition = product.composition || [];
+      this._units = product.units ? product.units.map(x => new Unit(x)) : [];
     } else {
       this._type = "";
       this._family = null;
@@ -138,7 +133,7 @@ export default class Product {
     obj.type = _type;
     obj.familyId = _family && _family.id;
     obj.composition = _composition;
-    obj.units = _units;
+    obj.units = _units.map(x => ({ ...x, productId: this.id }));
 
     return obj;
   }

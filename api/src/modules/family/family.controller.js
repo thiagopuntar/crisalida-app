@@ -1,6 +1,11 @@
-const { family } = require("../../infra/database");
+const FamilyDao = require("./family.dao");
+const familyDao = new FamilyDao();
 
-exports.list = async (req, res) => {
-  const data = await family.findAll({ order: ["name"] });
-  res.json(data);
-};
+class Controller {
+  async list(req, res) {
+    const data = await familyDao.findAll();
+    res.json(data);
+  }
+}
+
+module.exports = new Controller();

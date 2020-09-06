@@ -1,22 +1,27 @@
-const { unit } = require('../../infra/database');
+const UnitDao = require("./unit.dao");
+const unitDao = new UnitDao();
 
-exports.list = async (req, res) => {
-  const data = await unit.findAll();
-  res.json(data.map(x => x.name));
-}
-
-exports.insert = async (req, res) => {
-  const data = await unit.create(req.body);
-  res.json(data);
-}
-
-exports.update = async (req, res) => {
-  const data = await unit.findByPk(req.params.id);
-
-  if (!data) {
-    return res.status(404).send('Not found');
+class Controller {
+  async list(req, res) {
+    const data = await unitDao.findAll();
+    res.json(data.map((x) => x.name));
   }
 
-  const newData = await data.update(req.body);
-  res.json(newData);
+  async insert(req, res) {
+    const data = await unitDao.insert(req.body);
+    res.json(data);
+  }
+
+  async update(req, res) {
+    const data = await unitDao.findByPk(req.params.id);
+
+    if (!data) {
+      return res.status(404).send("Not found");
+    }
+
+    const newData = await data.update(req.body);
+    res.json(newData);
+  }
 }
+
+module.exports = new Controller();

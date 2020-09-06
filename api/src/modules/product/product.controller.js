@@ -1,50 +1,58 @@
-const { product, Sequelize } = require('../../infra/database');
-const { Op } = Sequelize
+const ProductDao = require("./product.dao");
 
-exports.list = async (req, res) => {
-  const data = await product.findAll();
-  res.json(data);
-}
+const productDao = new ProductDao();
 
-exports.insert = async (req, res) => {
-  const data = await product.create(req.body);
-  res.json(data);
-}
-
-exports.update = async (req, res) => {
-  const data = await product.findByPk(req.params.id);
-
-  if (!data) {
-    return res.status(404).send('Not found');
+class Controller {
+  async list(req, res) {
+    const data = await productDao.findAll();
+    res.json(data);
   }
 
-  const newData = await data.update(req.body);
-  res.json(newData);
-}
-
-exports.findOne = async (req, res) => {
-  const data = await product.findByPk(req.params.id);
-
-  if (!data) {
-    return res.status(404).send('Not found');
+  async listMaterials(req, res) {
+    const data = await product.findMaterials();
+    res.json(data);
   }
 
-  res.json(data);
+  async insert(req, res) {
+    const data = await productDao.insert(req.body);
+    res.json(data);
+  }
+
+  async update(req, res) {
+    const data = await productDao.findByPk(req.params.id);
+
+    if (!data) {
+      return res.status(404).send("Not found");
+    }
+
+    const [newData] = await productDao.update(req.body);
+    res.json(newData);
+  }
+
+  async findOne(req, res) {
+    const data = await productDao.findByPk(req.params.id);
+
+    if (!data) {
+      return res.status(404).send("Not found");
+    }
+
+    res.json(data);
+  }
+
+  async delete(req, res) {}
+
+  async listForSaleProducts(req, res) {
+    const data = await productDao.findAll({
+      attributes: ["id", "name", "price", "unit"],
+      where: {
+        type: { [Op.in]: ["Produto", "Kit", "Outros", "Revenda"] },
+        isActive: true,
+      },
+      order: ["name"],
+    });
+
+    res.json(data);
+  }
 }
 
-exports.delete = async (req, res) => {
-  
-}
-
-exports.listForSaleProducts = async (req, res) => {
-  const data = await product.findAll({
-    attributes: [ 'id', 'name', 'price', 'unit' ],
-    where: { 
-      type: { [Op.in]: ['Produto', 'Outros'] }, 
-      isActive: true 
-    },
-    order: [ 'name' ]
-  });
-
-  res.json(data);
-}
+module.exports = new Controller();

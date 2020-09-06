@@ -1,14 +1,10 @@
-const { paymentType } = require('../../infra/database');
-
-exports.list = async (req, res) => {
-  const data = await paymentType.findAll();
-  res.json(data);
+const PaymentTypeDao = require("./paymentType.dao");
+const paymentTypeDao = new PaymentTypeDao();
+class Controller {
+  async list(req, res) {
+    const data = await paymentTypeDao.findAll();
+    res.json(data);
+  }
 }
 
-exports.insert = async (req, res) => {
-  console.log('todo');
-}
-
-exports.update = async (req, res) => {
-  console.log('todo');
-}
+module.exports = new Controller();

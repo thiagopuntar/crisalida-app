@@ -1,40 +1,42 @@
-const { customer, customerAddress, setNestedArray } = require('../../infra/database');
+const CustomerDao = require("./customer.dao");
+const customerDao = new CustomerDao();
 
-exports.list = async (req, res) => {
-  const data = await customer.findAll({ include: [ customer.addresses ] });
-  res.json(data);
-}
-
-exports.insert = async (req, res) => {
-  const data = await customer.create(req.body, { include: [ { association: customer.addresses, as: 'addresses' } ] });
-  res.json(data);
-}
-
-exports.update = async (req, res) => {
-  const data = await customer.findByPk(req.params.id, { include: [ customer.addresses ]});
-
-  if (!data) {
-    return res.status(404).send('Not found');
+class Controller {
+  async list(req, res) {
+    const data = await customerDao.findAll();
+    res.json(data);
   }
 
-  await setNestedArray('addAddress', req.body.addresses, customerAddress, data);
-  await data.update(req.body);
-
-  const newData = await customer.findByPk(req.params.id, { include: [ customer.addresses ]});
-  res.json(newData);
-}
-
-exports.findOne = async (req, res) => {
-  const data = await customer.findByPk(req.params.id, { include: customer.addresses });
-
-  if (!data) {
-    return res.status(404).send('Not found');
+  async insert(req, res) {
+    const data = await customerDao.insert(req.body);
+    res.json(data);
   }
 
-  res.json(data);
+  async update(req, res) {
+    const [data] = await customerDao.findByPk(req.params.id);
+
+    if (!data) {
+      return res.status(404).send("Not found");
+    }
+
+    const [newData] = await customerDao.update(req.body);
+    res.json(newData);
+  }
+
+  async findOne(req, res) {
+    const [data] = await customerDao.findByPk(req.params.id);
+
+    if (!data) {
+      return res.status(404).send("Not found");
+    }
+
+    res.json(data);
+  }
+
+  async delete(req, res) {
+    const data = await customerDao.del(req.params.id);
+    res.json(data);
+  }
 }
 
-exports.delete = async (req, res) => {
-  const data = await customer.destroy({ where: { id: req.params.id }});
-  res.json(data);
-}
+module.exports = new Controller();

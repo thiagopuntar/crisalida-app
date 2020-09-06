@@ -6,10 +6,9 @@ export default class Customer {
       this.phone = customer.phone;
       this.instagram = customer.instagram;
       this.addresses = customer.addresses || [];
-
     } else {
-      this.name = '';
-      this.phone = '';
+      this.name = "";
+      this.phone = "";
       this.addresses = [];
     }
   }
@@ -17,24 +16,30 @@ export default class Customer {
   get mainAddress() {
     const main = this.addresses[0];
 
-    if (!main) 
-      return ' - ';
-    
-      const { address, number, complement, district } = main;
+    if (!main) return " - ";
 
-      let formated = address;
-      formated += number ? `, ${number}` : '';
-      formated += complement ? ` ${complement}` : '';
-      formated += district ? ` - ${district}` : '';
-    
-      return formated;
+    const { address, number, complement, district } = main;
+
+    let formated = address;
+    formated += number ? `, ${number}` : "";
+    formated += complement ? ` ${complement}` : "";
+    formated += district ? ` - ${district}` : "";
+
+    return formated;
   }
 
   get phoneClean() {
     if (!this.phone) {
-      return '';
+      return "";
     }
 
-    return this.phone.replace(/[\(\)\-\s+]/g, '');
+    return this.phone.replace(/[\(\)\-\s+]/g, "");
+  }
+
+  toJSON() {
+    const { addresses, ...obj } = this;
+    obj.addresses = addresses.map(x => ({ ...x, customerId: this.id }));
+
+    return obj;
   }
 }

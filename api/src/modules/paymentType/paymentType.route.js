@@ -1,11 +1,8 @@
-const Controller = require('./paymentType.controller');
+const Controller = require("./paymentType.controller");
 
-const { Router } = require('express');
+const { Router } = require("express");
 const router = new Router();
 
-router.get('/', Controller.list);
-router.post('/', Controller.insert);
-
-router.put('/:id', Controller.update);
+router.get("/", Controller.list);
 
 module.exports = router;

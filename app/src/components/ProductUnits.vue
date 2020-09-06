@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-h5 text-primary">Conversão de Unidades</h2>
     <div v-for="(unit) in product.units" :key="unit.id" class="flex row q-col-gutter-sm">
-      <iso1-select label="Unidade" v-model="unit.id" :options="units" class="col-4" />
+      <iso1-select label="Unidade" v-model="unit.unitId" :options="units" class="col-4" />
 
       <iso1-input type="number" step="any" v-model="unit.conversion" label="Fator conversão" />
       <iso1-input label="Un produto" v-model="product.unit" disable />
