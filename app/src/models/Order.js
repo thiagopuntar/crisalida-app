@@ -129,7 +129,7 @@ export default class Order {
   set customer(customer) {
     this._customer = customer;
 
-    if (customer) {
+    if (customer && this.hasDelivery) {
       const mainAddress = customer.addresses[0];
 
       if (mainAddress) {
