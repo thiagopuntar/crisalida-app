@@ -451,7 +451,7 @@ export default {
     },
     setPaymentValue(payment, event) {
       event.preventDefault();
-      payment.vl = this.order.remainingPayment;
+      payment.vl = this.order.remainingPayment.toFixed(2);
     },
     close() {
       this.$router.replace({ name: 'orders' });
