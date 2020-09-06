@@ -1,16 +1,16 @@
 import { date } from "quasar";
 
-export const dateBuilder = date => {
-  if (!date) {
+export const dateBuilder = dateString => {
+  if (!dateString) {
     return null;
   }
 
-  const dtArr = date.split("/");
+  const dtArr = dateString.split("/");
   const day = dtArr[0];
   const month = parseInt(dtArr[1]) - 1;
   const year = dtArr[2];
 
-  return new Date(year, month, day);
+  return date.formatDate(new Date(year, month, day), "YYYY-MM-DD");
 };
 
 const dt = new Date();

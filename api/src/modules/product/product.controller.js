@@ -42,14 +42,7 @@ class Controller {
   async delete(req, res) {}
 
   async listForSaleProducts(req, res) {
-    const data = await productDao.findAll({
-      attributes: ["id", "name", "price", "unit"],
-      where: {
-        type: { [Op.in]: ["Produto", "Kit", "Outros", "Revenda"] },
-        isActive: true,
-      },
-      order: ["name"],
-    });
+    const data = await productDao.findAllForSale();
 
     res.json(data);
   }

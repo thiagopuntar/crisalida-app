@@ -53,6 +53,7 @@ module.exports = class ProductDao extends BaseDao {
     return this.db(this.tableName)
       .select("id", "name", "price", "unit")
       .whereIn("type", ["Produto", "Kit", "Outros", "Revenda"])
+      .where("isActive", 1)
       .orderBy("name");
   }
 };

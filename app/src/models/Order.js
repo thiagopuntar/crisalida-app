@@ -9,14 +9,14 @@ class Detail {
       this.qty = detail.qty;
       this.vl = detail.vl;
       this.comments = detail.comments;
-      this.deleted = false;
     } else {
       this.product = null;
       this.qty = 0.0;
       this.vl = 0.0;
-      this.deleted = false;
       this.comments = "";
     }
+
+    this.deleted = false;
   }
 
   get product() {
@@ -60,13 +60,13 @@ class Payment {
       this.vl = payment.vl;
       this.date = date.formatDate(payment.date, "DD/MM/YYYY");
       this.paymentType = payment.paymentType;
-      this.deleted = false;
     } else {
       this.vl = 0.0;
       this.date = date.formatDate(new Date(), "DD/MM/YYYY");
       this.paymentType = null;
-      this.deleted = false;
     }
+
+    this.deleted = false;
   }
 
   toJSON() {
@@ -86,7 +86,7 @@ export default class Order {
       this.comments = order.comments;
       this.deliveryDate = date.formatDate(order.deliveryDate, "DD/MM/YYYY");
       this._deliveryType = order.deliveryType;
-      this.deliveryTax = order.deliveryTax;
+      this.deliveryTax = order.orderDeliveryTax;
       this.discount = order.discount;
       this.status = parseInt(order.status);
       this._customer = order.customer;
@@ -172,15 +172,10 @@ export default class Order {
     return this.deliveryType === "Pronta Entrega";
   }
 
-  get isToday() {
-    const today = date.formatDate(new Date(), "DD/MM/YYYY");
-    return this.deliveryDate === today;
-  }
-
   get total() {
     const totalItens =
       this._totalItens ||
-      this._details.reduce((total, item) => {
+      this.details.reduce((total, item) => {
         total += item.total;
         return total;
       }, 0.0);
@@ -247,8 +242,12 @@ export default class Order {
     obj.orderDate = dateBuilder(orderDate);
     obj.deliveryDate = dateBuilder(deliveryDate);
     obj.deliveryType = _deliveryType;
-    obj.details = _details.filter(x => x.product);
-    obj.payments = _payments.filter(x => !!x.vl);
+    obj.details = _details
+      .filter(x => x.product)
+      .map(x => ({ ...x.toJSON(), orderId: this.id }));
+    obj.payments = _payments
+      .filter(x => !!x.vl)
+      .map(x => ({ ...x.toJSON(), orderId: this.id }));
 
     return obj;
   }

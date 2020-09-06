@@ -2,7 +2,10 @@ const path = require("path");
 const fs = require("fs-extra");
 const hbs = require("handlebars");
 const moment = require("moment");
-const { order, orderDetails, sequelize } = require("../database");
+const OrderDao = require("../../modules/order/order.dao");
+const CustomerDao = require("../../modules/customer/customer.dao");
+const customerDao = new CustomerDao();
+const orderDao = new OrderDao(customerDao);
 
 exports.order = async (req, res) => {
   const data = await getOrder(req.params.id);
@@ -19,34 +22,21 @@ exports.order = async (req, res) => {
 };
 
 exports.routeList = async (req, res) => {
-  const query = `SELECT *
-    FROM orderTotal o
-    JOIN customers c ON c.id = o.customerId
-    LEFT JOIN customerAddresses ca ON ca.id = o.addressId
-    WHERE o.id IN (${req.query.ids})`;
-
-  const data = await sequelize.query(query, {
-    type: sequelize.QueryTypes.SELECT,
-  });
-
+  const data = await orderDao.getOrdersToRoute(req.query.ids);
   const objReport = {
     orders: data.map((x) => {
-      const { address, number, complement, district } = x;
       const totalPaid = parseFloat(x.totalPaid || 0);
       const totalValue =
         parseFloat(x.totalValue) +
-        parseFloat(x.deliveryTax) -
+        parseFloat(x.orderDeliveryTax) -
         parseFloat(x.discount);
 
       return {
-        customer: {
-          phone: x.phone,
-          name: x.name,
-        },
-        address: formatAddress({ address, number, complement, district }),
+        customer: x.customer,
+        address: formatAddress(x.address),
         deliveryDate: x.deliveryDate,
         comments: x.comments,
-        deliveryTax: x.deliveryTax,
+        deliveryTax: x.orderDeliveryTax,
         discount: x.discount,
         remainingPayment: (totalValue - totalPaid).toFixed(2),
       };
@@ -61,18 +51,7 @@ exports.routeList = async (req, res) => {
 };
 
 async function getOrder(id) {
-  const data = await order.findByPk(id, {
-    include: [
-      order.customer,
-      order.address,
-      {
-        association: order.details,
-        as: "details",
-        include: [orderDetails.product],
-      },
-      { association: order.payments, as: "payments" },
-    ],
-  });
+  const data = await orderDao.findByPk(id);
 
   if (!data) {
     return null;
@@ -86,7 +65,7 @@ async function getOrder(id) {
     payments,
     details,
     ...formatedData
-  } = data.toJSON();
+  } = data;
 
   formatedData.deliveryDate = formatDate(deliveryDate);
   formatedData.deliveryTax = formatCurrency(deliveryTax);
