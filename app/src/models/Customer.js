@@ -13,19 +13,26 @@ export default class Customer {
     }
   }
 
+  static formatAddress(data, showDistrict = true) {
+    const { address, number, complement, district } = data;
+
+    let formated = address;
+    formated += number ? `, ${number}` : "";
+
+    if (showDistrict) {
+      formated += complement ? ` ${complement}` : "";
+      formated += district ? ` - ${district}` : "";
+    }
+
+    return formated;
+  }
+
   get mainAddress() {
     const main = this.addresses[0];
 
     if (!main) return " - ";
 
-    const { address, number, complement, district } = main;
-
-    let formated = address;
-    formated += number ? `, ${number}` : "";
-    formated += complement ? ` ${complement}` : "";
-    formated += district ? ` - ${district}` : "";
-
-    return formated;
+    return Customer.formatAddress(main);
   }
 
   get phoneClean() {

@@ -51,7 +51,7 @@
           <q-td key="deliveryDate" :props="props">{{ props.row.deliveryDate }}</q-td>
           <q-td key="customerName" :props="props">{{ props.row.customer.name }}</q-td>
           <q-td key="customerPhone" :props="props">{{ props.row.customer.phone }}</q-td>
-          <q-td key="address" :props="props">{{ props.row.address.address }}</q-td>
+          <q-td key="address" :props="props">{{ formatAddress(props.row.address) }}</q-td>
           <q-td key="district" :props="props">{{ props.row.address.district }}</q-td>
           <q-td key="deliveryType" :props="props">{{ props.row.deliveryType }}</q-td>
           <q-td key="total" :props="props">{{ props.row.total | formatCurrency }}</q-td>
@@ -110,6 +110,7 @@ import Iso1Select from "../components/Iso1Select";
 import Iso1DateInput from "../components/Iso1DateInput";
 import OrderService from "../services/OrderService";
 import Order from "../models/Order";
+import Customer from "../models/Customer";
 import { formatCurrency } from "../utils/currencyHelper";
 import { isLikeName, isValue } from "../utils/dataFilterHelper";
 import { dateBuilder, dateOptions } from "../utils/dateHelper";
@@ -142,7 +143,7 @@ export default {
         },
         {
           name: "address",
-          field: (x) => (x.address ? x.address.address : ""),
+          field: (x) => (x.address ? Customer.formatAddress(x.address) : ""),
           label: "Endereço",
         },
         {
@@ -314,6 +315,13 @@ export default {
       ];
 
       return `background-color: ${colors[row.status]}`;
+    },
+    formatAddress(data) {
+      if (!data.address) {
+        return " - ";
+      }
+
+      return Customer.formatAddress(data, false);
     },
   },
 };
