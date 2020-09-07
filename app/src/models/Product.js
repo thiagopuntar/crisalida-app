@@ -170,7 +170,7 @@ export default class Product {
   }
 
   get hasComposition() {
-    return ["Produto", "Granel"].includes(this.type);
+    return ["Produto", "Granel", "Kit"].includes(this.type);
   }
 
   get calculatedCost() {

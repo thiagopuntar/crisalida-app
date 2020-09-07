@@ -84,7 +84,7 @@
               >
                 <!-- Composição -->
                 <q-tab-panel name="composition" keep-alive>
-                  <product-composition :product="product" />
+                  <product-composition :type="product.type" :product="product" />
                 </q-tab-panel>
 
                 <!-- Unidades -->

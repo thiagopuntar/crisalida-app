@@ -9,7 +9,21 @@ class Controller {
   }
 
   async listMaterials(req, res) {
-    const data = await productDao.findMaterials();
+    const { type } = req.query;
+
+    const types = {
+      Produto: ["Insumo", "Granel", "Embalagem"],
+      Granel: ["Insumo", "Granel", "Embalagem"],
+      Kit: ["Granel", "Produto", "Kit", "Revenda"],
+    };
+
+    const materialTypes = types[type];
+
+    if (!materialTypes) {
+      return res.status(400).send("Tipo de produto não previsto.");
+    }
+
+    const data = await productDao.findMaterials(materialTypes);
     res.json(data);
   }
 

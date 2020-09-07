@@ -14,9 +14,11 @@ export default class ProductService extends Service {
       });
   }
 
-  listMaterials() {
+  listMaterials(type) {
     return this._axios
-      .get(`${this._url}/materials`)
+      .get(`${this._url}/materials`, {
+        params: { type }
+      })
       .then(res => res.data)
       .catch(err => {
         throw err;

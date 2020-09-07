@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="text-h5 text-primary">Composição</h2>
-    <div class="flex row q-col-gutter-sm">
+    <div class="flex row q-col-gutter-sm q-mb-md">
       <iso1-input
         type="number"
         label="Rendimento médio"
@@ -10,6 +10,9 @@
       />
       <iso1-input label="Unidade" disable v-model="product.unit" class="col-1" />
       <iso1-input label="Total" disable v-model="product.calculatedCost" class="col-1" />
+      <div class="flex column justify-center">
+        <q-btn icon="update" color="primary" @click="getMaterials" size="sm" round />
+      </div>
     </div>
     <div
       v-for="material in product.composition"
@@ -26,6 +29,7 @@
       />
 
       <iso1-select
+        v-if="type !== 'Kit'"
         label="Unidade"
         :options="material.units"
         v-model="material.unit"
@@ -34,7 +38,13 @@
         class="col-2"
       />
 
-      <iso1-input label="Qtd" v-model.number="material.qty" type="number" step=".001" />
+      <iso1-input
+        label="Qtd"
+        v-model.number="material.qty"
+        type="number"
+        step=".001"
+        @keydown.tab.exact.native="addMaterial"
+      />
 
       <iso1-input label="Vl parcial" v-model.number="material.partialValue" type="number" disable />
 
@@ -67,12 +77,19 @@ export default {
   },
   props: {
     product: Object,
+    type: String,
   },
   data() {
     return {
       materials: [],
       productService: new ProductService(),
     };
+  },
+
+  watch: {
+    type(newVal) {
+      this.getMaterials(newVal);
+    },
   },
 
   async created() {
@@ -82,7 +99,7 @@ export default {
   methods: {
     getMaterials() {
       return this.productService
-        .listMaterials()
+        .listMaterials(this.product.type)
         .then((materials) => (this.materials = materials));
     },
     newProduct(productName) {
@@ -91,7 +108,8 @@ export default {
         params: { productName },
       });
     },
-    addMaterial() {
+    addMaterial(e) {
+      e.preventDefault();
       this.product.addMaterial();
       this.$nextTick(() => {
         this.$refs.inputProduct[this.$refs.inputProduct.length - 1].focus();
