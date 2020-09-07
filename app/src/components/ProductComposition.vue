@@ -1,36 +1,45 @@
 <template>
   <div>
     <h2 class="text-h5 text-primary">Composição</h2>
-
+    <div class="flex row q-col-gutter-sm">
+      <iso1-input
+        type="number"
+        label="Rendimento médio"
+        class="col-2"
+        v-model.number="product.productionYield"
+      />
+      <iso1-input label="Unidade" disable v-model="product.unit" class="col-1" />
+      <iso1-input label="Total" disable v-model="product.calculatedCost" class="col-1" />
+    </div>
     <div
-      v-for="(material, index) in product.composition"
+      v-for="material in product.composition"
       :key="material.id"
       class="flex row q-col-gutter-sm"
     >
       <product-composition-select
         :materials="materials"
-        v-model="material.product"
+        v-model="material.productMaterial"
         @newProduct="newProduct"
         class="col-4"
         ref="inputProduct"
-        accesskey="f"
+        accesskey="c"
       />
 
       <iso1-select
         label="Unidade"
-        :options="material.productMaterial.units"
+        :options="material.units"
         v-model="material.unit"
         :rules="[val => !!val || 'Campo obrigatório']"
+        option-label="unitId"
         class="col-2"
       />
 
-      <iso1-input label="Qtd" v-model.number="material.qty" type="number" />
+      <iso1-input label="Qtd" v-model.number="material.qty" type="number" step=".001" />
 
-      <iso1-input label="Vl parcial" v-model.number="material.qty" type="number" disable />
+      <iso1-input label="Vl parcial" v-model.number="material.partialValue" type="number" disable />
 
       <div class="col-1 q-pa-md">
         <q-btn
-          v-if="index > 0"
           size="sm"
           round
           icon="delete"
@@ -40,6 +49,7 @@
         />
       </div>
     </div>
+    <q-btn size="sm" round icon="add" color="secondary" @click="addMaterial" />
   </div>
 </template>
 
@@ -80,6 +90,15 @@ export default {
         name: `${this.route}NewProduct`,
         params: { productName },
       });
+    },
+    addMaterial() {
+      this.product.addMaterial();
+      this.$nextTick(() => {
+        this.$refs.inputProduct[this.$refs.inputProduct.length - 1].focus();
+      });
+    },
+    removeMaterial(material) {
+      this.product.removeMaterial(material);
     },
   },
 };

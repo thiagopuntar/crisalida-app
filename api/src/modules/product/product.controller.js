@@ -9,7 +9,7 @@ class Controller {
   }
 
   async listMaterials(req, res) {
-    const data = await product.findMaterials();
+    const data = await productDao.findMaterials();
     res.json(data);
   }
 

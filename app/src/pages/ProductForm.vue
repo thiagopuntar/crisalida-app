@@ -6,37 +6,42 @@
           <div class="flex justify-end">
             <q-toggle tab-index="-1" v-model="product.isActive" label="Ativo" />
           </div>
-          <iso1-select
-            label="Tipo *"
-            :options="types"
-            v-model="product.type"
-            :rules="[(val) => !!val || 'Campo obrigatório']"
-            autofocus
-            ref="inputType"
-          />
-
-          <iso1-input
-            label="Descrição *"
-            v-model="product.name"
-            :rules="[(val) => !!val || 'Campo obrigatório']"
-          />
 
           <div class="flex row q-col-gutter-sm">
+            <iso1-select
+              label="Tipo *"
+              :options="types"
+              v-model="product.type"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+              autofocus
+              ref="inputType"
+              class="col-3"
+            />
+
+            <iso1-input
+              label="Descrição *"
+              v-model="product.name"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+              class="col-6"
+            />
+
             <iso1-select
               label="Unidade *"
               v-model="product.unit"
               :options="units"
               :rules="[(val) => !!val || 'Campo obrigatório']"
-              class="col-4"
+              class="col-3"
             />
+          </div>
 
+          <div class="flex row q-col-gutter-sm">
             <iso1-input
               label="Custo"
               v-model="product.cost"
               mask="#.##"
               reverse-fill-mask
               fill-mask="0"
-              class="col-4"
+              class="col-2"
             />
 
             <iso1-input
@@ -45,10 +50,8 @@
               mask="#.##"
               reverse-fill-mask
               fill-mask="0"
-              class="col-4"
+              class="col-2"
             />
-          </div>
-          <div class="flex row q-col-gutter-sm">
             <iso1-select
               label="Família"
               :options="families"
@@ -56,8 +59,8 @@
               class="col-4"
             />
 
-            <iso1-input label="NCM" v-model="product.ncm" class="col-4" />
-            <iso1-input label="CFOP" v-model="product.cfop" class="col-4" />
+            <iso1-input label="NCM" v-model="product.ncm" class="col-2" />
+            <iso1-input label="CFOP" v-model="product.cfop" class="col-2" />
           </div>
         </q-card-section>
 
@@ -176,6 +179,7 @@ export default {
   methods: {
     save() {
       this.loading = true;
+      this.product.setCost();
       const promise = this.product.id ? this.edit() : this.saveNew();
 
       promise

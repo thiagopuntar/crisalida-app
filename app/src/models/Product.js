@@ -2,17 +2,71 @@ class Material {
   constructor(material) {
     if (material) {
       this.id = material.id;
-      this.productMaterial = material.productMaterial;
+      this._productMaterial = material.productMaterial;
       this.qty = material.qty;
-      this.realQty = material.realQty;
-      this.unit = material.unit;
+      this.unit = Object.keys(material.unit).length
+        ? material.unit
+        : { id: null, unitId: material.productMaterial.unit, conversion: 1 };
       this.deleted = false;
     } else {
-      this.productMaterial = {};
+      this.productMaterial = null;
       this.qty = 0.0;
       this.unit = null;
     }
     this.deleted = false;
+  }
+
+  get units() {
+    if (!this.productMaterial) {
+      return [];
+    }
+
+    const data = [
+      {
+        id: null,
+        unitId: this.productMaterial.unit,
+        conversion: 1
+      }
+    ];
+
+    if (this.productMaterial.units) {
+      data.push(...this.productMaterial.units);
+    }
+
+    return data;
+  }
+
+  get realQty() {
+    return parseFloat(
+      (parseFloat(this.unit.conversion || 0.0) * parseFloat(this.qty)).toFixed(
+        3
+      )
+    );
+  }
+
+  get partialValue() {
+    if (!this.unit) {
+      return "0.00";
+    }
+
+    return (this.realQty * parseFloat(this.productMaterial.cost)).toFixed(2);
+  }
+
+  get productMaterial() {
+    return this._productMaterial;
+  }
+
+  set productMaterial(material) {
+    this.unit = null;
+    this._productMaterial = material;
+  }
+
+  toJSON() {
+    const { _productMaterial, unit, ...obj } = this;
+    obj.materialId = _productMaterial.id;
+    obj.unitId = unit.id;
+
+    return obj;
   }
 }
 
@@ -39,15 +93,17 @@ export default class Product {
       this._type = product.type;
       this.cost = product.cost;
       this.price = product.price;
-      this.productionQty = product.productionQty;
       this.minStock = product.minStock;
       this.initialStock = product.initialStock;
       this.isActive = !!product.isActive;
       this.cfop = product.cfop;
       this.ncm = product.ncm;
       this._family = product.family;
-      this._composition = product.composition || [];
+      this._composition = product.composition
+        ? product.composition.map(x => new Material(x))
+        : [];
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
+      this.productionYield = product.productionYield;
     } else {
       this._type = "";
       this._family = null;
@@ -56,6 +112,7 @@ export default class Product {
       this.isActive = true;
       this._composition = [];
       this._units = [];
+      this.productionYield = 1;
     }
   }
 
@@ -108,6 +165,18 @@ export default class Product {
     return ["Produto", "Granel"].includes(this.type);
   }
 
+  get calculatedCost() {
+    if (!this.composition.length) {
+      return 0.0;
+    }
+    const compositionValue = this.composition.reduce((acc, material) => {
+      acc += parseFloat(material.partialValue);
+      return acc;
+    }, 0.0);
+
+    return (compositionValue / this.productionYield).toFixed(2);
+  }
+
   addMaterial() {
     this._composition.push(new Material());
   }
@@ -116,6 +185,10 @@ export default class Product {
     material.id
       ? (material.deleted = true)
       : this._composition.splice(this._composition.indexOf(material), 1);
+  }
+
+  setCost() {
+    this.cost = this.calculatedCost;
   }
 
   addUnit() {
@@ -132,7 +205,10 @@ export default class Product {
     const { _type, _family, _composition, _units, ...obj } = this;
     obj.type = _type;
     obj.familyId = _family && _family.id;
-    obj.composition = _composition;
+    obj.composition = _composition.map(x => ({
+      ...x.toJSON(),
+      productId: this.id
+    }));
     obj.units = _units.map(x => ({ ...x, productId: this.id }));
 
     return obj;
