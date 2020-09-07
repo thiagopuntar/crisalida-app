@@ -39,7 +39,10 @@ class Controller {
     res.json(data);
   }
 
-  async delete(req, res) {}
+  async delete(req, res) {
+    const data = await productDao.del(req.params.id);
+    res.json(data);
+  }
 
   async listForSaleProducts(req, res) {
     const data = await productDao.findAllForSale();

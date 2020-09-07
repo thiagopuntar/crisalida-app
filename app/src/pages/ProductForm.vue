@@ -130,6 +130,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    copySchema: Object,
   },
 
   data() {
@@ -162,6 +163,10 @@ export default {
 
     if (this.productName) {
       this.product.name = this.productName;
+    }
+
+    if (this.copySchema) {
+      this.product = this.copySchema;
     }
 
     this.unitService.list().then((units) => (this.units = units));

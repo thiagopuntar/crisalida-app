@@ -127,6 +127,14 @@ export default class Product {
     "Outros"
   ];
 
+  static copy(source) {
+    const { id, ...product } = source;
+    product.composition.forEach(x => delete x.id);
+    product.units.forEach(x => delete x.id);
+
+    return new Product(product);
+  }
+
   get type() {
     return this._type;
   }

@@ -110,6 +110,7 @@ const routes = [
             path: "new",
             component: () => import("pages/ProductForm.vue"),
             name: "newProduct",
+            props: true,
             children: [
               {
                 path: "newProduct/:productName",
