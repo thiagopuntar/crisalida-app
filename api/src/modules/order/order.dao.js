@@ -123,7 +123,7 @@ module.exports = class OrderDao extends BaseDao {
   }
 
   async update(data) {
-    const { details, payments, ...order } = data;
+    const { details = [], payments = [], ...order } = data;
     const trx = await this.db.transaction();
 
     await trx(this.tableName).where("id", order.id).update(order);

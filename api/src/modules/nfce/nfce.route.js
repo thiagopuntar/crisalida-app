@@ -1,9 +1,9 @@
 const Controller = require("./nfce.controller");
+const controller = new Controller();
 
 const { Router } = require("express");
 const router = new Router();
 
-router.get("/", Controller.getNfce);
-router.post("/:id", Controller.createNfce);
+router.post("/:id", controller.createNfce);
 
 module.exports = router;

@@ -3,15 +3,14 @@
     <q-form @submit="save" ref="orderForm">
       <q-card class="q-pa-md" flat>
         <q-card-section>
-          <iso1-date-input 
+          <iso1-date-input
             label="Data do pedido *"
             v-model="order.orderDate"
             :rules="[val => !!val || 'Campo obrigatório']"
           />
 
-
           <div class="flex row q-col-gutter-sm">
-            <order-customer-select 
+            <order-customer-select
               v-model="order.customer"
               :customers="customers"
               autofocus
@@ -20,7 +19,7 @@
               ref="inputName"
             />
 
-            <iso1-select 
+            <iso1-select
               :options="deliveryType"
               v-model="order.deliveryType"
               label="Tipo de entrega *"
@@ -28,15 +27,11 @@
               :rules="[val => !!val || 'Campo obrigatório']"
             />
 
-            <iso1-date-input 
-              label="Data de entrega"
-              v-model="order.deliveryDate"
-              class="col-3"
-            />
+            <iso1-date-input label="Data de entrega" v-model="order.deliveryDate" class="col-3" />
           </div>
 
           <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
-            <iso1-select 
+            <iso1-select
               :options="addresses"
               v-model="order.address"
               label="Endereço entrega"
@@ -46,7 +41,7 @@
               :rules="[val => !!val || 'Campo obrigatório']"
             />
 
-            <iso1-input 
+            <iso1-input
               label="Taxa de entrega"
               v-model="order.deliveryTax"
               mask="#.##"
@@ -56,16 +51,11 @@
             />
           </div>
 
-          <iso1-input 
-            label="Observações"
-            v-model="order.comments"
-            type="textarea"
-            rows="2"
-          />
+          <iso1-input label="Observações" v-model="order.comments" type="textarea" rows="2" />
           <div class="flex row justify-end">
             <div class="flex column col-6">
               <h2 class="text-h4">Status</h2>
-              <q-slider 
+              <q-slider
                 v-model="order.status"
                 :min="0"
                 :max="3"
@@ -80,7 +70,7 @@
 
         <q-card-section>
           <div class="flex row justify-end q-col-gutter-sm">
-            <iso1-input 
+            <iso1-input
               label="Desconto"
               v-model="order.discount"
               class="col-2"
@@ -89,20 +79,15 @@
               fill-mask="0"
             />
 
-            <iso1-input 
-              label="Total"
-              disable
-              :value="order.total | formatCurrency"
-              class="col-2"
-            />
+            <iso1-input label="Total" disable :value="order.total | formatCurrency" class="col-2" />
 
-            <iso1-input 
+            <iso1-input
               label="Total Pago"
               disable
               :value="order.totalPaid  | formatCurrency"
               class="col-2"
             />
-            <iso1-input 
+            <iso1-input
               label="A pagar"
               disable
               :value="order.remainingPayment  | formatCurrency"
@@ -111,19 +96,15 @@
           </div>
           <q-splitter :value="10" disable>
             <template #before>
-              <q-tabs
-                v-model="tab"
-                vertical
-                class="text-teal"
-              >
-                <q-tab name="itens" label="Items"/>
-                <q-tab name="payment" label="Pagamento"/>
+              <q-tabs v-model="tab" vertical class="text-teal">
+                <q-tab name="itens" label="Items" />
+                <q-tab name="payment" label="Pagamento" />
               </q-tabs>
             </template>
 
             <template #after>
-              <q-tab-panels 
-                v-model="tab" 
+              <q-tab-panels
+                v-model="tab"
                 animated
                 swipeable
                 vertical
@@ -133,8 +114,12 @@
                 <q-tab-panel name="itens" keep-alive>
                   <h2 class="text-h5 text-primary">Itens</h2>
                   <!-- Itens -->
-                  <div v-for="(detail, index) in order.details" :key="detail.id" class="flex row q-col-gutter-sm">
-                    <order-product-select 
+                  <div
+                    v-for="(detail, index) in order.details"
+                    :key="detail.id"
+                    class="flex row q-col-gutter-sm"
+                  >
+                    <order-product-select
                       :products="products"
                       v-model="detail.product"
                       @newProduct="newProduct"
@@ -145,20 +130,16 @@
                       @addComment="val => detail.comments = val"
                     />
 
-                    <iso1-input 
+                    <iso1-input
                       type="number"
                       label="Quantidade *"
                       v-model="detail.qty"
                       class="col-2"
                     />
 
-                    <iso1-input 
-                      disable
-                      :value="detail.unit"
-                      class="col-1"
-                    />
+                    <iso1-input disable :value="detail.unit" class="col-1" />
 
-                    <iso1-input 
+                    <iso1-input
                       label="Preço *"
                       v-model="detail.vl"
                       class="col-2"
@@ -176,34 +157,29 @@
                     />
 
                     <div class="col-1 q-pa-md">
-                      <q-btn 
-                        v-if="index > 0" 
-                        size="sm" 
-                        round 
-                        icon="delete" 
-                        color="negative" 
+                      <q-btn
+                        v-if="index > 0"
+                        size="sm"
+                        round
+                        icon="delete"
+                        color="negative"
                         @click="removeDetail(detail)"
                         tabindex="-1"
                       />
-                      
                     </div>
                   </div>
-                  <q-btn 
-                    size="sm" 
-                    round 
-                    icon="add" 
-                    color="secondary" 
-                    @click="addDetail"
-                  />
+                  <q-btn size="sm" round icon="add" color="secondary" @click="addDetail" />
                 </q-tab-panel>
 
                 <q-tab-panel name="payment" keep-alive>
                   <h2 class="text-h5 text-primary">Pagamentos</h2>
 
-                  <div v-for="(payment, index) in order.payments" :key="payment.id"
+                  <div
+                    v-for="(payment, index) in order.payments"
+                    :key="payment.id"
                     class="flex row q-col-gutter-sm"
                   >
-                    <iso1-input 
+                    <iso1-input
                       v-model="payment.vl"
                       label="Valor R$"
                       @keydown.enter.native="setPaymentValue(payment, $event)"
@@ -214,7 +190,7 @@
                       ref="inputPayment"
                     />
 
-                    <iso1-select 
+                    <iso1-select
                       label="Forma de pagamento *"
                       :options="paymentTypes"
                       v-model="payment.paymentType"
@@ -222,33 +198,26 @@
                       class="col-5"
                     />
 
-                    <iso1-date-input 
+                    <iso1-date-input
                       label="Data pagamento *"
                       v-model="payment.date"
                       :rules="[val => !!val || 'Campo obrigatório']"
                     />
 
                     <div class="col-1 q-pa-md">
-                      <q-btn 
-                        v-if="index > 0" 
-                        size="sm" 
-                        round 
-                        icon="delete" 
-                        color="negative" 
+                      <q-btn
+                        v-if="index > 0"
+                        size="sm"
+                        round
+                        icon="delete"
+                        color="negative"
                         @click="removePayment(payment)"
                         tabindex="-1"
                       />
-                      
                     </div>
                   </div>
 
-                  <q-btn 
-                    size="sm" 
-                    round 
-                    icon="add" 
-                    color="secondary" 
-                    @click="addPayment"
-                  />
+                  <q-btn size="sm" round icon="add" color="secondary" @click="addPayment" />
                 </q-tab-panel>
               </q-tab-panels>
             </template>
@@ -256,40 +225,34 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn 
-            color="primary"
-            label="Salvar"
-            type="submit"
-            :loading="loading"
-          />
+          <q-btn color="accent" label="Emitir NFCe" :loading="loadingNfce" @click="emitNfce" />
+
+          <q-btn color="primary" label="Salvar" type="submit" :loading="loading" />
         </q-card-actions>
       </q-card>
     </q-form>
 
-    <router-view 
-      @updateCustomers="updateCustomers" 
-      @updateProducts="updateProducts"
-      isFromOrder
-    />
+    <router-view @updateCustomers="updateCustomers" @updateProducts="updateProducts" isFromOrder />
   </iso1-dialog>
 </template>
 
 <script>
-import Iso1Dialog from '../components/Iso1Dialog';
-import Iso1Input from '../components/Iso1Input';
-import Iso1Select from '../components/Iso1Select';
-import Iso1DateInput from '../components/Iso1DateInput';
-import OrderCustomerSelect from '../components/OrderCustomerSelect';
-import OrderProductSelect from '../components/OrderProductSelect';
-import CustomerService from '../services/CustomerService';
-import OrderService from '../services/OrderService';
-import ProductService from '../services/ProductService';
-import PaymentTypeService from '../services/PaymentTypeService';
-import Order from '../models/Order';
-import Customer from '../models/Customer';
-import Product from '../models/Product';
-import FormLink from '../utils/FormLink';
-import { formatCurrency } from '../utils/currencyHelper';
+import Iso1Dialog from "../components/Iso1Dialog";
+import Iso1Input from "../components/Iso1Input";
+import Iso1Select from "../components/Iso1Select";
+import Iso1DateInput from "../components/Iso1DateInput";
+import OrderCustomerSelect from "../components/OrderCustomerSelect";
+import OrderProductSelect from "../components/OrderProductSelect";
+import CustomerService from "../services/CustomerService";
+import OrderService from "../services/OrderService";
+import ProductService from "../services/ProductService";
+import PaymentTypeService from "../services/PaymentTypeService";
+import NfceService from "../services/NFCeService";
+import Order from "../models/Order";
+import Customer from "../models/Customer";
+import Product from "../models/Product";
+import FormLink from "../utils/FormLink";
+import { formatCurrency } from "../utils/currencyHelper";
 
 export default {
   components: {
@@ -298,7 +261,7 @@ export default {
     Iso1Input,
     Iso1DateInput,
     OrderCustomerSelect,
-    OrderProductSelect
+    OrderProductSelect,
   },
   data() {
     return {
@@ -307,14 +270,16 @@ export default {
       customers: [],
       products: [],
       paymentTypes: [],
-      deliveryType: ['Agendada', 'Pronta Entrega', 'Retirada'],
+      deliveryType: ["Agendada", "Pronta Entrega", "Retirada"],
       orderService: new OrderService(),
       productService: new ProductService(),
       customerService: new CustomerService(),
       paymentTypeService: new PaymentTypeService(),
+      nfceService: new NfceService(),
       loading: false,
-      tab: 'itens'
-    }
+      loadingNfce: false,
+      tab: "itens",
+    };
   },
 
   computed: {
@@ -329,21 +294,21 @@ export default {
       return Order.status[this.order.status];
     },
     route() {
-      return this.$route.params.orderId ? 'order': 'newOrder';
-    }
+      return this.$route.params.orderId ? "order" : "newOrder";
+    },
   },
 
   async created() {
     const { orderId: id } = this.$route.params;
 
-    const [ products, customers, paymentTypes ] = await Promise.all([
+    const [products, customers, paymentTypes] = await Promise.all([
       this.productService.listForSaleProducts(),
       this.customerService.list(),
-      this.paymentTypeService.list()
+      this.paymentTypeService.list(),
     ]);
 
-    this.products = products.map(p => new Product(p));
-    this.customers = customers.map(c => new Customer(c));
+    this.products = products.map((p) => new Product(p));
+    this.customers = customers.map((c) => new Customer(c));
     this.paymentTypes = paymentTypes;
 
     if (id) {
@@ -356,58 +321,60 @@ export default {
   },
 
   filters: {
-    formatCurrency
+    formatCurrency,
   },
 
   methods: {
     save() {
       this.loading = true;
-      if (this.order.details.length === 1 && this.order.details[0].product === null) {
+      if (
+        this.order.details.length === 1 &&
+        this.order.details[0].product === null
+      ) {
         this.$q.notify({
-          message: 'Insira pelo menos um item para salvar um pedido de vendas',
-          color: 'negative'
+          message: "Insira pelo menos um item para salvar um pedido de vendas",
+          color: "negative",
         });
 
         this.loading = false;
         return;
       }
 
-      const promise = this.order.id 
-        ? this.edit() 
-        : this.saveNew();
+      const promise = this.order.id ? this.edit() : this.saveNew();
 
       promise.then(() => {
         this.$q.notify({
-          message: 'Registro salvo com sucesso.',
-          color: 'positive'
+          message: "Registro salvo com sucesso.",
+          color: "positive",
         });
-      })
+      });
 
       promise.finally(() => {
         this.loading = false;
       });
     },
     saveNew() {
-      return this.orderService.post(this.order)
-        .then(order => {
-          this.order.id = order.id;
-          this.$emit('updateList', new FormLink('add', this.order));
-          this.order = new Order();
-          this.$refs.orderForm.reset();
-          this.$refs.inputName.focus();
-          this.orderService.openReport(order.id);
-        });
+      return this.orderService.post(this.order).then((order) => {
+        this.order.id = order.id;
+        this.$emit("updateList", new FormLink("add", this.order));
+        this.order = new Order();
+        this.$refs.orderForm.reset();
+        this.$refs.inputName.focus();
+        this.orderService.openReport(order.id);
+      });
     },
     edit() {
-      return this.orderService.update(this.order)
-        .then(order => {
-          this.$emit('updateList', new FormLink('edit', this.order));
-          this.$router.replace({ name: 'orders' });
-          return this.order.id;
-        });
+      return this.orderService.update(this.order).then((order) => {
+        this.$emit("updateList", new FormLink("edit", this.order));
+        this.$router.replace({ name: "orders" });
+        return this.order.id;
+      });
     },
     newCustomer(customerName) {
-      this.$router.push({ name: `${this.route}NewCustomer`, params: { customerName } });
+      this.$router.push({
+        name: `${this.route}NewCustomer`,
+        params: { customerName },
+      });
     },
     editCustomer(id) {
       this.$router.push({ name: `${this.route}EditCustomer`, params: { id } });
@@ -415,20 +382,26 @@ export default {
     updateCustomers(payload) {
       const { data: customer, type } = payload;
 
-      if (type === 'add') {
+      if (type === "add") {
         this.customers.push(customer);
       } else {
-        this.customers.splice(this.customers.find(c => c.id === customer.id), 1);
+        this.customers.splice(
+          this.customers.find((c) => c.id === customer.id),
+          1
+        );
       }
 
-      this.$set(this.order, 'customer', customer);
+      this.$set(this.order, "customer", customer);
     },
     updateProducts(product) {
       this.products.push(product);
       this.order.details[this.order.details.length - 1].product = product;
     },
     newProduct(productName) {
-      this.$router.push({ name: `${this.route}NewProduct`, params: { productName } });
+      this.$router.push({
+        name: `${this.route}NewProduct`,
+        params: { productName },
+      });
     },
     addDetail(event) {
       event.preventDefault();
@@ -454,8 +427,33 @@ export default {
       payment.vl = this.order.remainingPayment.toFixed(2);
     },
     close() {
-      this.$router.replace({ name: 'orders' });
-    }
-  }
-}
+      this.$router.replace({ name: "orders" });
+    },
+    async emitNfce() {
+      if (!this.order.id) {
+        this.$q.notify({
+          message: "Salve o pedido antes de emitir a NFCe",
+          color: "warning",
+        });
+        return;
+      }
+
+      this.nfceService
+        .post(this.order.id)
+        .then(() => {
+          this.$q.notify({
+            message: "NFCe emitida com sucesso.",
+            color: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$q.notify({
+            message: "Erro ao emitir NFCe. Consulte o log",
+            color: "negative",
+          });
+        });
+    },
+  },
+};
 </script>
