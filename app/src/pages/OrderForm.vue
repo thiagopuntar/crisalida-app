@@ -360,7 +360,6 @@ export default {
         this.order = new Order();
         this.$refs.orderForm.reset();
         this.$refs.inputName.focus();
-        this.orderService.openReport(order.id);
       });
     },
     edit() {
