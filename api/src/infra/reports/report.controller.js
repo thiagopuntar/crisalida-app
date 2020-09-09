@@ -59,7 +59,7 @@ async function getOrder(id) {
 
   const {
     deliveryDate,
-    deliveryTax,
+    orderDeliveryTax,
     discount,
     address,
     payments,
