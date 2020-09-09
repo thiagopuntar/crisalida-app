@@ -66,10 +66,16 @@
       <span>Telefone:</span>
       <span>{{customer.phone}}</span>
     </div>
+    {{#if address}}
     <div class="div-header">
       <span>Endereço:</span>
       <span>{{address}}</span>
     </div>
+    {{else}}
+    <div class="div-header">
+      <span>Retirada pelo cliente</span>
+    </div>
+    {{/if}}
     <div class="div-header">
       <span>Entrega em:</span>
       <span>{{deliveryDate}}</span>

@@ -68,7 +68,7 @@ async function getOrder(id) {
   } = data;
 
   formatedData.deliveryDate = formatDate(deliveryDate);
-  formatedData.deliveryTax = formatCurrency(deliveryTax);
+  formatedData.deliveryTax = formatCurrency(orderDeliveryTax);
   formatedData.discount = formatCurrency(discount);
   formatedData.address = formatAddress(address);
   const totalPaid = payments.reduce((total, payment) => {
@@ -80,7 +80,7 @@ async function getOrder(id) {
     parseFloat(
       details.reduce((total, detail) => (total += detail.vl * detail.qty), 0.0)
     ) +
-    parseFloat(data.deliveryTax) -
+    parseFloat(data.orderDeliveryTax) -
     parseFloat(data.discount);
 
   formatedData.totalPaid = formatCurrency(totalPaid);
@@ -117,7 +117,7 @@ function formatDate(val) {
 }
 
 function formatAddress(val) {
-  if (!val) {
+  if (!val || !Object.keys(val).length) {
     return "";
   }
 
