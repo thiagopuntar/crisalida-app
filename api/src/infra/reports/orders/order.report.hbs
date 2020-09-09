@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,70 +53,67 @@
     .preco {
       text-align: right;
     }
-    
   </style>
 </head>
+
 <body>
   <h3 id="titulo">Crisálida</h1>
-  <div class="div-header">
-    <span>Cliente:</span>
-    <span id="nome-cliente">{{customer.name}}</span>
-  </div>
-  <div class="div-header">
-    <span>Telefone:</span>
-    <span>{{customer.phone}}</span>
-  </div>
-  <div class="div-header">
-    <span>Endereço:</span>
-    <span>{{address}}</span>
-  </div>
-  <div class="div-header">
-    <span>Entrega em:</span>
-    <span>{{deliveryDate}}</span>
-  </div>
-  {{#if comments}}
+    <div class="div-header">
+      <span>Cliente:</span>
+      <span id="nome-cliente">{{customer.name}}</span>
+    </div>
+    <div class="div-header">
+      <span>Telefone:</span>
+      <span>{{customer.phone}}</span>
+    </div>
+    <div class="div-header">
+      <span>Endereço:</span>
+      <span>{{address}}</span>
+    </div>
+    <div class="div-header">
+      <span>Entrega em:</span>
+      <span>{{deliveryDate}}</span>
+    </div>
+    {{#if comments}}
     <div class="div-header">
       <span>{{comments}}</span>
     </div>
-  {{/if}}
-  <table>
-    <tr>
-      <th>Qtd</th>
-      <th>Item</th>
-      <th>Vl unit.</th>
-      <th>Vl total</th>
-    </tr>
-    <tbody>
-      {{#each details}}
+    {{/if}}
+    <table>
+      <tr>
+        <th>Qtd</th>
+        <th>Item</th>
+        <th>Vl unit.</th>
+        <th>Vl total</th>
+      </tr>
+      <tbody>
+        {{#each details}}
         <tr>
           <td>{{qty}}</td>
           <td class="produto">{{product}}</td>
           <td>{{vl}}</td>
           <td>{{total}}</td>
         </tr>
-      {{/each}}
-    </tbody>
-    <tr class="separator"></tr>
-    <tr>
-      <td class="total" colspan="1">Taxa de entrega:</td>
-      <td id="total">{{deliveryTax}}</td>
-    </tr>
-    <tr>
-      <td class="total" colspan="1">Total:</td>
-      <td id="total">{{total}}</td>
-    </tr>
-    <tr>
-      <td class="total" colspan="1">Valor pago:</td>
-      <td>{{totalPaid}}</td>
-    </tr>
-    <tr>
-      <td class="total super-total" colspan="1">Restante:</td>
-      <td class="super-total">{{remainingPayment}}</td>
-    </tr>
-  </table>
+        {{/each}}
+      </tbody>
+      <tr class="separator"></tr>
+      <tr>
+        <td class="total" colspan="1">Taxa de entrega:</td>
+        <td id="total">{{deliveryTax}}</td>
+      </tr>
+      <tr>
+        <td class="total" colspan="1">Total:</td>
+        <td id="total">{{total}}</td>
+      </tr>
+      <tr>
+        <td class="total" colspan="1">Valor pago:</td>
+        <td>{{totalPaid}}</td>
+      </tr>
+      <tr>
+        <td class="total super-total" colspan="1">Restante:</td>
+        <td class="super-total">{{remainingPayment}}</td>
+      </tr>
+    </table>
 </body>
-<script>
-  window.print();
-</script>
-</script>
+
 </html>
