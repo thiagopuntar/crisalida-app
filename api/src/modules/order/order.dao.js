@@ -36,7 +36,7 @@ module.exports = class OrderDao extends BaseDao {
       )
       .orderBy("o.deliveryDate");
   }
-
+  // FIND ALL
   async findAll() {
     const data = await this.findOrderTotal;
     return this._addCustomerOnStructure(data);
