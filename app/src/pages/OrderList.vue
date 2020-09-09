@@ -18,6 +18,8 @@
 
         <q-checkbox label="Somente pendentes de pagamento" v-model="filter.isNotPaid" />
 
+        <q-checkbox label="Somente pagamentos com cartão" v-model="filter.isCreditCard" />
+
         <div class="flex row q-col-gutter-sm">
           <iso1-select
             :options="dates"
@@ -135,6 +137,7 @@ export default {
           name: "customerName",
           field: (x) => x.customer.name,
           label: "Cliente",
+          sortable: true,
         },
         {
           name: "customerPhone",
@@ -145,11 +148,13 @@ export default {
           name: "address",
           field: (x) => (x.address ? Customer.formatAddress(x.address) : ""),
           label: "Endereço",
+          sortable: true,
         },
         {
           name: "district",
           field: (x) => (x.address ? x.address.district : ""),
           label: "Bairro",
+          sortable: true,
         },
         { name: "deliveryType", field: "deliveryType", label: "Tipo entrega" },
         {
@@ -175,6 +180,7 @@ export default {
         isNotConfirmed: false,
         isNotPicked: false,
         isNotPaid: false,
+        isCreditCard: false,
         initialDeliveryDate: dateOptions[0].initialDate,
         finalDeliveryDate: dateOptions[0].finalDate,
         quickDate: dateOptions[0],
@@ -215,6 +221,7 @@ export default {
           (this.filter.isNotDelivered ? o.status <= 2 : true) &&
           (this.filter.isNotConfirmed ? o.status === 0 : true) &&
           (this.filter.isNotPicked ? o.status <= 1 : true) &&
+          (this.filter.isCreditCard ? o.isCreditCard > 0 : true) &&
           (this.filter.isNotPaid ? o.remainingPayment > 0.0 : true) &&
           filterDate(o)
       );

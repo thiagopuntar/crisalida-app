@@ -99,6 +99,7 @@ export default class Order {
         : [];
       this._totalItens = order.totalItens;
       this._totalPaid = order.totalPaid;
+      this.paymentMethod = parseInt(order.paymentMethod);
     } else {
       this._customer = null;
       this._address = null;
@@ -109,6 +110,7 @@ export default class Order {
       this._details = [new Detail()];
       this._payments = [new Payment()];
       this.status = 1;
+      this.paymentMethod = 0;
     }
   }
 
@@ -202,6 +204,10 @@ export default class Order {
     return this.total - this.totalPaid;
   }
 
+  get isCreditCard() {
+    return this.paymentMethod > 0;
+  }
+
   addDetail() {
     this._details.push(new Detail());
   }
@@ -235,6 +241,7 @@ export default class Order {
       deliveryDate,
       _details,
       _payments,
+      paymentMethod,
       ...obj
     } = this;
     obj.addressId = _address ? _address.id : null;
