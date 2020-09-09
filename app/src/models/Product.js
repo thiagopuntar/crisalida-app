@@ -212,7 +212,7 @@ export default class Product {
   toJSON() {
     const { _type, _family, _composition, _units, ...obj } = this;
     obj.type = _type;
-    obj.familyId = _family && _family.id;
+    obj.familyId = _family ? _family.id : null;
     obj.composition = _composition.map(x => ({
       ...x.toJSON(),
       productId: this.id

@@ -21,6 +21,14 @@ module.exports = class ProductDao extends BaseDao {
     };
   }
 
+  get familySchema() {
+    return {
+      name: "family",
+      type: "object",
+      fields: [{ familyId: "id" }, { familyName: "name" }],
+    };
+  }
+
   async findMaterials(types) {
     return this.db(this.tableName).whereIn("type", types).orderBy("name");
   }
@@ -39,7 +47,16 @@ module.exports = class ProductDao extends BaseDao {
   }
 
   async findByPk(id) {
-    const [product] = await super.findByPk(id);
+    const product = await this.db("products as p")
+      .leftJoin("families as f", "p.familyId", "f.id")
+      .select("p.*", "f.id as familyId", "f.name as familyName")
+      .where("p.id", id);
+
+    const [structuredProduct] = this.structureNestedData(
+      product,
+      this.familySchema
+    );
+
     const units = await this.db("productUnits").where("productId", id);
     const composition = await this.db
       .queryBuilder()
@@ -86,7 +103,11 @@ module.exports = class ProductDao extends BaseDao {
       };
     });
 
-    return { ...product, units, composition: structuredComposition };
+    return {
+      ...structuredProduct,
+      units,
+      composition: structuredComposition,
+    };
   }
 
   async insert(data) {
