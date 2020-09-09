@@ -188,7 +188,7 @@ export default class Order {
   }
 
   get totalPaid() {
-    return this._totalPaid === undefined
+    return !this._totalPaid
       ? parseFloat(
           this._payments.reduce((total, payment) => {
             total += parseFloat(payment.vl);

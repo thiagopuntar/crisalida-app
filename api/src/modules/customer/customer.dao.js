@@ -49,7 +49,8 @@ module.exports = class CustomerDao extends BaseDao {
 
   async findByPk(id) {
     const data = await this.customerJoined.where("c.id", id);
-    return this.structureNestedData(data, this.addressSchema);
+    const [customer] = this.structureNestedData(data, this.addressSchema);
+    return customer;
   }
 
   async insert(data) {

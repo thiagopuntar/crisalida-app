@@ -47,7 +47,7 @@ module.exports = class OrderDao extends BaseDao {
       .queryBuilder()
       .from(`${this.tableName} as o`)
       .leftJoin("customerAddresses as ca", "o.addressId", "ca.id")
-      .select("*", "o.id", "o.deliveryTax as orderDeliveryTax")
+      .select("*", "o.id", "o.deliveryTax as orderDeliveryTax", "o.customerId")
       .where("o.id", id);
 
     const { addressSchema } = this.customerDao;
@@ -57,7 +57,7 @@ module.exports = class OrderDao extends BaseDao {
       name: "address",
     });
 
-    const [details, payments, customers] = await Promise.all([
+    const [details, payments, customer] = await Promise.all([
       this._getOrderDetails(id),
       this._getPayments(id),
       this.customerDao.findByPk(transformed.customerId),
@@ -65,9 +65,7 @@ module.exports = class OrderDao extends BaseDao {
 
     transformed.details = details;
     transformed.payments = payments;
-    transformed.customer = customers[0];
-    transformed.deliveryTax =
-      transformed.address && transformed.address.deliveryTax;
+    transformed.customer = customer;
 
     return transformed;
   }

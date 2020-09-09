@@ -13,18 +13,18 @@ class Controller {
   }
 
   async update(req, res) {
-    const [data] = await customerDao.findByPk(req.params.id);
+    const data = await customerDao.findByPk(req.params.id);
 
     if (!data) {
       return res.status(404).send("Not found");
     }
 
-    const [newData] = await customerDao.update(req.body);
+    const newData = await customerDao.update(req.body);
     res.json(newData);
   }
 
   async findOne(req, res) {
-    const [data] = await customerDao.findByPk(req.params.id);
+    const data = await customerDao.findByPk(req.params.id);
 
     if (!data) {
       return res.status(404).send("Not found");
