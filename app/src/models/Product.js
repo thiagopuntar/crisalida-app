@@ -64,7 +64,7 @@ class Material {
   toJSON() {
     const { _productMaterial, unit, ...obj } = this;
     obj.materialId = _productMaterial.id;
-    obj.unitId = unit.id;
+    obj.unitId = unit ? unit.id : null;
 
     return obj;
   }
