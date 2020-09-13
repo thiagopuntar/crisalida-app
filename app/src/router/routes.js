@@ -115,13 +115,13 @@ const routes = [
               {
                 path: "newProduct/:productName",
                 component: () => import("pages/ProductForm.vue"),
-                name: "productNewProduct",
+                name: "newProductNewProduct",
                 props: true
               },
               {
                 path: "editProduct/:productName",
                 component: () => import("pages/ProductForm.vue"),
-                name: "productEditProduct",
+                name: "newProductEditProduct",
                 props: true
               }
             ]
@@ -134,13 +134,13 @@ const routes = [
               {
                 path: "newProduct/:productName",
                 component: () => import("pages/ProductForm.vue"),
-                name: "productNewProduct",
+                name: "editProductNewProduct",
                 props: true
               },
               {
                 path: "editProduct/:productName",
                 component: () => import("pages/ProductForm.vue"),
-                name: "productEditProduct",
+                name: "editProductEditProduct",
                 props: true
               }
             ]
