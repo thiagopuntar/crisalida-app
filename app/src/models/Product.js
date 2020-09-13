@@ -105,6 +105,7 @@ export default class Product {
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
       this.productionYield = product.productionYield;
     } else {
+      this.name = "";
       this._type = "";
       this._family = null;
       this.cost = 0;
@@ -171,6 +172,10 @@ export default class Product {
 
   get hasComposition() {
     return ["Produto", "Granel", "Kit"].includes(this.type);
+  }
+
+  get isForSale() {
+    return ["Produto", "Revenda", "Kit"].includes(this.type);
   }
 
   get calculatedCost() {

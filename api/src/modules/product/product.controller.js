@@ -14,7 +14,7 @@ class Controller {
     const types = {
       Produto: ["Insumo", "Granel", "Embalagem"],
       Granel: ["Insumo", "Granel", "Embalagem"],
-      Kit: ["Granel", "Produto", "Kit", "Revenda"],
+      Kit: ["Granel", "Embalagem", "Produto", "Kit", "Revenda"],
     };
 
     const materialTypes = types[type];

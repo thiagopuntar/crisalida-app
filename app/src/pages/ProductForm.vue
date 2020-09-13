@@ -53,6 +53,7 @@
               class="col-2"
             />
             <iso1-select
+              v-if="product.isForSale"
               label="Família"
               :options="families"
               v-model="product.family"
