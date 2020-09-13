@@ -94,6 +94,7 @@
               class="col-2"
             />
           </div>
+
           <q-splitter :value="10" disable>
             <template #before>
               <q-tabs v-model="tab" vertical class="text-teal">
@@ -112,112 +113,11 @@
                 transition-next="jump-up"
               >
                 <q-tab-panel name="itens" keep-alive>
-                  <h2 class="text-h5 text-primary">Itens</h2>
-                  <!-- Itens -->
-                  <div
-                    v-for="(detail, index) in order.details"
-                    :key="detail.id"
-                    class="flex row q-col-gutter-sm"
-                  >
-                    <order-product-select
-                      :products="products"
-                      v-model="detail.product"
-                      @newProduct="newProduct"
-                      class="col-4"
-                      ref="inputProduct"
-                      accesskey="p"
-                      :comments="detail.comments"
-                      @addComment="val => detail.comments = val"
-                    />
-
-                    <iso1-input
-                      type="number"
-                      label="Quantidade *"
-                      v-model="detail.qty"
-                      class="col-2"
-                    />
-
-                    <iso1-input disable :value="detail.unit" class="col-1" />
-
-                    <iso1-input
-                      label="Preço *"
-                      v-model="detail.vl"
-                      class="col-2"
-                      mask="#.##"
-                      reverse-fill-mask
-                      fill-mask="0"
-                      @keydown.tab.exact.native="addDetail"
-                    />
-
-                    <iso1-input
-                      label="Total"
-                      :value="detail.total | formatCurrency"
-                      class="col-2"
-                      disable
-                    />
-
-                    <div class="col-1 q-pa-md">
-                      <q-btn
-                        v-if="index > 0"
-                        size="sm"
-                        round
-                        icon="delete"
-                        color="negative"
-                        @click="removeDetail(detail)"
-                        tabindex="-1"
-                      />
-                    </div>
-                  </div>
-                  <q-btn size="sm" round icon="add" color="secondary" @click="addDetail" />
+                  <order-form-products :order="order" :products="products" />
                 </q-tab-panel>
 
                 <q-tab-panel name="payment" keep-alive>
-                  <h2 class="text-h5 text-primary">Pagamentos</h2>
-
-                  <div
-                    v-for="(payment, index) in order.payments"
-                    :key="payment.id"
-                    class="flex row q-col-gutter-sm"
-                  >
-                    <iso1-input
-                      v-model="payment.vl"
-                      label="Valor R$"
-                      @keydown.enter.native="setPaymentValue(payment, $event)"
-                      mask="#.##"
-                      reverse-fill-mask
-                      fill-mask="0"
-                      class="col-2"
-                      ref="inputPayment"
-                    />
-
-                    <iso1-select
-                      label="Forma de pagamento *"
-                      :options="paymentTypes"
-                      v-model="payment.paymentType"
-                      :rules="[val => !!val || 'Campo obrigatório']"
-                      class="col-5"
-                    />
-
-                    <iso1-date-input
-                      label="Data pagamento *"
-                      v-model="payment.date"
-                      :rules="[val => !!val || 'Campo obrigatório']"
-                    />
-
-                    <div class="col-1 q-pa-md">
-                      <q-btn
-                        v-if="index > 0"
-                        size="sm"
-                        round
-                        icon="delete"
-                        color="negative"
-                        @click="removePayment(payment)"
-                        tabindex="-1"
-                      />
-                    </div>
-                  </div>
-
-                  <q-btn size="sm" round icon="add" color="secondary" @click="addPayment" />
+                  <order-form-payments :order="order" :paymentTypes="paymentTypes" />
                 </q-tab-panel>
               </q-tab-panels>
             </template>
@@ -242,7 +142,8 @@ import Iso1Input from "../components/Iso1Input";
 import Iso1Select from "../components/Iso1Select";
 import Iso1DateInput from "../components/Iso1DateInput";
 import OrderCustomerSelect from "../components/OrderCustomerSelect";
-import OrderProductSelect from "../components/OrderProductSelect";
+import OrderFormProducts from "../components/OrderFormProducts";
+import OrderFormPayments from "../components/OrderFormPayments";
 import CustomerService from "../services/CustomerService";
 import OrderService from "../services/OrderService";
 import ProductService from "../services/ProductService";
@@ -261,7 +162,8 @@ export default {
     Iso1Input,
     Iso1DateInput,
     OrderCustomerSelect,
-    OrderProductSelect,
+    OrderFormProducts,
+    OrderFormPayments,
   },
   data() {
     return {
@@ -395,35 +297,6 @@ export default {
     updateProducts(product) {
       this.products.push(product);
       this.order.details[this.order.details.length - 1].product = product;
-    },
-    newProduct(productName) {
-      this.$router.push({
-        name: `${this.route}NewProduct`,
-        params: { productName },
-      });
-    },
-    addDetail(event) {
-      event.preventDefault();
-      this.order.addDetail();
-      this.$nextTick(() => {
-        this.$refs.inputProduct[this.order.details.length - 1].focus();
-      });
-    },
-    removeDetail(detail) {
-      this.order.removeDetail(detail);
-    },
-    addPayment() {
-      this.order.addPayment();
-      this.$nextTick(() => {
-        this.$refs.inputPayment[this.order.payments.length - 1].focus();
-      });
-    },
-    removePayment(payment) {
-      this.order.removePayment(payment);
-    },
-    setPaymentValue(payment, event) {
-      event.preventDefault();
-      payment.vl = this.order.remainingPayment.toFixed(2);
     },
     close() {
       this.$router.replace({ name: "orders" });

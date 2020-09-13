@@ -108,7 +108,7 @@ export default class Order {
       this.discount = 0.0;
       this.orderDate = date.formatDate(new Date(), "DD/MM/YYYY");
       this._details = [new Detail()];
-      this._payments = [new Payment()];
+      this._payments = [];
       this.status = 1;
       this.paymentMethod = 0;
     }
