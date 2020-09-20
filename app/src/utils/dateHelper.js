@@ -13,6 +13,20 @@ export const dateBuilder = dateString => {
   return date.formatDate(new Date(year, month, day), "YYYY-MM-DD");
 };
 
+export const formatWeekDay = date => {
+  const weekDays = {
+    0: "dom",
+    1: "seg",
+    2: "ter",
+    3: "qua",
+    4: "qui",
+    5: "sex",
+    6: "sab"
+  };
+
+  return weekDays[date.getDay()];
+};
+
 const dt = new Date();
 const dayOfWeek = dt.getDay();
 

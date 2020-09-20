@@ -165,6 +165,13 @@ const routes = [
             name: "editSupplier"
           }
         ]
+      },
+      {
+        path: "/production",
+        component: () => import("pages/ProductionForm.vue"),
+        name: "production",
+        title: "Azulejo Produção",
+        icon: "business"
       }
     ]
   }

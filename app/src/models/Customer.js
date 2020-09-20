@@ -35,12 +35,12 @@ export default class Customer {
     return Customer.formatAddress(main);
   }
 
-  get phoneClean() {
+  get phoneFormated() {
     if (!this.phone) {
       return "";
     }
 
-    return this.phone.replace(/[\(\)\-\s+]/g, "");
+    return this.phone.replace(/(\d{2})(\d{5})(\d{3,4})/g, "($1) $2-$3");
   }
 
   toJSON() {

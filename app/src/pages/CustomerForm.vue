@@ -11,7 +11,12 @@
             ref="inputName"
           />
 
-          <iso1-input label="Telefone" v-model="customer.phone" mask="(##) #####-####" />
+          <iso1-input
+            label="Telefone"
+            v-model="customer.phone"
+            mask="(##) #####-####"
+            unmasked-value
+          />
         </q-card-section>
 
         <q-card-section>

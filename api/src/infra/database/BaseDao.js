@@ -35,7 +35,7 @@ module.exports = class BaseDao {
   }
 
   async insert(data) {
-    const id = this.db(this.tableName).insert(data);
+    const id = await this.db(this.tableName).insert(data);
     return this.findByPk(id);
   }
 

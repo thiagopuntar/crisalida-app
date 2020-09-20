@@ -18,10 +18,7 @@
     @dblclick.native="edit"
   >
     <template #option="scope">
-      <q-item
-        v-bind="scope.itemProps"
-        v-on="scope.itemEvents"
-      >
+      <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
         <q-item-section>
           <q-item-label>{{ scope.opt.name }}</q-item-label>
           <q-item-label caption>{{ scope.opt.phone }}</q-item-label>
@@ -35,10 +32,11 @@
     <template #no-option>
       <q-item>
         <q-item-section>
-          <q-item-label class="text-italic text-grey q-mb-sm">
-            Nenhum cliente localizado.
-          </q-item-label>
-          <a @click="newCustomer" class="cursor-pointer text-primary text-italic">Clique para cadastrar um novo</a>
+          <q-item-label class="text-italic text-grey q-mb-sm">Nenhum cliente localizado.</q-item-label>
+          <a
+            @click="newCustomer"
+            class="cursor-pointer text-primary text-italic"
+          >Clique para cadastrar um novo</a>
         </q-item-section>
       </q-item>
     </template>
@@ -50,26 +48,26 @@ export default {
   props: {
     customers: {
       type: Array,
-      required: true
+      required: true,
     },
     value: {
-      type: Object
-    }
+      type: Object,
+    },
   },
 
-  data () {
+  data() {
     return {
       filteredCustomers: [],
-      customerName: ''
-    }
+      customerName: "",
+    };
   },
 
   methods: {
     input(val) {
-      this.$emit('input', val);
+      this.$emit("input", val);
     },
     filterCustomer(val, update, abort) {
-      if (val === '') {
+      if (val === "") {
         update(() => {
           this.filteredCustomers = this.customers;
           return;
@@ -78,24 +76,27 @@ export default {
 
       update(() => {
         const needle = val.toLowerCase();
-        this.filteredCustomers = this.customers
-          .filter(v => v.name.toLowerCase().indexOf(needle) > -1 || v.phoneClean.indexOf(needle) > -1 );
-      })
+        this.filteredCustomers = this.customers.filter(
+          (v) =>
+            v.name.toLowerCase().indexOf(needle) > -1 ||
+            v.phone.indexOf(needle) > -1
+        );
+      });
     },
     setCustomerName(val) {
       this.customerName = val;
     },
     newCustomer() {
-      this.$emit('newCustomer', this.customerName);
+      this.$emit("newCustomer", this.customerName);
     },
     focus() {
       this.$refs.select.focus();
     },
     edit() {
       if (this.value) {
-        this.$emit('editCustomer', this.value.id);
+        this.$emit("editCustomer", this.value.id);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

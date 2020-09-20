@@ -103,7 +103,7 @@ export default class Product {
         ? product.composition.map(x => new Material(x))
         : [];
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
-      this.productionYield = product.productionYield;
+      this.productionYield = product.productionYield || 1;
     } else {
       this.name = "";
       this._type = "";
