@@ -8,7 +8,12 @@
           </q-item-section>
         </q-item>
       </q-list>
-      <q-list v-for="data of listData" :key="data.deliveryDate" class="col-3" separator>
+      <q-list
+        v-for="data of listData"
+        :key="data.deliveryDate"
+        class="col-3"
+        separator
+      >
         <q-item>
           <q-item-section>
             <q-item-label header>{{ data.deliveryDate }}</q-item-label>
@@ -34,14 +39,19 @@
     </div>
 
     <q-dialog v-model="isOpen">
-      <q-card style="min-width:400px;padding:15px">
+      <q-card style="min-width: 400px; padding: 15px">
         <q-form @submit="save">
           <q-card-section>
             <h2 class="text-h4">Lançar produção</h2>
           </q-card-section>
           <q-card-section>
             <h3 class="text-h5">{{ productionData.name }}</h3>
-            <iso1-input autofocus type="number" v-model.number="productionQty" label="Quantidade" />
+            <iso1-input
+              autofocus
+              type="number"
+              v-model.number="productionQty"
+              label="Quantidade"
+            />
           </q-card-section>
           <q-card-actions align="right">
             <q-btn label="Cancelar" @click="isOpen = false" color="secondary" />
@@ -71,7 +81,6 @@ export default {
       stockService: new StockService(),
       products: [],
       stock: [],
-      listData: [],
       productionData: new ProductionFormData(),
       productionQty: 0,
       isOpen: false,
@@ -82,38 +91,10 @@ export default {
     listTotal() {
       return;
     },
-  },
-
-  async created() {
-    await this.updateProduction();
-    await this.updateStock(this.products.map((x) => x.productId));
-    this.setListData();
-  },
-
-  methods: {
-    async updateStock(ids) {
-      const stock = await this.stockService.list({ ids: ids.join(",") });
-      this.stock = stock;
-    },
-    async updateProduction() {
-      return this.productionService
-        .list()
-        .then((products) =>
-          products.map((x) => {
-            const { deliveryDate, ...obj } = x;
-            return {
-              ...obj,
-              deliveryDate: date.formatDate(deliveryDate, "DD/MM/YYYY"),
-              weekDay: formatWeekDay(new Date(deliveryDate)),
-            };
-          })
-        )
-        .then((products) => (this.products = products));
-    },
-    setListData() {
+    listData() {
       const actualStock = this.stock.map((x) => ({ ...x }));
 
-      this.listData = this.products.reduce((data, item) => {
+      return this.products.reduce((data, item) => {
         const { deliveryDate, weekDay, qty, ...product } = item;
         const stock = actualStock.find((x) => x.id === product.productId) || {
           stockQty: 0.0,
@@ -156,6 +137,34 @@ export default {
         return data;
       }, []);
     },
+  },
+
+  async created() {
+    await this.updateProduction();
+    await this.updateStock(this.products.map((x) => x.productId));
+    this.setListData();
+  },
+
+  methods: {
+    async updateStock(ids) {
+      const stock = await this.stockService.list({ ids: ids.join(",") });
+      this.stock = stock;
+    },
+    async updateProduction() {
+      return this.productionService
+        .list()
+        .then((products) =>
+          products.map((x) => {
+            const { deliveryDate, ...obj } = x;
+            return {
+              ...obj,
+              deliveryDate: date.formatDate(deliveryDate, "DD/MM/YYYY"),
+              weekDay: formatWeekDay(new Date(deliveryDate)),
+            };
+          })
+        )
+        .then((products) => (this.products = products));
+    },
     setProductionData(productionData) {
       this.productionData = productionData;
       this.productionQty = productionData.remaining;
@@ -163,8 +172,14 @@ export default {
     },
     save() {
       this.productionService.post(this.productionData).then(() => {
-        const diff = this.productionData.remaining - this.productionQty;
-        this.productionData.remaining = diff >= 0 ? diff : 0;
+        const product = this.stock.find(
+          (x) => x.id === this.productionData.productId
+        );
+        product.stockQty += this.productionQty;
+        this.$q.notify({
+          message: `${this.productionData.name} adicionado ao estoque.`,
+          color: "positive",
+        });
         this.isOpen = false;
         this.productionData = new ProductionFormData();
       });
