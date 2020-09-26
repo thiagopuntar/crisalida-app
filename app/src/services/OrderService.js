@@ -1,4 +1,5 @@
 import Service from "./Service";
+import axios from "axios";
 
 export default class OrderService extends Service {
   constructor() {
@@ -6,12 +7,36 @@ export default class OrderService extends Service {
   }
 
   openReport(id) {
-    const url = `${process.env.REPORT}/order/${id}`;
-    const printWindow = window.open(url, "_blank");
+    const token = this._axios.defaults.headers.common["Authorization"];
+    const urlBase = `${process.env.REPORT}/order/${id}`;
+
+    axios
+      .get(urlBase, {
+        headers: {
+          Authorization: token
+        }
+      })
+      .then(res => res.data)
+      .then(data => {
+        const win = window.open("", "_blank");
+        win.document.write(data);
+      });
   }
 
   openOrderList(ids) {
-    const url = `${process.env.REPORT}/orders/routes?ids=${ids.join(",")}`;
-    window.open(url, "_blank");
+    const token = this._axios.defaults.headers.common["Authorization"];
+    const urlBase = `${process.env.REPORT}/orders/routes?ids=${ids.join(",")}`;
+
+    axios
+      .get(urlBase, {
+        headers: {
+          Authorization: token
+        }
+      })
+      .then(res => res.data)
+      .then(data => {
+        const win = window.open("", "_blank");
+        win.document.write(data);
+      });
   }
 }
