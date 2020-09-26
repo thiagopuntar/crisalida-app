@@ -1,17 +1,16 @@
-import Service from './Service';
+import Service from "./Service";
 
 export default class LoginService extends Service {
   constructor() {
-    super('Login');
+    super("login");
   }
 
   async login(user) {
     try {
-      const token = await super.post(user)
+      const token = await super.post(user);
       this.setHeader(token);
       return token;
-      
-    } catch(e) {
+    } catch (e) {
       return Promise.reject(JSON.parse(e.response));
     }
   }

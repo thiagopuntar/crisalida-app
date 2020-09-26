@@ -1,16 +1,16 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-import routes from './routes'
+import routes from "./routes";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation
  */
 
-export default function ({ store }) {
+export default function({ store }) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,
@@ -24,15 +24,14 @@ export default function ({ store }) {
 
   Router.beforeEach((to, from, next) => {
     const isPublic = to.matched.some(x => x.meta.public);
-    // const isLogged = store.getters['auth/isAuthenticated'];
-    const isLogged = true;
+    const isLogged = store.getters["auth/isAuthenticated"];
 
     if (!isPublic && !isLogged) {
-      next({ path: '/login' });
+      next({ path: "/login" });
     } else {
       next();
     }
   });
 
-  return Router
+  return Router;
 }
