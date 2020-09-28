@@ -100,9 +100,7 @@ export default class Order {
       this._totalItens = order.totalItens;
       this._totalPaid = order.totalPaid;
       this.paymentMethod = parseInt(order.paymentMethod);
-      this.isGift = order.isGift;
     } else {
-      this.isGift = false;
       this._customer = null;
       this._address = null;
       this.deliveryTax = 0.0;

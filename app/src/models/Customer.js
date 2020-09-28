@@ -3,7 +3,7 @@ export default class Customer {
     if (customer) {
       this.id = customer.id;
       this.name = customer.name;
-      this.phone = customer.phone;
+      this.phone = customer.phone || "";
       this.instagram = customer.instagram;
       this.addresses = customer.addresses || [];
     } else {
