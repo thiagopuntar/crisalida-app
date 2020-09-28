@@ -7,7 +7,21 @@
             <q-item-label header>Total</q-item-label>
           </q-item-section>
         </q-item>
+
+        <q-item
+          v-for="item of listTotal"
+          :key="item.productId"
+          clickable
+          @click="setProductionData(item)"
+        >
+          <q-item-section avatar>{{ item.remaining }}</q-item-section>
+          <q-item-section>
+            <q-item-label>{{ item.name }}</q-item-label>
+            <q-item-label caption>{{ item.qty }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
+
       <q-list
         v-for="data of listData"
         :key="data.deliveryDate"
@@ -89,7 +103,32 @@ export default {
 
   computed: {
     listTotal() {
-      return;
+      return this.products
+        .reduce((data, item) => {
+          const existentData = data.find((x) => x.productId === item.productId);
+
+          if (existentData) {
+            existentData.qty += item.qty;
+            return data;
+          }
+
+          const { productId, qty, name } = item;
+          const stock = this.stock.find((x) => x.id === productId) || {};
+          const { stockQty = 0.0 } = stock;
+
+          data.push({ productId, qty, name, stockQty });
+          return data;
+        }, [])
+        .map((item) => {
+          const diff = parseInt(item.qty) - parseInt(item.stockQty);
+
+          const remaining = diff > 0 ? diff : 0;
+
+          return {
+            ...item,
+            remaining,
+          };
+        });
     },
     listData() {
       const actualStock = this.stock.map((x) => ({ ...x }));
@@ -110,15 +149,14 @@ export default {
         if (stock.id && stock.stockQty) {
           const diff = parseInt(productionItem.qty) - parseInt(stock.stockQty);
 
-          if (diff < 0) {
-            productionItem.remaining = 0.0;
-            productionItem.stock = productionItem.qty;
+          if (diff <= 0) {
             stock.stockQty -= productionItem.qty;
-          } else {
-            productionItem.remaining = diff;
-            productionItem.stock = stock.stockQty;
-            stock.stockQty = 0.0;
+            return data;
           }
+
+          productionItem.remaining = diff;
+          productionItem.stock = stock.stockQty;
+          stock.stockQty = 0.0;
         }
 
         const existentData = data.find((x) => deliveryDate === x.deliveryDate);
@@ -142,7 +180,6 @@ export default {
   async created() {
     await this.updateProduction();
     await this.updateStock(this.products.map((x) => x.productId));
-    this.setListData();
   },
 
   methods: {
