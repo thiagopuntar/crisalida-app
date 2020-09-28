@@ -5,15 +5,6 @@ module.exports = class CustomerDao extends BaseDao {
     super("productions");
   }
 
-  get customerJoined() {
-    return this.db
-      .queryBuilder()
-      .from(`${this.tableName} as c`)
-      .select("*", "c.id", "ca.id as addressId")
-      .leftJoin("customerAddresses as ca", "c.id", "ca.customerId")
-      .orderBy("c.name");
-  }
-
   async listDemand() {
     const data = await this.db
       .queryBuilder()
@@ -64,12 +55,6 @@ module.exports = class CustomerDao extends BaseDao {
       .join("products as p", "c.materialId", "p.id")
       .select("p.id", "p.name", "c.qty")
       .where("c.productId", id);
-  }
-
-  async findByPk(id) {
-    const data = await this.customerJoined.where("c.id", id);
-    const [customer] = this.structureNestedData(data, this.addressSchema);
-    return customer;
   }
 
   async insert(data) {
