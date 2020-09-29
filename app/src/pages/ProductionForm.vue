@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="flex row q-col-gutter-md q-pa-md">
-      <q-list class="col-3">
+      <q-list class="col-xs-12 col-md-3">
         <q-item>
           <q-item-section>
             <q-item-label header>Total</q-item-label>
@@ -25,7 +25,7 @@
       <q-list
         v-for="data of listData"
         :key="data.deliveryDate"
-        class="col-3"
+        class="col-xs-12 col-md-3"
         separator
       >
         <q-item>
