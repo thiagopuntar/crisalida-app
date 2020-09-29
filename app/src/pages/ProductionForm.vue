@@ -108,7 +108,7 @@ export default {
           const existentData = data.find((x) => x.productId === item.productId);
 
           if (existentData) {
-            existentData.qty += item.qty;
+            existentData.qty += parseInt(item.qty);
             return data;
           }
 
@@ -116,7 +116,7 @@ export default {
           const stock = this.stock.find((x) => x.id === productId) || {};
           const { stockQty = 0.0 } = stock;
 
-          data.push({ productId, qty, name, stockQty });
+          data.push({ productId, qty: parseInt(qty), name, stockQty });
           return data;
         }, [])
         .map((item) => {
