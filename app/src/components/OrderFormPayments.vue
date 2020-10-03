@@ -25,17 +25,18 @@
         label="Forma de pagamento *"
         :options="filteredPaymentTypes"
         v-model="payment.paymentType"
-        :rules="[val => !!val || 'Campo obrigatório']"
-        class="q-mb-sm"
+        :rules="[(val) => !!val || 'Campo obrigatório']"
+        class="q-mb-sm col-4"
         use-input
         @filter="filterPaymentType"
         hide-bottom-space
+        input-debounce="0"
       />
 
       <iso1-date-input
         label="Data pagamento *"
         v-model="payment.date"
-        :rules="[val => !!val || 'Campo obrigatório']"
+        :rules="[(val) => !!val || 'Campo obrigatório']"
       />
 
       <div class="col-1 q-pa-md">
