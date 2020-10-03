@@ -1,5 +1,6 @@
 <template>
   <q-page padding>
+    <q-btn color="primary" label="Atualizar" @click="updateData" />
     <div class="flex row q-col-gutter-md q-pa-md">
       <q-list class="col-xs-12 col-md-3">
         <q-item>
@@ -65,6 +66,7 @@
               type="number"
               v-model.number="productionQty"
               label="Quantidade"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
             />
           </q-card-section>
           <q-card-actions align="right">
@@ -96,14 +98,14 @@ export default {
       products: [],
       stock: [],
       productionData: new ProductionFormData(),
-      productionQty: 0,
+      productionQty: null,
       isOpen: false,
     };
   },
 
   computed: {
     listTotal() {
-      return this.products
+      const products = this.products
         .reduce((data, item) => {
           const existentData = data.find((x) => x.productId === item.productId);
 
@@ -129,60 +131,100 @@ export default {
             remaining,
           };
         });
+
+      products.sort((a, b) => {
+        if (b.name > a.name) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+
+      return products;
     },
     listData() {
       const actualStock = this.stock.map((x) => ({ ...x }));
 
-      return this.products.reduce((data, item) => {
-        const { deliveryDate, weekDay, qty, ...product } = item;
-        const stock = actualStock.find((x) => x.id === product.productId) || {
-          stockQty: 0.0,
-        };
+      return this.products
+        .reduce((data, item) => {
+          const { deliveryDate, weekDay, qty, ...product } = item;
+          const stock = actualStock.find((x) => x.id === product.productId) || {
+            stockQty: 0.0,
+          };
 
-        const productionItem = {
-          ...product,
-          remaining: parseInt(qty),
-          qty: parseInt(qty),
-          stock: 0,
-        };
+          const productionItem = {
+            ...product,
+            remaining: parseInt(qty),
+            qty: parseInt(qty),
+            stock: 0,
+          };
 
-        if (stock.id && stock.stockQty) {
-          const diff = parseInt(productionItem.qty) - parseInt(stock.stockQty);
+          if (stock.id && stock.stockQty) {
+            const diff =
+              parseInt(productionItem.qty) - parseInt(stock.stockQty);
 
-          if (diff <= 0) {
-            stock.stockQty -= productionItem.qty;
+            if (diff <= 0) {
+              stock.stockQty -= productionItem.qty;
+              return data;
+            }
+
+            productionItem.remaining = diff;
+            productionItem.stock = stock.stockQty;
+            stock.stockQty = 0.0;
+          }
+
+          const existentData = data.find(
+            (x) => deliveryDate === x.deliveryDate
+          );
+
+          if (!existentData) {
+            data.push({
+              deliveryDate: deliveryDate,
+              weekDay,
+              products: [productionItem],
+            });
+
             return data;
           }
 
-          productionItem.remaining = diff;
-          productionItem.stock = stock.stockQty;
-          stock.stockQty = 0.0;
-        }
+          const existentProduct = existentData.products.find(
+            (x) => x.productId === productionItem.productId
+          );
 
-        const existentData = data.find((x) => deliveryDate === x.deliveryDate);
+          if (!existentProduct) {
+            existentData.products.push(productionItem);
+            return data;
+          }
 
-        if (existentData) {
-          existentData.products.push(productionItem);
+          existentProduct.qty += productionItem.qty;
+          existentProduct.stock += productionItem.stock;
+          existentProduct.remaining += productionItem.remaining;
+
           return data;
-        }
+        }, [])
+        .map((item) => {
+          item.products.sort((a, b) => {
+            if (b.name > a.name) {
+              return -1;
+            } else {
+              return 1;
+            }
+          });
 
-        data.push({
-          deliveryDate: deliveryDate,
-          weekDay,
-          products: [productionItem],
+          return item;
         });
-
-        return data;
-      }, []);
     },
   },
 
-  async created() {
-    await this.updateProduction();
-    await this.updateStock(this.products.map((x) => x.productId));
+  created() {
+    this.updateData();
   },
 
   methods: {
+    async updateData() {
+      await this.updateProduction();
+      await this.updateStock(this.products.map((x) => x.productId));
+    },
     async updateStock(ids) {
       const stock = await this.stockService.list({ ids: ids.join(",") });
       this.stock = stock;
@@ -204,7 +246,6 @@ export default {
     },
     setProductionData(productionData) {
       this.productionData = productionData;
-      this.productionQty = productionData.remaining;
       this.isOpen = true;
     },
     save() {
@@ -219,6 +260,7 @@ export default {
         });
         this.isOpen = false;
         this.productionData = new ProductionFormData();
+        this.productionQty = null;
       });
     },
   },
