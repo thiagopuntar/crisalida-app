@@ -13,4 +13,18 @@ module.exports = class CustomerDao extends BaseDao {
 
     return data;
   }
+
+  async insert(data, trx) {
+    if (!trx) return super.insert(data);
+
+    const inserted = await trx(this.tableName).insert(data);
+    return inserted;
+  }
+
+  async removeFromRef(ref, trx) {
+    const db = trx || this.db;
+
+    const removed = await db(this.tableName).where("ref", ref).del();
+    return removed;
+  }
 };

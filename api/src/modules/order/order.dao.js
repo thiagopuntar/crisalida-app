@@ -1,9 +1,11 @@
 const BaseDao = require("../../infra/database/BaseDao");
 
 module.exports = class OrderDao extends BaseDao {
-  constructor(customerDao) {
+  constructor(customerDao, productionDao, stockMovementDao) {
     super("orders");
     this.customerDao = customerDao;
+    this.productionDao = productionDao;
+    this.stockMovementDao = stockMovementDao;
   }
 
   get productSchema() {
@@ -107,12 +109,16 @@ module.exports = class OrderDao extends BaseDao {
     const { details, payments, ...order } = data;
     const trx = await this.db.transaction();
 
-    const orderId = await this.db(this.tableName).insert(order);
+    const orderId = await trx(this.tableName).insert(order);
     const transformedDetails = this.addParentId(details, { orderId });
     const transformedPayments = this.addParentId(payments, { orderId });
 
     await trx("orderDetails").insert(transformedDetails);
     await trx("payments").insert(transformedPayments);
+
+    if (data.status > 1) {
+      await this.updateStock(trx, transformedDetails, orderId);
+    }
 
     await trx.commit();
 
@@ -125,13 +131,51 @@ module.exports = class OrderDao extends BaseDao {
     const trx = await this.db.transaction();
 
     await trx(this.tableName).where("id", order.id).update(order);
+    await this.stockMovementDao.removeFromRef(order.id, trx);
     await this.updateNestedData(trx, details, "orderDetails");
     await this.updateNestedData(trx, payments, "payments");
+
+    if (data.status > 1) {
+      await this.updateStock(trx, details, order.id);
+    }
 
     await trx.commit();
 
     const inserted = await this.findOrderTotal.where("o.id", order.id);
     return this._addCustomerOnStructure(inserted);
+  }
+
+  async updateStock(trx, details, orderId) {
+    for (const detail of details) {
+      const [product] = await trx("products").where("id", detail.productId);
+
+      if (product.type === "Kit") {
+        const composition = await this.productionDao.getKitComposition(
+          detail.productId,
+          trx
+        );
+        const stockData = composition.map((x) => {
+          return {
+            qty: (parseFloat(x.qty) * detail.qty * -1).toFixed(3),
+            productId: x.id,
+            ref: orderId,
+            moveType: "V",
+          };
+        });
+
+        await this.stockMovementDao.insert(stockData, trx);
+        continue;
+      }
+
+      const stockData = {
+        qty: (detail.qty * -1).toFixed(3),
+        productId: detail.productId,
+        ref: orderId,
+        moveType: "V",
+      };
+
+      await this.stockMovementDao.insert(stockData, trx);
+    }
   }
 
   async getOrdersToRoute(ids) {

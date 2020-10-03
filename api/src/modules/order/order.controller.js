@@ -1,8 +1,12 @@
 const OrderDao = require("./order.dao");
 const CustomerDao = require("../customer/customer.dao");
+const ProductionDao = require("../production/production.dao");
+const StockMovementDao = require("../stockMovement/stockMovement.dao");
 
 const customerDao = new CustomerDao();
-const orderDao = new OrderDao(customerDao);
+const productionDao = new ProductionDao();
+const stockMovementDao = new StockMovementDao();
+const orderDao = new OrderDao(customerDao, productionDao, stockMovementDao);
 
 class Controller {
   async list(req, res) {

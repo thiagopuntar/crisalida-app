@@ -15,7 +15,7 @@ module.exports = class CustomerDao extends BaseDao {
       .select("o.deliveryDate", "d.productId", "p.name", "p.type")
       .sum("d.qty as qty")
       .groupBy("o.deliveryDate", "d.productId", "p.name", "p.type")
-      .orderBy("o.deliveryDate");
+      .orderBy("o.deliveryDate", "p.name");
 
     const compositions = [];
     const demand = [];
@@ -48,38 +48,14 @@ module.exports = class CustomerDao extends BaseDao {
     return demand;
   }
 
-  async getKitComposition(id) {
-    return this.db
+  async getKitComposition(id, trx) {
+    const db = trx || this.db;
+
+    return db
       .queryBuilder()
       .from("compositions as c")
       .join("products as p", "c.materialId", "p.id")
       .select("p.id", "p.name", "c.qty")
       .where("c.productId", id);
-  }
-
-  async insert(data) {
-    const { addresses, ...obj } = data;
-    const trx = await this.db.transaction();
-
-    const customerId = await trx(this.tableName).insert(obj);
-
-    const transformedAddresses = this.addParentId(addresses, { customerId });
-    await trx("customerAddresses").insert(transformedAddresses);
-
-    await trx.commit();
-
-    return this.findByPk(customerId);
-  }
-
-  async update(data) {
-    const { addresses, ...customer } = data;
-    const trx = await this.db.transaction();
-    await this.updateNestedData(trx, addresses, "customerAddresses");
-
-    await trx(this.tableName).where("id", customer.id).update(customer);
-
-    await trx.commit();
-
-    return this.findByPk(customer.id);
   }
 };
