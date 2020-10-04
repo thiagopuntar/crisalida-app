@@ -11,7 +11,7 @@ module.exports = class OrderDao extends BaseDao {
   get productSchema() {
     return {
       name: "product",
-      fields: [{ productId: "id" }, "name", "unit", "price"],
+      fields: [{ productId: "id" }, "name", "unit", "price", "ncm", "cfop"],
       type: "object",
     };
   }
@@ -19,7 +19,12 @@ module.exports = class OrderDao extends BaseDao {
   get paymentTypeSchema() {
     return {
       name: "paymentType",
-      fields: [{ paymentTypeId: "id" }, "name"],
+      fields: [
+        { paymentTypeId: "id" },
+        "name",
+        "forma_pagamento",
+        "bandeira_operadora",
+      ],
       type: "object",
     };
   }
@@ -78,7 +83,7 @@ module.exports = class OrderDao extends BaseDao {
       .from("orderDetails as d")
       .join("products as p", "d.productId", "p.id")
       .where("d.orderId", orderId)
-      .select("d.*", "p.name", "p.unit", "p.price");
+      .select("d.*", "p.name", "p.unit", "p.price", "p.ncm", "p.cfop");
 
     const transformed = this.structureNestedData(data, this.productSchema);
     return transformed;
@@ -90,7 +95,7 @@ module.exports = class OrderDao extends BaseDao {
       .from("payments as p")
       .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
       .where("p.orderId", orderId)
-      .select("p.*", "pt.name");
+      .select("p.*", "pt.name", "pt.forma_pagamento", "pt.bandeira_operadora");
 
     const transformed = this.structureNestedData(data, this.paymentTypeSchema);
     return transformed;
@@ -143,6 +148,11 @@ module.exports = class OrderDao extends BaseDao {
 
     const inserted = await this.findOrderTotal.where("o.id", order.id);
     return this._addCustomerOnStructure(inserted);
+  }
+
+  async updateNfce(data) {
+    const updated = await super.update(data);
+    return updated;
   }
 
   async updateStock(trx, details, orderId) {

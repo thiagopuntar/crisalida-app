@@ -74,7 +74,6 @@ class Controller {
 
   async createNfce(req, res) {
     const { id } = req.params;
-    console.log(this._formatNfce);
     const order = await orderDao.findByPk(id);
     const data = Controller._formatNfce(order);
 
@@ -97,9 +96,9 @@ class Controller {
           caminho_danfe,
         } = response.data;
 
-        await orderDao.update({
+        await orderDao.updateNfce({
           id,
-          chave_nfe,
+          chave_nfe: chave_nfe.replace("NFe", ""),
           numero,
           serie,
           caminho_xml_nota_fiscal,
@@ -109,7 +108,9 @@ class Controller {
         res.send(`${NF_API_DOMAIN}${caminho_danfe}`);
       })
       .catch((err) => {
-        res.status(400).send(err.response.data);
+        const error = err.response ? err.response.data : err;
+
+        res.status(400).send({ error, payload: data });
       });
   }
 }

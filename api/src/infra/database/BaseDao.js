@@ -40,7 +40,7 @@ module.exports = class BaseDao {
   }
 
   async update(data) {
-    await this.db(this.tableName).where(id, data.id).update(data);
+    await this.db(this.tableName).where("id", data.id).update(data);
     return this.findByPk(data.id);
   }
 
