@@ -249,7 +249,9 @@ export default {
       this.isOpen = true;
     },
     save() {
-      this.productionService.post(this.productionData).then(() => {
+      const data = { ...this.productionData, qty: this.productionQty };
+
+      this.productionService.post(data).then(() => {
         const product = this.stock.find(
           (x) => x.id === this.productionData.productId
         );
