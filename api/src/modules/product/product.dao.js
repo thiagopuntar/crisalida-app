@@ -30,7 +30,10 @@ module.exports = class ProductDao extends BaseDao {
   }
 
   async findMaterials(types) {
-    return this.db(this.tableName).whereIn("type", types).orderBy("name");
+    return this.db(this.tableName)
+      .whereIn("type", types)
+      .where("isActive", 1)
+      .orderBy("name");
   }
 
   async update(data) {
