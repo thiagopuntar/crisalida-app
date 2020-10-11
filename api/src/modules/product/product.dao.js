@@ -46,6 +46,12 @@ module.exports = class ProductDao extends BaseDao {
     return super.findByPk(product.id);
   }
 
+  async changeStatus(id, newStatus) {
+    await this.db(this.tableName)
+      .update({ isActive: newStatus })
+      .where("id", id);
+  }
+
   async findByPk(id) {
     const product = await this.db("products as p")
       .leftJoin("families as f", "p.familyId", "f.id")

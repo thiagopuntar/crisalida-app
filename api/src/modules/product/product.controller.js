@@ -43,6 +43,11 @@ class Controller {
     res.json(newData);
   }
 
+  async changeStatus(req, res) {
+    await productDao.changeStatus(req.body.id, req.body.newStatus);
+    res.send("Success");
+  }
+
   async findOne(req, res) {
     const data = await productDao.findByPk(req.params.id);
 

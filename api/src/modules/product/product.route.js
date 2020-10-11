@@ -7,6 +7,7 @@ router.get("/", Controller.list);
 router.get("/forSale", Controller.listForSaleProducts);
 router.get("/materials", Controller.listMaterials);
 router.post("/", Controller.insert);
+router.post("/changeStatus", Controller.changeStatus);
 
 router.put("/:id", Controller.update);
 router.get("/:id", Controller.findOne);

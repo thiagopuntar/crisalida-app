@@ -3,18 +3,42 @@
     <iso1-collapsible-filter @action="add" @submit="updateList">
       <template #inputForms>
         <iso1-input v-model="filter.name" label="Descrição" clearable />
+        <div class="flex row q-col-gutter-sm">
+          <iso1-select
+            v-model="filter.types"
+            :options="types"
+            label="Tipo de produto"
+            multiple
+            clearable
+            class="col-8"
+          />
 
-        <iso1-select
-          v-model="filter.types"
-          :options="types"
-          label="Tipo de produto"
-          multiple
-          clearable
-        />
+          <iso1-select
+            v-model="filter.statuses"
+            :options="statuses"
+            label="Status"
+            multiple
+            class="col-4"
+          />
+        </div>
       </template>
     </iso1-collapsible-filter>
 
-    <iso1-table :data="filteredData" :columns="columns" title="Produtos" :loading="loading">
+    <iso1-table
+      :data="filteredData"
+      :columns="columns"
+      title="Produtos"
+      :loading="loading"
+    >
+      <template #body-cell-isActive="props">
+        <q-td :props="props">
+          <q-toggle
+            :value="props.row.isActive"
+            @input="changeStatus(props.row)"
+          />
+        </q-td>
+      </template>
+
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
           <q-btn
@@ -46,7 +70,7 @@
         </q-td>
       </template>
     </iso1-table>
-    <router-view @updateList="f => f.update(products)" />
+    <router-view @updateList="(f) => f.update(products)" />
   </q-page>
 </template>
 
@@ -72,17 +96,34 @@ export default {
       products: [],
       types: Product.types,
       columns: [
-        { name: "id", field: "id", label: "ID" },
-        { name: "name", field: "name", label: "Descrição" },
-        { name: "type", field: "type", label: "Tipo" },
+        { name: "id", field: "id", label: "ID", sortable: true },
+        { name: "name", field: "name", label: "Descrição", sortable: true },
+        { name: "type", field: "type", label: "Tipo", sortable: true },
         { name: "cost", field: "cost", label: "Custo" },
         { name: "price", field: "price", label: "Preço" },
+        {
+          name: "isActive",
+          field: "isActive",
+          label: "Status",
+          sortable: true,
+        },
         { name: "btnDetails" },
       ],
       productService: new ProductService(),
+      statuses: [
+        {
+          name: "Ativo",
+          id: true,
+        },
+        {
+          name: "Inativo",
+          id: false,
+        },
+      ],
       filter: {
         name: "",
         types: [],
+        statuses: [],
       },
       loading: true,
     };
@@ -93,7 +134,8 @@ export default {
       return this.products.filter(
         (p) =>
           isLikeName(this.filter.name)(p.name) &&
-          isInArray(this.filter.types)(p.type)
+          isInArray(this.filter.types)(p.type) &&
+          isInArray(this.filter.statuses.map((x) => x.id))(p.isActive)
       );
     },
   },
@@ -145,6 +187,21 @@ export default {
                 color: "negative",
               });
             });
+        });
+    },
+    changeStatus(product) {
+      const newStatus = !product.isActive;
+      this.productService
+        .changeStatus(product.id, newStatus)
+        .then(() => {
+          product.isActive = newStatus;
+        })
+        .catch((err) => {
+          console.log(err.response);
+          this.$q.notify({
+            message: `Erro ao alterar o status do item ${product.name}`,
+            color: "negative",
+          });
         });
     },
   },

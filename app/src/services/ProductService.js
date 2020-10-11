@@ -24,4 +24,16 @@ export default class ProductService extends Service {
         throw err;
       });
   }
+
+  changeStatus(id, newStatus) {
+    return this._axios
+      .post(`${this._url}/changeStatus`, {
+        newStatus,
+        id
+      })
+      .then(res => res.data)
+      .catch(err => {
+        throw err;
+      });
+  }
 }
