@@ -69,7 +69,11 @@
           <q-splitter :value="10" disable>
             <template #before>
               <q-tabs v-model="tab" vertical class="text-teal">
-                <q-tab v-if="product.hasComposition" name="composition" label="Composição" />
+                <q-tab
+                  v-if="product.hasComposition"
+                  name="composition"
+                  label="Composição"
+                />
                 <q-tab name="units" label="Unidades" />
               </q-tabs>
             </template>
@@ -85,7 +89,10 @@
               >
                 <!-- Composição -->
                 <q-tab-panel name="composition" keep-alive>
-                  <product-composition :type="product.type" :product="product" />
+                  <product-composition
+                    :type="product.type"
+                    :product="product"
+                  />
                 </q-tab-panel>
 
                 <!-- Unidades -->
@@ -97,7 +104,12 @@
           </q-splitter>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn color="primary" label="Salvar" type="submit" :loading="loading" />
+          <q-btn
+            color="primary"
+            label="Salvar"
+            type="submit"
+            :loading="loading"
+          />
         </q-card-actions>
       </q-card>
     </q-form>
@@ -223,7 +235,7 @@ export default {
     },
     edit() {
       return this.productService.update(this.product).then((product) => {
-        this.$emit("updateList", new FormLink("edit", product));
+        this.$emit("updateList", new FormLink("edit", new Product(product)));
         this.$router.go(-1);
       });
     },

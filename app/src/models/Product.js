@@ -201,7 +201,9 @@ export default class Product {
   }
 
   setCost() {
-    this.cost = this.calculatedCost;
+    if (this.hasComposition) {
+      this.cost = this.calculatedCost;
+    }
   }
 
   addUnit() {
