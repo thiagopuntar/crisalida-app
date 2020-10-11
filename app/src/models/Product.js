@@ -1,5 +1,5 @@
 class Material {
-  constructor(material) {
+  constructor({ parentType, material }) {
     if (material) {
       this.id = material.id;
       this._productMaterial = material.productMaterial;
@@ -14,6 +14,7 @@ class Material {
       this.unit = null;
     }
     this.deleted = false;
+    this._parentType = parentType;
   }
 
   get units() {
@@ -57,12 +58,16 @@ class Material {
   }
 
   set productMaterial(material) {
-    this.unit = null;
+    this.unit =
+      this._parentType === "Kit"
+        ? { id: null, unitId: material.unit, conversion: 1 }
+        : null;
     this._productMaterial = material;
   }
 
   toJSON() {
-    const { _productMaterial, unit, ...obj } = this;
+    const { _productMaterial, unit, _parentType, ...obj } = this;
+
     obj.materialId = _productMaterial.id;
     obj.unitId = unit ? unit.id : null;
 
@@ -100,7 +105,9 @@ export default class Product {
       this.ncm = product.ncm;
       this._family = product.family;
       this._composition = product.composition
-        ? product.composition.map(x => new Material(x))
+        ? product.composition.map(
+            x => new Material({ parentType: product.type, material: x })
+          )
         : [];
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
       this.productionYield = product.productionYield || 1;
@@ -191,7 +198,7 @@ export default class Product {
   }
 
   addMaterial() {
-    this._composition.push(new Material());
+    this._composition.push(new Material({ parentType: this._type }));
   }
 
   removeMaterial(material) {
@@ -201,7 +208,7 @@ export default class Product {
   }
 
   setCost() {
-    if (this.hasComposition) {
+    if (this.hasComposition && this._composition.length) {
       this.cost = this.calculatedCost;
     }
   }
