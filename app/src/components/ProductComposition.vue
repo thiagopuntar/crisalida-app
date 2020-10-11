@@ -6,12 +6,29 @@
         type="number"
         label="Rendimento médio"
         class="col-2"
+        step=".001"
         v-model.number="product.productionYield"
       />
-      <iso1-input label="Unidade" disable v-model="product.unit" class="col-1" />
-      <iso1-input label="Total" disable v-model="product.calculatedCost" class="col-1" />
+      <iso1-input
+        label="Unidade"
+        disable
+        v-model="product.unit"
+        class="col-1"
+      />
+      <iso1-input
+        label="Total"
+        disable
+        v-model="product.calculatedCost"
+        class="col-1"
+      />
       <div class="flex column justify-center">
-        <q-btn icon="update" color="primary" @click="getMaterials" size="sm" round />
+        <q-btn
+          icon="update"
+          color="primary"
+          @click="getMaterials"
+          size="sm"
+          round
+        />
       </div>
     </div>
     <div
@@ -33,7 +50,7 @@
         label="Unidade"
         :options="material.units"
         v-model="material.unit"
-        :rules="[val => !!val || 'Campo obrigatório']"
+        :rules="[(val) => !!val || 'Campo obrigatório']"
         option-label="unitId"
         class="col-2"
       />
@@ -46,7 +63,12 @@
         @keydown.tab.exact.native="addMaterial"
       />
 
-      <iso1-input label="Vl parcial" v-model.number="material.partialValue" type="number" disable />
+      <iso1-input
+        label="Vl parcial"
+        v-model.number="material.partialValue"
+        type="number"
+        disable
+      />
 
       <div class="col-1 q-pa-md">
         <q-btn
