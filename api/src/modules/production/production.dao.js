@@ -56,6 +56,7 @@ module.exports = class CustomerDao extends BaseDao {
       .from("compositions as c")
       .join("products as p", "c.materialId", "p.id")
       .select("p.id", "p.name", "c.qty")
-      .where("c.productId", id);
+      .where("c.productId", id)
+      .andWhereNot("p.type", "Embalagem");
   }
 };
