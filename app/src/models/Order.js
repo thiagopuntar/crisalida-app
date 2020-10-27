@@ -100,6 +100,10 @@ export default class Order {
       this._totalItens = order.totalItens;
       this._totalPaid = order.totalPaid;
       this.paymentMethod = parseInt(order.paymentMethod);
+      this.numero = order.numero;
+      this.serie = order.serie;
+      this.xmlPath = order.xmlPath;
+      this.danfePath = order.danfePath;
     } else {
       this._customer = null;
       this._address = null;

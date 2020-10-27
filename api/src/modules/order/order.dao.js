@@ -1,4 +1,5 @@
 const BaseDao = require("../../infra/database/BaseDao");
+const { NF_API_DOMAIN } = process.env;
 
 module.exports = class OrderDao extends BaseDao {
   constructor(customerDao, productionDao, stockMovementDao) {
@@ -46,7 +47,14 @@ module.exports = class OrderDao extends BaseDao {
   // FIND ALL
   async findAll() {
     const data = await this.findOrderTotal;
-    return this._addCustomerOnStructure(data);
+    const addNfePath = data.map((x) => ({
+      ...x,
+      danfePath: x.caminho_danfe && `${NF_API_DOMAIN}${x.caminho_danfe}`,
+      xmlPath:
+        x.caminho_xml_nota_fiscal &&
+        `${NF_API_DOMAIN}${x.caminho_xml_nota_fiscal}`,
+    }));
+    return this._addCustomerOnStructure(addNfePath);
   }
 
   async findByPk(id) {
@@ -73,6 +81,12 @@ module.exports = class OrderDao extends BaseDao {
     transformed.details = details;
     transformed.payments = payments;
     transformed.customer = customer;
+    transformed.danfePath =
+      transformed.caminho_danfe &&
+      `${NF_API_DOMAIN}${transformed.caminho_danfe}`;
+    transformed.xmlPath =
+      transformed.caminho_xml_nota_fiscal &&
+      `${NF_API_DOMAIN}${transformed.caminho_xml_nota_fiscal}`;
 
     return transformed;
   }

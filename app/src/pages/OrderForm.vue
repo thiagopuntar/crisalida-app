@@ -6,7 +6,7 @@
           <iso1-date-input
             label="Data do pedido *"
             v-model="order.orderDate"
-            :rules="[val => !!val || 'Campo obrigatório']"
+            :rules="[(val) => !!val || 'Campo obrigatório']"
           />
 
           <div class="flex row q-col-gutter-sm">
@@ -24,10 +24,14 @@
               v-model="order.deliveryType"
               label="Tipo de entrega *"
               class="col-3"
-              :rules="[val => !!val || 'Campo obrigatório']"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
             />
 
-            <iso1-date-input label="Data de entrega" v-model="order.deliveryDate" class="col-3" />
+            <iso1-date-input
+              label="Data de entrega"
+              v-model="order.deliveryDate"
+              class="col-3"
+            />
           </div>
 
           <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
@@ -38,7 +42,7 @@
               option-value="id"
               option-label="address"
               class="col-8"
-              :rules="[val => !!val || 'Campo obrigatório']"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
             />
 
             <iso1-input
@@ -51,7 +55,12 @@
             />
           </div>
 
-          <iso1-input label="Observações" v-model="order.comments" type="textarea" rows="2" />
+          <iso1-input
+            label="Observações"
+            v-model="order.comments"
+            type="textarea"
+            rows="2"
+          />
           <div class="flex row justify-end">
             <div class="flex column col-6">
               <h2 class="text-h4">Status</h2>
@@ -79,18 +88,23 @@
               fill-mask="0"
             />
 
-            <iso1-input label="Total" disable :value="order.total | formatCurrency" class="col-2" />
+            <iso1-input
+              label="Total"
+              disable
+              :value="order.total | formatCurrency"
+              class="col-2"
+            />
 
             <iso1-input
               label="Total Pago"
               disable
-              :value="order.totalPaid  | formatCurrency"
+              :value="order.totalPaid | formatCurrency"
               class="col-2"
             />
             <iso1-input
               label="A pagar"
               disable
-              :value="order.remainingPayment  | formatCurrency"
+              :value="order.remainingPayment | formatCurrency"
               class="col-2"
             />
           </div>
@@ -117,7 +131,10 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="payment" keep-alive>
-                  <order-form-payments :order="order" :paymentTypes="paymentTypes" />
+                  <order-form-payments
+                    :order="order"
+                    :paymentTypes="paymentTypes"
+                  />
                 </q-tab-panel>
               </q-tab-panels>
             </template>
@@ -125,14 +142,43 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn color="accent" label="Emitir NFCe" :loading="loadingNfce" @click="emitNfce" />
+          <q-btn
+            v-if="!order.numero"
+            color="accent"
+            label="Emitir NFCe"
+            :loading="loadingNfce"
+            @click="emitNfce"
+          />
 
-          <q-btn color="primary" label="Salvar" type="submit" :loading="loading" />
+          <q-btn
+            v-if="order.danfePath"
+            color="accent"
+            label="DANFE"
+            @click="openLink('danfe')"
+          />
+
+          <q-btn
+            v-if="order.xmlPath"
+            color="accent"
+            label="XML"
+            @click="openLink('xml')"
+          />
+
+          <q-btn
+            color="primary"
+            label="Salvar"
+            type="submit"
+            :loading="loading"
+          />
         </q-card-actions>
       </q-card>
     </q-form>
 
-    <router-view @updateCustomers="updateCustomers" @updateProducts="updateProducts" isFromOrder />
+    <router-view
+      @updateCustomers="updateCustomers"
+      @updateProducts="updateProducts"
+      isFromOrder
+    />
   </iso1-dialog>
 </template>
 
@@ -325,6 +371,10 @@ export default {
             color: "negative",
           });
         });
+    },
+    openLink(type) {
+      const url = this.order[`${type}Path`];
+      window.open(url, "_blank");
     },
   },
 };
