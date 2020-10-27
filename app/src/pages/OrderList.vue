@@ -3,22 +3,52 @@
     <iso1-collapsible-filter @action="add" @submit="updateList">
       <template #inputForms>
         <div class="flex row q-col-gutter-sm">
-          <iso1-input label="Cliente" v-model="filter.name" clearable class="col-9" autofocus />
+          <iso1-input
+            label="Cliente"
+            v-model="filter.name"
+            clearable
+            class="col-9"
+            autofocus
+          />
 
           <iso1-input label="ID" v-model="filter.id" class="col-3" clearable />
         </div>
 
-        <iso1-input label="Endereço/Bairro" v-model="filter.address" clearable />
+        <iso1-input
+          label="Endereço/Bairro"
+          v-model="filter.address"
+          clearable
+        />
 
-        <q-checkbox label="Somente pendentes de entrega" v-model="filter.isNotDelivered" />
+        <q-checkbox
+          label="Somente pendentes de entrega"
+          v-model="filter.isNotDelivered"
+        />
 
-        <q-checkbox label="Somente não separados" v-model="filter.isNotPicked" />
+        <q-checkbox
+          label="Somente não separados"
+          v-model="filter.isNotPicked"
+        />
 
-        <q-checkbox label="Somente pendentes de confirmação" v-model="filter.isNotConfirmed" />
+        <q-checkbox
+          label="Somente pendentes de confirmação"
+          v-model="filter.isNotConfirmed"
+        />
 
-        <q-checkbox label="Somente pendentes de pagamento" v-model="filter.isNotPaid" />
+        <q-checkbox
+          label="Somente pendentes de pagamento"
+          v-model="filter.isNotPaid"
+        />
 
-        <q-checkbox label="Somente pagamentos com cartão" v-model="filter.isCreditCard" />
+        <q-checkbox
+          label="Somente pagamentos com cartão"
+          v-model="filter.isCreditCard"
+        />
+
+        <q-checkbox
+          label="Pendentes de emissão de NFCe"
+          v-model="filter.noNfce"
+        />
 
         <div class="flex row q-col-gutter-sm">
           <iso1-select
@@ -29,16 +59,23 @@
           />
         </div>
 
-        <div class="flex row q-col-gutter-sm" v-if="filter.quickDate.value === 'Personalizado'">
+        <div
+          class="flex row q-col-gutter-sm"
+          v-if="filter.quickDate.value === 'Personalizado'"
+        >
           <iso1-date-input
             :value="filter.initialDeliveryDate"
-            @change="$event => filter.initialDeliveryDate = $event.target.value"
+            @change="
+              ($event) => (filter.initialDeliveryDate = $event.target.value)
+            "
             label="Data inicial"
           />
 
           <iso1-date-input
             :value="filter.finalDeliveryDate"
-            @change="$event => filter.finalDeliveryDate = $event.target.value"
+            @change="
+              ($event) => (filter.finalDeliveryDate = $event.target.value)
+            "
             label="Data final"
           />
         </div>
@@ -46,21 +83,39 @@
       </template>
     </iso1-collapsible-filter>
 
-    <iso1-table :data="filteredData" :columns="columns" title="Pedidos" :loading="loading">
+    <iso1-table
+      :data="filteredData"
+      :columns="columns"
+      title="Pedidos"
+      :loading="loading"
+    >
       <template #body="props">
         <q-tr :props="props" :style="itemStyle(props.row)">
           <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-          <q-td key="deliveryDate" :props="props">{{ props.row.deliveryDate }}</q-td>
-          <q-td key="customerName" :props="props">{{ props.row.customer.name }}</q-td>
-          <q-td key="customerPhone" :props="props">{{ props.row.customer.phone }}</q-td>
-          <q-td key="address" :props="props">{{ formatAddress(props.row.address) }}</q-td>
-          <q-td key="district" :props="props">{{ props.row.address.district }}</q-td>
-          <q-td key="deliveryType" :props="props">{{ props.row.deliveryType }}</q-td>
-          <q-td key="total" :props="props">{{ props.row.total | formatCurrency }}</q-td>
-          <q-td
-            key="remainingPayment"
-            :props="props"
-          >{{ props.row.remainingPayment | formatCurrency }}</q-td>
+          <q-td key="deliveryDate" :props="props">{{
+            props.row.deliveryDate
+          }}</q-td>
+          <q-td key="customerName" :props="props">{{
+            props.row.customer.name
+          }}</q-td>
+          <q-td key="customerPhone" :props="props">{{
+            props.row.customer.phone
+          }}</q-td>
+          <q-td key="address" :props="props">{{
+            formatAddress(props.row.address)
+          }}</q-td>
+          <q-td key="district" :props="props">{{
+            props.row.address.district
+          }}</q-td>
+          <q-td key="deliveryType" :props="props">{{
+            props.row.deliveryType
+          }}</q-td>
+          <q-td key="total" :props="props">{{
+            props.row.total | formatCurrency
+          }}</q-td>
+          <q-td key="remainingPayment" :props="props">{{
+            props.row.remainingPayment | formatCurrency
+          }}</q-td>
 
           <q-td key="btnDetails" :props="props">
             <q-btn
@@ -100,7 +155,7 @@
         </q-tr>
       </template>
     </iso1-table>
-    <router-view @updateList="f => f.update(orders)" />
+    <router-view @updateList="(f) => f.update(orders)" />
   </q-page>
 </template>
 
@@ -184,6 +239,7 @@ export default {
         initialDeliveryDate: dateOptions[0].initialDate,
         finalDeliveryDate: dateOptions[0].finalDate,
         quickDate: dateOptions[0],
+        noNfce: false,
       },
       dates: dateOptions,
       isLoading: true,
@@ -223,6 +279,7 @@ export default {
           (this.filter.isNotPicked ? o.status <= 1 : true) &&
           (this.filter.isCreditCard ? o.isCreditCard > 0 : true) &&
           (this.filter.isNotPaid ? o.remainingPayment > 0.0 : true) &&
+          (this.filter.noNfce ? !o.numero : true) &&
           filterDate(o)
       );
     },
