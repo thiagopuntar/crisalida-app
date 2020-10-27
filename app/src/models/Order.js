@@ -246,6 +246,8 @@ export default class Order {
       _details,
       _payments,
       paymentMethod,
+      xmlPath,
+      danfePath,
       ...obj
     } = this;
     obj.addressId = _address ? _address.id : null;

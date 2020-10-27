@@ -147,7 +147,7 @@
             color="accent"
             label="Emitir NFCe"
             :loading="loadingNfce"
-            @click="emitNfce"
+            @click="emitNfce(order.id)"
           />
 
           <q-btn
@@ -273,7 +273,7 @@ export default {
   },
 
   methods: {
-    save() {
+    async save() {
       this.loading = true;
       if (
         this.order.details.length === 1 &&
@@ -288,13 +288,18 @@ export default {
         return;
       }
 
+      const emitNfceAfter = await this.askNfceEmission();
       const promise = this.order.id ? this.edit() : this.saveNew();
 
-      promise.then(() => {
+      promise.then((id) => {
         this.$q.notify({
           message: "Registro salvo com sucesso.",
           color: "positive",
         });
+
+        if (emitNfceAfter) {
+          this.emitNfce(id);
+        }
       });
 
       promise.finally(() => {
@@ -308,6 +313,7 @@ export default {
         this.order = new Order();
         this.$refs.orderForm.reset();
         this.$refs.inputName.focus();
+        return order.id;
       });
     },
     edit() {
@@ -347,8 +353,8 @@ export default {
     close() {
       this.$router.replace({ name: "orders" });
     },
-    async emitNfce() {
-      if (!this.order.id) {
+    async emitNfce(id) {
+      if (!id) {
         this.$q.notify({
           message: "Salve o pedido antes de emitir a NFCe",
           color: "warning",
@@ -356,8 +362,10 @@ export default {
         return;
       }
 
+      this.loadingNfce = true;
+
       this.nfceService
-        .post(this.order.id)
+        .post(id)
         .then(() => {
           this.$q.notify({
             message: "NFCe emitida com sucesso.",
@@ -370,11 +378,38 @@ export default {
             message: "Erro ao emitir NFCe. Consulte o log",
             color: "negative",
           });
+        })
+        .finally(() => {
+          this.loadingNfce = false;
         });
     },
     openLink(type) {
       const url = this.order[`${type}Path`];
       window.open(url, "_blank");
+    },
+    async askNfceEmission() {
+      return new Promise((resolve, reject) => {
+        const isCreditCard = this.order.payments.filter((x) =>
+          ["03", "04"].includes(x.paymentType.forma_pagamento)
+        );
+
+        if (this.order.numero || !isCreditCard.length) {
+          return resolve(false);
+        }
+
+        this.$q
+          .dialog({
+            title: "Emitir NFCe",
+            message: "Gostaria de emitir NFCe para o pedido?",
+            cancel: true,
+          })
+          .onOk(() => {
+            resolve(true);
+          })
+          .onCancel(() => {
+            resolve(false);
+          });
+      });
     },
   },
 };
