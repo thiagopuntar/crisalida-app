@@ -118,7 +118,7 @@ class Controller {
   }
 
   async getXmls(req, res) {
-    const dirPath = path.resolve(__dirname, "/temp");
+    // const dirPath = path.resolve(__dirname, "/temp");
     const { month = moment().subtract(1, "months").format() } = req.query;
     const initialDate = moment(month)
       .startOf("month")
@@ -126,45 +126,25 @@ class Controller {
     const finalDate = moment(month).endOf("month").format("YYYY-MM-DD HH:mm");
 
     const xmlPaths = await orderDao.getXmlPathsByMonth(initialDate, finalDate);
-    const promises = xmlPaths.map((xmlPath) => {
-      return Controller._saveXml(xmlPath, dirPath);
-    });
-
-    const files = await Promise.all(promises);
     const zipFile = new AdmZip();
-    zipFile.addLocalFolder(dirPath);
-
-    const zipBuffer = zipFile.toBuffer();
-
-    files.forEach((file) => {
-      fs.unlinkSync(file);
+    const promises = xmlPaths.map((xmlPath) => {
+      return Controller._saveXml(xmlPath, zipFile);
     });
 
-    res.send(zipBuffer);
+    await Promise.all(promises);
+    res.send(zipFile.toBuffer());
   }
 
-  static async _saveXml(xmlPath, dirPath) {
+  static async _saveXml(xmlPath, zipFile) {
     const [, fileName] = /\/(\w+)-nfe/.exec(xmlPath);
 
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-
-    const filePath = path.resolve(dirPath, `${fileName}.xml`);
-
-    const writer = fs.createWriteStream(filePath);
     const response = await axios({
       url: xmlPath,
       method: "GET",
-      responseType: "stream",
+      responseType: "arraybuffer",
     });
 
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on("finish", () => resolve(filePath));
-      writer.on("error", reject);
-    });
+    zipFile.addFile(`${fileName}.xml`, response.data);
   }
 }
 
