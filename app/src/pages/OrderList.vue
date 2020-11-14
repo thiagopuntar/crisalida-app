@@ -80,6 +80,7 @@
           />
         </div>
         <q-btn label="LISTA DE PEDIDOS" @click="openOrderList" />
+        <q-btn label="DOWNLOAD XML" @click="getXmls" />
       </template>
     </iso1-collapsible-filter>
 
@@ -166,6 +167,7 @@ import Iso1Input from "../components/Iso1Input";
 import Iso1Select from "../components/Iso1Select";
 import Iso1DateInput from "../components/Iso1DateInput";
 import OrderService from "../services/OrderService";
+import NFCeService from "../services/NFCeService";
 import Order from "../models/Order";
 import Customer from "../models/Customer";
 import { formatCurrency } from "../utils/currencyHelper";
@@ -227,6 +229,7 @@ export default {
         { name: "btnDetails" },
       ],
       orderService: new OrderService(),
+      nfceService: new NFCeService(),
       filter: {
         id: null,
         name: "",
@@ -369,6 +372,9 @@ export default {
       }
 
       this.orderService.openOrderList(ids);
+    },
+    getXmls() {
+      this.nfceService.downloadXml();
     },
     itemStyle(row) {
       const colors = [
