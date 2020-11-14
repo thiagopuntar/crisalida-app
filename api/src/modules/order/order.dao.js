@@ -213,4 +213,13 @@ module.exports = class OrderDao extends BaseDao {
 
     return this._addCustomerOnStructure(data);
   }
+
+  async getXmlPathsByMonth(initialDate, finalDate) {
+    const orders = await this.db(this.tableName)
+      .select("caminho_xml_nota_fiscal")
+      .whereNotNull("caminho_xml_nota_fiscal")
+      .andWhereBetween("deliveryDate", [initialDate, finalDate]);
+
+    return orders.map((x) => `${NF_API_DOMAIN}/${x.caminho_xml_nota_fiscal}`);
+  }
 };

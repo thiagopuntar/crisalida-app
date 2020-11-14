@@ -14,7 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.4.16",
     "api-query-params": "^4.15.0",
+    "archiver": "^5.0.2",
     "axios": "^0.19.1",
     "compression": "^1.7.4",
     "connect-history-api-fallback": "^1.6.0",

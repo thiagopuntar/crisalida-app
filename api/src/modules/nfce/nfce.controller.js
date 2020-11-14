@@ -1,6 +1,9 @@
 const axios = require("axios");
 const moment = require("moment");
 const { NF_DOMAIN, NF_TOKEN, NF_CNPJ_EMITENTE, NF_API_DOMAIN } = process.env;
+const fs = require("fs");
+const path = require("path");
+const AdmZip = require("adm-zip");
 
 const OrderDao = require("../../modules/order/order.dao");
 const CustomerDao = require("../../modules/customer/customer.dao");
@@ -113,6 +116,56 @@ class Controller {
         res.status(400).send({ error, payload: data });
       });
   }
+
+  async getXmls(req, res) {
+    const dirPath = path.resolve(__dirname, "/temp");
+    const { month = moment().subtract(1, "months").format() } = req.query;
+    const initialDate = moment(month)
+      .startOf("month")
+      .format("YYYY-MM-DD HH:mm");
+    const finalDate = moment(month).endOf("month").format("YYYY-MM-DD HH:mm");
+
+    const xmlPaths = await orderDao.getXmlPathsByMonth(initialDate, finalDate);
+    const promises = xmlPaths.map((xmlPath) => {
+      return Controller._saveXml(xmlPath, dirPath);
+    });
+
+    const files = await Promise.all(promises);
+    const zipFile = new AdmZip();
+    zipFile.addLocalFolder(dirPath);
+
+    const zipBuffer = zipFile.toBuffer();
+
+    files.forEach((file) => {
+      fs.unlinkSync(file);
+    });
+
+    res.send(zipBuffer);
+  }
+
+  static async _saveXml(xmlPath, dirPath) {
+    const [, fileName] = /\/(\w+)-nfe/.exec(xmlPath);
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+
+    const filePath = path.resolve(dirPath, `${fileName}.xml`);
+
+    const writer = fs.createWriteStream(filePath);
+    const response = await axios({
+      url: xmlPath,
+      method: "GET",
+      responseType: "stream",
+    });
+
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on("finish", () => resolve(filePath));
+      writer.on("error", reject);
+    });
+  }
 }
 
-module.exports = Controller;
+module.exports = new Controller();
