@@ -68,11 +68,13 @@ module.exports = class CustomerDao extends BaseDao {
   }
 
   async update(data) {
-    const { addresses, ...customer } = data;
+    const { addresses = [], ...customer } = data;
     const trx = await this.db.transaction();
     await this.updateNestedData(trx, addresses, "customerAddresses");
 
-    await trx(this.tableName).where("id", customer.id).update(customer);
+    await trx(this.tableName)
+      .where("id", customer.id)
+      .update({ ...customer, omieId: null });
 
     await trx.commit();
 

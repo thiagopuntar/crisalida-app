@@ -149,10 +149,12 @@ module.exports = class OrderDao extends BaseDao {
     const { details = [], payments = [], ...order } = data;
     const trx = await this.db.transaction();
 
+    const paymentsToIntegrate = payments.map((x) => ({ ...x, omieId: null }));
+
     await trx(this.tableName).where("id", order.id).update(order);
     await this.stockMovementDao.removeFromRef(order.id, trx);
     await this.updateNestedData(trx, details, "orderDetails");
-    await this.updateNestedData(trx, payments, "payments");
+    await this.updateNestedData(trx, paymentsToIntegrate, "payments");
 
     if (data.status > 1) {
       await this.updateStock(trx, details, order.id);
