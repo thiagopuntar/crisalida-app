@@ -1,7 +1,9 @@
 const BaseDao = require("../../infra/database/BaseDao");
 const { NF_API_DOMAIN } = process.env;
 
-module.exports = class OrderDao extends BaseDao {
+module.exports = class OrderDao extends (
+  BaseDao
+) {
   constructor(customerDao, productionDao, stockMovementDao) {
     super("orders");
     this.customerDao = customerDao;
@@ -25,6 +27,8 @@ module.exports = class OrderDao extends BaseDao {
         "name",
         "forma_pagamento",
         "bandeira_operadora",
+        "tax",
+        "deadline",
       ],
       type: "object",
     };
@@ -109,7 +113,14 @@ module.exports = class OrderDao extends BaseDao {
       .from("payments as p")
       .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
       .where("p.orderId", orderId)
-      .select("p.*", "pt.name", "pt.forma_pagamento", "pt.bandeira_operadora");
+      .select(
+        "p.*",
+        "pt.name",
+        "pt.forma_pagamento",
+        "pt.bandeira_operadora",
+        "pt.tax",
+        "pt.deadline"
+      );
 
     const transformed = this.structureNestedData(data, this.paymentTypeSchema);
     return transformed;
