@@ -19,6 +19,7 @@ class OmieDao extends BaseDao {
       cnpj_cpf: customer.cpf_cnpj || "",
       telefone1_ddd: customer.phone && customer.phone.slice(0, 2),
       telefone1_numero: customer.phone && customer.phone.slice(2),
+      estado: "MG",
     }));
   }
 
@@ -37,24 +38,45 @@ class OmieDao extends BaseDao {
       .andWhere(this.db.raw("p.dt < o.deliveryDate"));
   }
 
-  async listOrders() {
-    const orders = await this.db
+  async listProducts() {
+    const products = await this.db
       .queryBuilder()
-      .from("orderTotal as o")
-      .whereNull("o.omieFinanceiroId")
-      .andWhere("o.status", 3)
-      .select("o.*");
+      .from("products as p")
+      .whereIn("type", ["Produto", "Kit", "Revenda"])
+      .andWhereRaw("omieId IS NULL")
+      .andWhereNot("price", "0.00")
+      .andWhere("isActive", 1);
 
-    return orders.map((order) => ({
-      codigo_lancamento_integracao: order.id,
-      codigo_cliente_fornecedor_integracao: order.customerId,
-      data_vencimento: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
-      data_emissao: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
-      data_previsao: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
-      valor_documento: order.totalValue + order.deliveryTax - order.discount,
-      numero_documento: order.id,
-      codigo_categoria: "1.01.01",
+    return products.map((product) => ({
+      codigo_produto_integracao: product.id,
+      descricao: product.name,
+      unidade: product.unit,
+      ncm: product.ncm || "21069090",
+      valor_unitario: product.price,
+      codigo: product.id,
     }));
+  }
+
+  updateProduct(data) {
+    return this.db("products").where("id", data.id).update(data);
+  }
+
+  async listOrdersToInsert() {
+    return this.db
+      .queryBuilder()
+      .from("orders as o")
+      .whereNull("o.omieId")
+      .andWhere("o.status", ">=", 1)
+      .select("o.id");
+  }
+
+  async listOrdersToUpdate() {
+    return this.db
+      .queryBuilder()
+      .from("orders as o")
+      .whereNull("o.omieFinanceiroId")
+      .andWhere("o.status", ">=", 1)
+      .select("o.id");
   }
 
   updateOrder(data) {

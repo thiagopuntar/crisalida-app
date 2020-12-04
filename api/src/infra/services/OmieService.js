@@ -46,6 +46,24 @@ class OmieService {
     return this._post("geral/clientes/", params);
   }
 
+  async insertProduct(product) {
+    const params = {
+      call: "UpsertProduto",
+      param: [product],
+    };
+
+    return this._post("geral/produtos/", params);
+  }
+
+  async insertPedido(data) {
+    const params = {
+      call: "IncluirPedido",
+      param: [data],
+    };
+
+    return this._post("produtos/pedido/", params);
+  }
+
   async insertContaReceber(data) {
     const params = {
       call: "UpsertContaReceber",
