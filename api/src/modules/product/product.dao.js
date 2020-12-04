@@ -42,7 +42,7 @@ module.exports = class ProductDao extends BaseDao {
     await this.updateNestedData(trx, units, "productUnits");
     await this.updateNestedData(trx, composition, "compositions");
 
-    await trx(this.tableName).where("id", product.id).update(product);
+    await trx(this.tableName).where("id", product.id).update({...product, omieId: null });
 
     await trx.commit();
 
