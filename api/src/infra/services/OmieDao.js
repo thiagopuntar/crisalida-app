@@ -27,17 +27,6 @@ class OmieDao extends BaseDao {
     return this.db("customers").where("id", data.id).update(data);
   }
 
-  listAdiantamentos() {
-    return this.db
-      .queryBuilder()
-      .from("payments as p")
-      .join("paymentTypes as tp", "p.paymentTypeId", "tp.id")
-      .join("orders as o", "p.orderId", "o.id")
-      .select()
-      .whereNull("p.omieId")
-      .andWhere(this.db.raw("p.dt < o.deliveryDate"));
-  }
-
   async listProducts() {
     const products = await this.db
       .queryBuilder()
@@ -74,13 +63,40 @@ class OmieDao extends BaseDao {
     return this.db
       .queryBuilder()
       .from("orders as o")
-      .whereNull("o.omieFinanceiroId")
+      .whereNull("o.isOmieUpdated")
       .andWhere("o.status", ">=", 1)
+      .select("o.id");
+  }
+
+  async listOrdersToInvoice() {
+    return this.db
+      .queryBuilder()
+      .from("orders as o")
+      .whereNull("o.isOmieFaturado")
+      .andWhereRaw("o.idOmie IS NOT NULL")
+      .andWhere("o.status", 3)
       .select("o.id");
   }
 
   updateOrder(data) {
     return this.db("orders").where("id", data.id).update(data);
+  }
+
+  async listPayments(omieOrderId) {
+    return this.db
+      .queryBuilder()
+      .from("payments as p")
+      .join("paymentTypes as pt", "p.paymentTypeId", "p.id")
+      .join("orders as o")
+      .select(
+        "p.id",
+        "p.vl",
+        "p.date",
+        "pt.tax",
+        "pt.deadline",
+        "pt.omieContaId"
+      )
+      .where("o.omieId", omieOrderId);
   }
 }
 

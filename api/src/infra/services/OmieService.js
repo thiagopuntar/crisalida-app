@@ -64,6 +64,19 @@ class OmieService {
     return this._post("produtos/pedido/", params);
   }
 
+  async faturarPedido(id) {
+    const params = {
+      call: "FaturarPedidoVenda",
+      param: [
+        {
+          cCodIntPed: id,
+        },
+      ],
+    };
+
+    return this._post("produtos/pedidovendafat/", params);
+  }
+
   async insertContaReceber(data) {
     const params = {
       call: "UpsertContaReceber",
@@ -73,25 +86,26 @@ class OmieService {
     return this._post("financas/contareceber/", params);
   }
 
-  async getClientes(cb) {
+  async getContasReceber(cb) {
     await this._paginate(async (pagina) => {
       const params = {
-        call: "ListarClientes",
+        call: "ListarContasReceber",
         param: [
           {
             pagina,
             registros_por_pagina: 50,
             apenas_importado_api: "N",
+            filtrar_apenas_titulos_em_aberto: "S",
           },
         ],
       };
 
-      const { total_de_paginas, clientes_cadastro } = await this._post(
-        "geral/clientes/",
+      const { total_de_paginas, conta_receber_cadastro } = await this._post(
+        "financas/contareceber/",
         params
       );
 
-      await cb(clientes_cadastro);
+      await cb(conta_receber_cadastro);
       return total_de_paginas;
     });
   }

@@ -6,6 +6,7 @@ const OmieService = require("./OmieService");
 const OmieDao = require("./OmieDao");
 const OrderDao = require("../../modules/order/order.dao");
 const CustomerDao = require("../../modules/customer/customer.dao");
+const logger = require("../logger/Logger")("automationLogger");
 
 const omieService = new OmieService();
 const omieDao = new OmieDao();
@@ -16,12 +17,15 @@ class Automation {
   async run() {
     try {
       await this.createCustomers();
-      // await this.createProducts();
+      await this.createProducts();
       await this.createOrders();
+      // await this.updateOrders();
+      // await this.invoiceOrders();
+      // await this.finishPayments();
       console.log("Done");
       process.exit(0);
     } catch (error) {
-      console.log(error.response.data);
+      logger.error(error);
     }
   }
 
@@ -38,7 +42,7 @@ class Automation {
           omieId: codigo_cliente_omie,
         });
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
     });
 
@@ -56,7 +60,7 @@ class Automation {
           omieId: codigo_produto,
         });
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
     });
 
@@ -65,6 +69,29 @@ class Automation {
 
   async createOrders() {
     // const ordersId = await omieDao.listOrdersToInsert();
+    const ordersId = [673];
+
+    const ordersSave = ordersId.map(async (id) => {
+      try {
+        const order = await orderDao.findByPk(id);
+        const transformed = this._transformOrder(order);
+
+        const { codigo_pedido } = await omieService.insertPedido(transformed);
+
+        await omieDao.updateOrder({
+          id,
+          omieId: codigo_pedido,
+        });
+      } catch (error) {
+        logger.error(error);
+      }
+    });
+
+    await Promise.all(ordersSave);
+  }
+
+  async updateOrders() {
+    // const ordersId = await omieDao.listOrdersToUpdate();
     const ordersId = [664];
 
     const ordersSave = ordersId.map(async (id) => {
@@ -80,11 +107,45 @@ class Automation {
           omieFinanceiroId: 1,
         });
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
     });
 
     await Promise.all(ordersSave);
+  }
+
+  async invoiceOrders() {
+    // const ordersId = await omieDao.listOrdersToInvoice();
+    const ordersId = [673];
+
+    const ordersSave = ordersId.map(async (id) => {
+      try {
+        await omieService.faturarPedido(id);
+
+        await omieDao.updateOrder({
+          id,
+          isOmieFaturado: 1,
+        });
+      } catch (error) {
+        logger.error(error);
+      }
+    });
+
+    await Promise.all(ordersSave);
+  }
+
+  async finishPayments() {
+    await omieService.getContasReceber(async (contasReceber) => {
+      try {
+        for (const contaReceberOmie of contasReceber) {
+          const pagamentos = await omieDao.listPayments(
+            contaReceberOmie.nCodPedido
+          );
+        }
+      } catch (error) {
+        logger.error(error);
+      }
+    });
   }
 
   _sumTotalOrder(order) {
@@ -162,8 +223,6 @@ class Automation {
             parcela_adiantamento: isAdiantamento ? "S" : "N",
             categoria_adiantamento: isAdiantamento ? "1.04.01" : null,
             conta_corrente_adiantamento: isAdiantamento ? "1966403980" : null,
-            tipo_documento, // TODO: implementar
-            meio_pagamento,
           };
         }),
       },
@@ -182,8 +241,6 @@ class Automation {
       })),
     };
   }
-
-  async updateOrders() {}
 }
 
 new Automation().run();
