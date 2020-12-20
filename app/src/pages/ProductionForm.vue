@@ -47,11 +47,14 @@
           :key="item.id"
           clickable
           @click="setProductionData(item)"
-          :class="!item.remaining && 'item-done'"
         >
-          <q-item-section avatar>{{ item.remaining }}</q-item-section>
+          <q-item-section :class="!item.remaining && 'item-done'" avatar>{{
+            item.remaining
+          }}</q-item-section>
           <q-item-section>
-            <q-item-label>{{ item.name }}</q-item-label>
+            <q-item-label :class="!item.remaining && 'item-done'">{{
+              item.name
+            }}</q-item-label>
             <q-item-label caption>{{ item.qty }}</q-item-label>
           </q-item-section>
         </q-item>
