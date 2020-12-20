@@ -18,7 +18,11 @@
           <q-item-section avatar>{{ item.remaining }}</q-item-section>
           <q-item-section>
             <q-item-label>{{ item.name }}</q-item-label>
-            <q-item-label caption>{{ item.qty }}</q-item-label>
+            <q-item-label caption>Total: {{ item.qty }}</q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+            <q-item-label caption>Estoque</q-item-label>
+            <q-item-label>{{ item.stockQty }}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -43,6 +47,7 @@
           :key="item.id"
           clickable
           @click="setProductionData(item)"
+          :class="!item.remaining && 'item-done'"
         >
           <q-item-section avatar>{{ item.remaining }}</q-item-section>
           <q-item-section>
@@ -164,13 +169,14 @@ export default {
               parseInt(productionItem.qty) - parseInt(stock.stockQty);
 
             if (diff <= 0) {
+              productionItem.remaining = 0;
+              productionItem.stock = productionItem.qty;
               stock.stockQty -= productionItem.qty;
-              return data;
+            } else {
+              productionItem.remaining = diff;
+              productionItem.stock = stock.stockQty;
+              stock.stockQty = 0.0;
             }
-
-            productionItem.remaining = diff;
-            productionItem.stock = stock.stockQty;
-            stock.stockQty = 0.0;
           }
 
           const existentData = data.find(
@@ -268,3 +274,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.item-done {
+  text-decoration: line-through;
+}
+</style>
