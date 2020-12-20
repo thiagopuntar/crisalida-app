@@ -68,6 +68,7 @@
             @change="
               ($event) => (filter.initialDeliveryDate = $event.target.value)
             "
+            @input="inputDateFilter('initialDeliveryDate', ...arguments)"
             label="Data inicial"
           />
 
@@ -76,8 +77,13 @@
             @change="
               ($event) => (filter.finalDeliveryDate = $event.target.value)
             "
+            @input="inputDateFilter('finalDeliveryDate', ...arguments)"
             label="Data final"
           />
+
+          <div class="flex flex-center q-pl-md">
+            <q-btn size="sm" round icon="clear" @click="clearDtFilter" />
+          </div>
         </div>
         <q-btn label="LISTA DE PEDIDOS" @click="openOrderList" />
         <q-btn label="DOWNLOAD XML" @click="getXmls" />
@@ -93,21 +99,30 @@
       <template #body="props">
         <q-tr :props="props" :style="itemStyle(props.row)">
           <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-          <q-td key="deliveryDate" :props="props">{{
-            props.row.deliveryDate
-          }}</q-td>
+          <q-td
+            key="deliveryDate"
+            :props="props"
+            @dblclick="filterByClick(props.row.deliveryDate, 'date')"
+            >{{ props.row.deliveryDate }}</q-td
+          >
           <q-td key="customerName" :props="props">{{
             props.row.customer.name
           }}</q-td>
-          <q-td key="customerPhone" :props="props">{{
-            props.row.customer.phone
-          }}</q-td>
+          <q-td
+            key="customerPhone"
+            :props="props"
+            @dblclick="filterByClick(props.row.customer.phone, 'name')"
+            >{{ props.row.customer.phone }}</q-td
+          >
           <q-td key="address" :props="props">{{
             formatAddress(props.row.address)
           }}</q-td>
-          <q-td key="district" :props="props">{{
-            props.row.address.district
-          }}</q-td>
+          <q-td
+            key="district"
+            :props="props"
+            @dblclick="filterByClick(props.row.address.district, 'address')"
+            >{{ props.row.address.district }}</q-td
+          >
           <q-td key="deliveryType" :props="props">{{
             props.row.deliveryType
           }}</q-td>
@@ -311,6 +326,15 @@ export default {
 
   async created() {
     this.updateList();
+    const persistedFilter = localStorage.getItem("orderListFilter");
+    if (persistedFilter) {
+      const parsed = JSON.parse(persistedFilter);
+      this.filter = parsed;
+    }
+  },
+
+  destroyed() {
+    localStorage.setItem("orderListFilter", JSON.stringify(this.filter));
   },
 
   methods: {
@@ -392,6 +416,22 @@ export default {
       }
 
       return Customer.formatAddress(data, false);
+    },
+    clearDtFilter() {
+      this.$set(this.filter, "initialDeliveryDate", "");
+      this.$set(this.filter, "finalDeliveryDate", "");
+    },
+    inputDateFilter(field, value) {
+      this.filter[field] = value;
+    },
+    filterByClick(data, type) {
+      if (type === "date") {
+        this.filter.initialDeliveryDate = data;
+        this.filter.finalDeliveryDate = data;
+        return;
+      }
+
+      this.filter[type] = data;
     },
   },
 };
