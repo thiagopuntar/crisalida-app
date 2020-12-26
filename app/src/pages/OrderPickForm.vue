@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-    <q-btn color="primary" label="Atualizar" @click="updateData" />
     <!-- Início dos filtros -->
     <div class="flex row q-col-gutter-sm">
       <iso1-select
@@ -33,7 +32,17 @@
         <q-btn size="sm" round icon="clear" @click="clearDtFilter" />
       </div>
     </div>
+    <q-btn
+      :loading="loading"
+      color="primary"
+      label="Atualizar"
+      @click="updateData"
+    />
     <!-- Final dos filtros -->
+
+    <div class="q-pa-xl" v-if="!orders.length">
+      Não há mais pedidos para separar!
+    </div>
 
     <div class="flex row q-col-gutter-md q-pa-md">
       <div v-for="order of orders" :key="order.id" class="col-xs-12 col-md-4">
@@ -97,6 +106,9 @@
         </q-card>
       </div>
     </div>
+    <q-inner-loading :showing="loading">
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
   </q-page>
 </template>
 
@@ -125,6 +137,7 @@ export default {
       orderService: new OrderService(),
       orders: [],
       dates: dateOptions,
+      loading: false,
     };
   },
 
@@ -134,6 +147,7 @@ export default {
 
   methods: {
     async updateData() {
+      this.loading = true;
       const initialDate = dateBuilder(this.initialDeliveryDate);
       const finalDate = dateBuilder(this.finalDeliveryDate);
       const orders = await this.orderService.getOrdersToPick(
@@ -142,6 +156,7 @@ export default {
       );
 
       this.orders = orders.map((x) => new Order(x));
+      this.loading = false;
     },
     save(order) {
       this.$q
@@ -179,7 +194,7 @@ export default {
       this.$set(this.filter, "finalDeliveryDate", "");
     },
     inputDateFilter(field, value) {
-      this.filter[field] = value;
+      this[field] = value;
     },
     formatAddress(order) {
       return Customer.formatAddress(order.address, false);
