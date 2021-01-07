@@ -109,6 +109,15 @@ class OmieService {
       return total_de_paginas;
     });
   }
+
+  async lancarRecebimento(data) {
+    const params = {
+      call: "LancarRecebimento",
+      param: [data],
+    };
+
+    return this._post("financas/contareceber/", params);
+  }
 }
 
 module.exports = OmieService;

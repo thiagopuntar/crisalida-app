@@ -1,18 +1,23 @@
 const winston = require("winston");
 
-const format = winston.format.combine(
+const formatConsole = winston.format.combine(
   winston.format.colorize(),
   winston.format.timestamp(),
   winston.format.align(),
-  winston.format.printf(({ level, message, timestamp }) => {
-    return `${timestamp} ${level}: ${message}`;
-  })
+  winston.format.json()
+);
+
+const format = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.json()
 );
 
 winston.loggers.add("emailLogger", {
   format,
   transports: [
-    new winston.transports.Console(),
+    new winston.transports.Console({
+      format: formatConsole,
+    }),
     new winston.transports.File({
       filename: "./storage/logs/error.log",
       level: "error",
@@ -38,16 +43,32 @@ winston.loggers.add("serverLogger", {
   exitOnError: false,
 });
 
-winston.loggers.add("automationLogger", {
+winston.loggers.add("omieLogger", {
   format,
   transports: [
-    new winston.transports.Console(),
+    new winston.transports.Console({
+      format: formatConsole,
+    }),
     new winston.transports.File({
-      filename: "./logs/automation/error.log",
+      filename: "./logs/omie_error.log",
       level: "error",
     }),
     new winston.transports.File({
-      filename: "./logs/automation/info.log",
+      filename: "./logs/omie_info.log",
+      level: "info",
+    }),
+  ],
+  exitOnError: false,
+});
+
+winston.loggers.add("successLogger", {
+  format,
+  transports: [
+    new winston.transports.Console({
+      format: formatConsole,
+    }),
+    new winston.transports.File({
+      filename: "./logs/omie_success.log",
       level: "info",
     }),
   ],

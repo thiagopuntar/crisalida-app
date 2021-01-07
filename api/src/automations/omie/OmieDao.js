@@ -1,4 +1,4 @@
-const BaseDao = require("../database/BaseDao");
+const BaseDao = require("../../infra/database/BaseDao");
 const dayjs = require("dayjs");
 
 class OmieDao extends BaseDao {
@@ -56,6 +56,7 @@ class OmieDao extends BaseDao {
       .from("orders as o")
       .whereNull("o.omieId")
       .andWhere("o.status", ">=", 1)
+      .andWhere("o.deliveryDate", ">=", "2020-10-01")
       .select("o.id");
   }
 
@@ -86,17 +87,24 @@ class OmieDao extends BaseDao {
     return this.db
       .queryBuilder()
       .from("payments as p")
-      .join("paymentTypes as pt", "p.paymentTypeId", "p.id")
-      .join("orders as o")
+      .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
+      .join("orders as o", "o.id", "p.orderId")
       .select(
         "p.id",
         "p.vl",
         "p.date",
         "pt.tax",
         "pt.deadline",
-        "pt.omieContaId"
+        "pt.omieContaId",
+        "p.orderId"
       )
-      .where("o.omieId", omieOrderId);
+      .where("o.omieId", omieOrderId)
+      .andWhereRaw("p.omieId IS NULL")
+      .andWhere("o.deliveryDate", ">=", "2020-10-01");
+  }
+
+  async updatePayment(data, id) {
+    return this.db("payments").update(data).where("id", id);
   }
 }
 
