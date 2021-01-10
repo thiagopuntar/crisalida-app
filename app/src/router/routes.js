@@ -172,6 +172,13 @@ const routes = [
         name: "production",
         title: "Azulejo Produção",
         icon: "business"
+      },
+      {
+        path: "/ordersPick",
+        component: () => import("pages/OrderPickForm.vue"),
+        name: "orderPick",
+        title: "Azulejo Pedidos",
+        icon: "assignment"
       }
     ]
   }

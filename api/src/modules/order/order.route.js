@@ -4,8 +4,11 @@ const { Router } = require("express");
 const router = new Router();
 
 router.get("/", Controller.list);
-router.get("/districts", Controller.listDistricts);
 router.post("/", Controller.insert);
+
+router.get("/districts", Controller.listDistricts);
+router.get("/toPick", Controller.getOrdersToPick);
+router.post("/pick/:id", Controller.pickOrder);
 
 router.put("/:id", Controller.update);
 router.get("/:id", Controller.findOne);

@@ -226,4 +226,27 @@ module.exports = class OrderDao extends (
   async listDistricts() {
     return this.db("districts");
   }
+
+  async getOrdersToPick(initialDate, finalDate) {
+    const orders = await this.findOrderTotal
+      .where("o.status", 1)
+      .andWhere("o.deliveryDate", ">=", initialDate)
+      .andWhere("o.deliveryDate", "<=", finalDate);
+
+    const promises = orders.map(async (x) => {
+      x.details = await this._getOrderDetails(x.id);
+      return x;
+    });
+
+    const data = await Promise.all(promises);
+    return this._addCustomerOnStructure(data);
+  }
+
+  async pick(id) {
+    const data = await this.db(this.tableName)
+      .update({ status: 2 })
+      .where("id", id);
+
+    return data;
+  }
 };

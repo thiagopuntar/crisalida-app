@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const OrderDao = require("./order.dao");
 const CustomerDao = require("../customer/customer.dao");
 const ProductionDao = require("../production/production.dao");
@@ -47,6 +48,17 @@ class Controller {
 
   async delete(req, res) {
     const data = await orderDao.del(req.params.id);
+    res.json(data);
+  }
+
+  async getOrdersToPick(req, res) {
+    const { initialDate, finalDate } = req.query;
+    const data = await orderDao.getOrdersToPick(initialDate, finalDate);
+    res.json(data);
+  }
+
+  async pickOrder(req, res) {
+    const data = await orderDao.pick(req.params.id);
     res.json(data);
   }
 }

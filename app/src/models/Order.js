@@ -17,6 +17,7 @@ class Detail {
     }
 
     this.deleted = false;
+    this.picked = false;
   }
 
   get product() {
@@ -46,7 +47,7 @@ class Detail {
   }
 
   toJSON() {
-    const { _product, ...obj } = this;
+    const { _product, picked, ...obj } = this;
     obj.productId = _product.id;
 
     return obj;
