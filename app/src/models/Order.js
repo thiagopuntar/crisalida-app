@@ -87,7 +87,7 @@ export default class Order {
       this.comments = order.comments;
       this.deliveryDate = date.formatDate(order.deliveryDate, "DD/MM/YYYY");
       this._deliveryType = order.deliveryType;
-      this.addressId = order.addressId;
+      this._addressId = order.addressId;
       this.deliveryTax = order.orderDeliveryTax;
       this.discount = order.discount;
       this.status = parseInt(order.status);
@@ -121,6 +121,7 @@ export default class Order {
       this._payments = [];
       this.status = 1;
       this.paymentMethod = 0;
+      this._addressId = null;
       this.address = null;
       this.addressNumber = null;
       this.complement = null;
@@ -151,9 +152,18 @@ export default class Order {
       const mainAddress = customer.addresses[0];
 
       if (mainAddress) {
-        this.address = mainAddress;
+        this.setAddress(mainAddress);
       }
     }
+  }
+
+  get addressId() {
+    return this._addressId;
+  }
+
+  set addressId(address) {
+    this.setAddress(address);
+    this._addressId = address.id;
   }
 
   setAddress(address) {
@@ -275,6 +285,7 @@ export default class Order {
     const {
       _customer,
       _deliveryType,
+      _addressId,
       orderDate,
       deliveryDate,
       _details,
@@ -284,6 +295,8 @@ export default class Order {
       danfePath,
       ...obj
     } = this;
+
+    obj.addressId = _addressId;
     obj.customerId = _customer && _customer.id;
     obj.orderDate = dateBuilder(orderDate);
     obj.deliveryDate = dateBuilder(deliveryDate);
