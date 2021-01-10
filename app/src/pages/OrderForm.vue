@@ -37,12 +37,11 @@
           <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
             <iso1-select
               :options="addresses"
-              v-model="order.address"
-              label="Endereço entrega"
+              v-model="order.addressId"
+              label="Endereço cliente"
               option-value="id"
               option-label="address"
               class="col-8"
-              :rules="[(val) => !!val || 'Campo obrigatório']"
             />
 
             <iso1-input
@@ -53,6 +52,20 @@
               fill-mask="0"
               class="col-4"
             />
+          </div>
+
+          <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
+            <iso1-input label="Logradouro" v-model="order.address" />
+            <iso1-input label="Número" v-model="order.addressNumber" />
+            <iso1-input label="Complemento" v-model="order.complement" />
+            <iso1-select
+              label="Bairro"
+              :value="order.district"
+              @input="setDistrict"
+              :options="districtOptions"
+            />
+            <iso1-input label="Cidade" v-model="order.city" />
+            <iso1-input label="UF" v-model="order.state" />
           </div>
 
           <iso1-input
@@ -216,6 +229,7 @@ export default {
       isOpen: false,
       order: new Order(),
       customers: [],
+      districts: [],
       products: [],
       paymentTypes: [],
       deliveryType: ["Agendada", "Pronta Entrega", "Retirada"],
@@ -244,20 +258,25 @@ export default {
     route() {
       return this.$route.params.orderId ? "order" : "newOrder";
     },
+    districtOptions() {
+      return this.districts.map((x) => x.name);
+    },
   },
 
   async created() {
     const { orderId: id } = this.$route.params;
 
-    const [products, customers, paymentTypes] = await Promise.all([
+    const [products, customers, paymentTypes, districts] = await Promise.all([
       this.productService.listForSaleProducts(),
       this.customerService.list(),
       this.paymentTypeService.list(),
+      this.orderService.listDistricts(),
     ]);
 
     this.products = products.map((p) => new Product(p));
     this.customers = customers.map((c) => new Customer(c));
     this.paymentTypes = paymentTypes;
+    this.districts = districts;
 
     if (id) {
       const order = await this.orderService.getById(id);
@@ -352,6 +371,18 @@ export default {
     },
     close() {
       this.$router.replace({ name: "orders" });
+    },
+    setDistrict(districtName) {
+      const selectedDistrict = this.districts.find(
+        (x) => x.name.toLowerCase() === districtName.toLowerCase()
+      );
+      if (!selectedDistrict) {
+        console.error("Erro ao selecionar o distrito.");
+        return;
+      }
+
+      this.order.district = districtName;
+      this.order.deliveryTax = selectedDistrict.tax;
     },
     async emitNfce(id) {
       if (!id) {

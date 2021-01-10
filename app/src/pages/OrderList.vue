@@ -103,11 +103,9 @@
             props.row.customer.phone
           }}</q-td>
           <q-td key="address" :props="props">{{
-            formatAddress(props.row.address)
+            props.row.formattedAddress()
           }}</q-td>
-          <q-td key="district" :props="props">{{
-            props.row.address.district
-          }}</q-td>
+          <q-td key="district" :props="props">{{ props.row.district }}</q-td>
           <q-td key="deliveryType" :props="props">{{
             props.row.deliveryType
           }}</q-td>
@@ -385,13 +383,6 @@ export default {
       ];
 
       return `background-color: ${colors[row.status]}`;
-    },
-    formatAddress(data) {
-      if (!data.address) {
-        return " - ";
-      }
-
-      return Customer.formatAddress(data, false);
     },
   },
 };

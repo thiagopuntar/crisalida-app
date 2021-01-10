@@ -39,7 +39,6 @@ module.exports = class OrderDao extends (
       .queryBuilder()
       .from(`orderTotal as o`)
       .join("customers as c", "o.customerId", "c.id")
-      .leftJoin("customerAddresses as ca", "o.addressId", "ca.id")
       .select(
         "*",
         "o.id",
@@ -62,19 +61,11 @@ module.exports = class OrderDao extends (
   }
 
   async findByPk(id) {
-    const data = await this.db
+    const [transformed] = await this.db
       .queryBuilder()
       .from(`${this.tableName} as o`)
-      .leftJoin("customerAddresses as ca", "o.addressId", "ca.id")
       .select("*", "o.id", "o.deliveryTax as orderDeliveryTax", "o.customerId")
       .where("o.id", id);
-
-    const { addressSchema } = this.customerDao;
-    const [transformed] = this.structureNestedData(data, {
-      ...addressSchema,
-      type: "object",
-      name: "address",
-    });
 
     const [details, payments, customer] = await Promise.all([
       this._getOrderDetails(id),
@@ -127,12 +118,8 @@ module.exports = class OrderDao extends (
   }
 
   async _addCustomerOnStructure(data) {
-    const { addressSchema, customerSchema } = this.customerDao;
-    return this.structureNestedData(
-      data,
-      { ...addressSchema, type: "object", name: "address" },
-      customerSchema
-    );
+    const { customerSchema } = this.customerDao;
+    return this.structureNestedData(data, customerSchema);
   }
 
   async insert(data) {
@@ -234,5 +221,9 @@ module.exports = class OrderDao extends (
       .andWhereBetween("deliveryDate", [initialDate, finalDate]);
 
     return orders.map((x) => `${NF_API_DOMAIN}/${x.caminho_xml_nota_fiscal}`);
+  }
+
+  async listDistricts() {
+    return this.db("districts");
   }
 };

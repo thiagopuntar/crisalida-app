@@ -86,11 +86,11 @@ export default class Order {
       this.comments = order.comments;
       this.deliveryDate = date.formatDate(order.deliveryDate, "DD/MM/YYYY");
       this._deliveryType = order.deliveryType;
+      this.addressId = order.addressId;
       this.deliveryTax = order.orderDeliveryTax;
       this.discount = order.discount;
       this.status = parseInt(order.status);
       this._customer = order.customer;
-      this._address = order.address;
       this._details = order.details
         ? order.details.map(d => new Detail(d))
         : [];
@@ -104,9 +104,14 @@ export default class Order {
       this.serie = order.serie;
       this.xmlPath = order.xmlPath;
       this.danfePath = order.danfePath;
+      this.address = order.address;
+      this.addressNumber = order.addressNumber;
+      this.complement = order.complement;
+      this.district = order.district;
+      this.city = order.city;
+      this.state = order.state;
     } else {
       this._customer = null;
-      this._address = null;
       this.deliveryTax = 0.0;
       this._deliveryType = null;
       this.discount = 0.0;
@@ -115,6 +120,12 @@ export default class Order {
       this._payments = [];
       this.status = 1;
       this.paymentMethod = 0;
+      this.address = null;
+      this.addressNumber = null;
+      this.complement = null;
+      this.district = null;
+      this.city = null;
+      this.state = null;
     }
   }
 
@@ -144,18 +155,41 @@ export default class Order {
     }
   }
 
-  get address() {
-    return this._address;
+  setAddress(address) {
+    this.address = address.address;
+    this.addressNumber = address.number;
+    this.complement = address.complement;
+    this.district = address.district;
+    this.city = address.city;
+    this.state = address.state;
+    this.deliveryTax = address.deliveryTax;
   }
 
-  set address(address) {
-    this._address = address;
-    const { deliveryTax } = address || {};
-
-    if (deliveryTax) {
-      this.deliveryTax = deliveryTax;
+  formattedAddress() {
+    if (!this.address) {
+      return " - ";
     }
+
+    const { address, addressNumber } = this;
+
+    let formated = address;
+    formated += addressNumber ? `, ${addressNumber}` : "";
+
+    return formated;
   }
+
+  // get address() {
+  //   return this._address;
+  // }
+
+  // set address(address) {
+  //   this._address = address;
+  //   const { deliveryTax } = address || {};
+
+  //   if (deliveryTax) {
+  //     this.deliveryTax = deliveryTax;
+  //   }
+  // }
 
   get deliveryType() {
     return this._deliveryType;
@@ -238,7 +272,6 @@ export default class Order {
 
   toJSON() {
     const {
-      _address,
       _customer,
       _deliveryType,
       orderDate,
@@ -250,7 +283,6 @@ export default class Order {
       danfePath,
       ...obj
     } = this;
-    obj.addressId = _address ? _address.id : null;
     obj.customerId = _customer && _customer.id;
     obj.orderDate = dateBuilder(orderDate);
     obj.deliveryDate = dateBuilder(deliveryDate);

@@ -39,4 +39,8 @@ export default class OrderService extends Service {
         win.document.write(data);
       });
   }
+
+  listDistricts() {
+    return this._axios.get(`${this._url}/districts`).then(res => res.data);
+  }
 }

@@ -61,7 +61,6 @@ async function getOrder(id) {
     deliveryDate,
     orderDeliveryTax,
     discount,
-    address,
     payments,
     details,
     ...formatedData
@@ -70,7 +69,7 @@ async function getOrder(id) {
   formatedData.deliveryDate = formatDate(deliveryDate);
   formatedData.deliveryTax = formatCurrency(orderDeliveryTax);
   formatedData.discount = formatCurrency(discount);
-  formatedData.address = formatAddress(address);
+  formatedData.address = formatAddress(data);
   const totalPaid = payments.reduce((total, payment) => {
     total += payment.vl;
     return total;
@@ -121,10 +120,10 @@ function formatAddress(val) {
     return "";
   }
 
-  const { address, number, complement, district } = val;
+  const { address, addressNumber, complement, district } = val;
 
   let formated = address;
-  formated += number ? `, ${number}` : "";
+  formated += addressNumber ? `, ${addressNumber}` : "";
   formated += complement ? ` ${complement}` : "";
   formated += district ? ` - ${district}` : "";
 
