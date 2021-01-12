@@ -104,6 +104,7 @@ export default class Product {
       this.cfop = product.cfop;
       this.ncm = product.ncm;
       this._family = product.family;
+      this.prepareMode = product.prepareMode;
       this._composition = product.composition
         ? product.composition.map(
             x => new Material({ parentType: product.type, material: x })

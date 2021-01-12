@@ -82,6 +82,14 @@
       </div>
     </div>
     <q-btn size="sm" round icon="add" color="secondary" @click="addMaterial" />
+
+    <iso1-input
+      class="q-ma-md"
+      label="Modo de preparo"
+      type="textarea"
+      rows="5"
+      v-model="product.prepareMode"
+    />
   </div>
 </template>
 
