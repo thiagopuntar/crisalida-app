@@ -1,6 +1,8 @@
 const BaseDao = require("../../infra/database/BaseDao");
 
-module.exports = class ProductDao extends BaseDao {
+module.exports = class ProductDao extends (
+  BaseDao
+) {
   constructor() {
     super("products");
   }
@@ -30,10 +32,24 @@ module.exports = class ProductDao extends BaseDao {
   }
 
   async findMaterials(types) {
-    return this.db(this.tableName)
+    const materials = await this.db
+      .queryBuilder()
+      .from(`${this.tableName} as p`)
+      .leftJoin("productUnits as u", "p.id", "u.productId")
+      .select(
+        "p.id",
+        "p.name",
+        "p.cost",
+        "p.unit",
+        "u.id as pUnit",
+        "u.unitId",
+        "u.conversion"
+      )
       .whereIn("type", types)
       .where("isActive", 1)
       .orderBy("name");
+
+    return this.structureNestedData(materials, this.materialUnitSchema);
   }
 
   async update(data) {
@@ -42,7 +58,9 @@ module.exports = class ProductDao extends BaseDao {
     await this.updateNestedData(trx, units, "productUnits");
     await this.updateNestedData(trx, composition, "compositions");
 
-    await trx(this.tableName).where("id", product.id).update({...product, omieId: null });
+    await trx(this.tableName)
+      .where("id", product.id)
+      .update({ ...product, omieId: null });
 
     await trx.commit();
 
