@@ -63,6 +63,31 @@
             <iso1-input label="NCM" v-model="product.ncm" class="col-2" />
             <iso1-input label="CFOP" v-model="product.cfop" class="col-2" />
           </div>
+
+          <div class="flex row q-col-gutter-sm">
+            <q-toggle
+              tab-index="-1"
+              v-model="product.isLoja"
+              label="Ativo no cardápio?"
+            />
+            <div class="col-10 flex row q-col-gutter-sm" v-if="product.isLoja">
+              <iso1-input
+                label="Título cardápio *"
+                v-model="product.title"
+                class="col-6"
+                :rules="[(val) => !!val || 'Campo obrigatório']"
+              />
+
+              <iso1-input
+                type="textarea"
+                rows="2"
+                label="Descrição *"
+                v-model="product.description"
+                class="col-6"
+                :rules="[(val) => !!val || 'Campo obrigatório']"
+              />
+            </div>
+          </div>
         </q-card-section>
 
         <q-card-section>

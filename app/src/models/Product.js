@@ -111,6 +111,9 @@ export default class Product {
         : [];
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
       this.productionYield = product.productionYield || 1;
+      this.isLoja = !!product.isLoja;
+      this.title = product.title;
+      this.description = product.description;
     } else {
       this.name = "";
       this._type = "";
@@ -121,6 +124,7 @@ export default class Product {
       this._composition = [];
       this._units = [];
       this.productionYield = 1;
+      this.isLoja = false;
     }
   }
 
