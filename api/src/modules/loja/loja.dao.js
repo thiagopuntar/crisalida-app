@@ -27,20 +27,23 @@ module.exports = class LojaDao extends (
   }
 
   async getCustomerByPhone(phone) {
-    const query = this.db
+    let [customer] = await this.db
       .queryBuilder()
       .from("customers as c")
-      .leftJoin("customerAddresses as ca", "ca.customerId", "c.id")
-      .select("c.id");
-
-    let [customer] = await query.where("phone", phone);
+      .select("c.id")
+      .where("phone", phone);
 
     if (!customer) {
       const otherPhonePattern =
         phone.length === 11
           ? phone.replace(/(\d{2})(\d{1})(\d+)/, "$1$3")
           : phone.replace(/(\d{2})(\d+)/, "$19$2");
-      const customer2 = await query.where("phone", otherPhonePattern);
+
+      const customer2 = await this.db
+        .queryBuilder()
+        .from("customers as c")
+        .select("c.id")
+        .where("phone", otherPhonePattern);
 
       customer = customer2[0];
     }

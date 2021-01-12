@@ -20,8 +20,17 @@ class Controller {
 
   async getCep(req, res) {
     const { cep } = req.params;
-    const response = await axios.get(`${cepUrl}/${cep}/json`);
-    res.json(response.data);
+    const { data } = await axios.get(`${cepUrl}/${cep}/json`);
+
+    if (data.localidade.toLowerCase() !== "juiz de fora") {
+      return res
+        .status(400)
+        .json(
+          "Localidade não atendida. Favor selecionar retirada ou entrar em contato com a loja."
+        );
+    }
+
+    res.json(data);
   }
 
   async getDistricts(req, res) {
@@ -80,7 +89,7 @@ class Controller {
       throw new Error("Telefone em formato inválido.");
     }
 
-    const phoneOnlyNumbers = tel.replace(/\D+/, "");
+    const phoneOnlyNumbers = tel.replace(/\D+/g, "");
     let data = await lojaDao.getCustomerByPhone(phoneOnlyNumbers);
 
     if (!data) {
@@ -98,7 +107,7 @@ class Controller {
     };
 
     const newCustomer = await lojaDao.createCustomer(transformed);
-    return newCustomer.id;
+    return newCustomer;
   }
 
   async _transformOrder(products, customerId, address, order) {
