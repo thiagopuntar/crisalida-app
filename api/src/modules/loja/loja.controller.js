@@ -1,9 +1,35 @@
 const LojaDao = require("./loja.dao");
 const lojaDao = new LojaDao();
-const axios = require("axios");
-const cepUrl = "http://www.viacep.com.br/ws";
-const dayjs = require("dayjs");
 
+const CustomerDao = require("../customer/customer.dao");
+const customerDao = new CustomerDao();
+
+const OrderDao = require("../order/order.dao");
+const orderDao = new OrderDao(customerDao);
+
+const {
+  PAGSEGURO_EMAIL,
+  PAGSEGURO_TOKEN,
+  PAGSEGURO_DOMAIN,
+  PAGSEGURO_CHECKOUT_SITE,
+} = process.env;
+const PagseguroHelper = require("./pagseguro.helper");
+const pagseguroHelper = new PagseguroHelper(
+  PAGSEGURO_TOKEN,
+  PAGSEGURO_EMAIL,
+  PAGSEGURO_DOMAIN
+);
+
+const axios = require("axios");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("America/Sao_Paulo");
+
+const cepUrl = "http://www.viacep.com.br/ws";
 class Controller {
   async listProducts(req, res) {
     const data = await lojaDao.listProducts();
@@ -38,6 +64,63 @@ class Controller {
     res.json(data);
   }
 
+  _getFormatedWorkingHour(workingHours) {
+    const weekdays = {
+      0: "Domingo",
+      1: "Segunda-feira",
+      2: "Terça-feira",
+      3: "Quarta-feira",
+      4: "Quinta-feira",
+      5: "Sexta-feira",
+      6: "Sábado",
+    };
+
+    return workingHours.map(
+      (x) =>
+        `${weekdays[x.weekday]}: ${x.openHour.slice(
+          0,
+          5
+        )} às ${x.closeHour.slice(0, 5)}`
+    );
+  }
+
+  getStoreStatus = async (req, res) => {
+    const workingHours = await lojaDao.getWorkingHour();
+    const formattedWorkingHours = this._getFormatedWorkingHour(workingHours);
+
+    const isClosedStatus = await lojaDao.getIsClosedStatus();
+    const response = {
+      workingHours: formattedWorkingHours,
+      isClosed: true,
+    };
+
+    if (isClosedStatus) {
+      return res.json(response);
+    }
+
+    const actualDay = dayjs.utc().subtract(3, "hour");
+
+    const actualWeekday = actualDay.day();
+    const workingDay = workingHours.find((x) => x.weekday === actualWeekday);
+
+    if (!workingDay) {
+      return res.json(response);
+    }
+
+    const actualHour = actualDay.hour();
+    const actualMinutes = actualDay.minute();
+    const actualTime = `${actualHour}:${actualMinutes}`;
+
+    const { openHour, closeHour } = workingDay;
+
+    if (actualTime >= openHour && actualTime <= closeHour) {
+      response.isClosed = false;
+      return res.json(response);
+    }
+
+    return res.json(response);
+  };
+
   addOrder = async (req, res) => {
     try {
       const { carrinho, cliente, ...pedido } = req.body;
@@ -50,18 +133,32 @@ class Controller {
 
       const customerId = await this._getCustomer(cliente);
 
-      const data = await this._transformOrder(
+      const orderId = await this._transformOrder(
         validProducts,
         customerId,
         cliente.endereco,
         pedido
       );
 
-      res.json(data);
+      const savedOrder = await orderDao.findByPk(orderId);
+      const transformedToPagseguro = pagseguroHelper.formatOrderBody(
+        savedOrder
+      );
+      const pagseguroCode = await pagseguroHelper.getCheckoutLink(
+        transformedToPagseguro
+      );
+
+      const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
+
+      // await this._sendMailNotification(savedOrder, urlCheckout);
+
+      res.json({ urlCheckout, orderId });
     } catch (error) {
       console.log(error);
     }
   };
+
+  async _sendMailNotification(order, urlCheckout) {}
 
   async _validateProducts(products) {
     const promises = products.map(async (x) => {

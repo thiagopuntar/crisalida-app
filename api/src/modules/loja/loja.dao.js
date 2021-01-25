@@ -68,4 +68,21 @@ module.exports = class LojaDao extends (
   async createOrderDetails(details, trx) {
     return trx("orderDetails").insert(details);
   }
+
+  async getWorkingHour() {
+    return this.db("workingHours");
+  }
+
+  async getIsClosedStatus() {
+    const response = await this.db("crisalidaConfig")
+      .where("id", 1)
+      .select("isClosed");
+
+    if (response.length) {
+      const { isClosed } = response[0];
+      return isClosed;
+    }
+
+    return false;
+  }
 };

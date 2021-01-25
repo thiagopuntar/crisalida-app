@@ -14,7 +14,15 @@ module.exports = class OrderDao extends (
   get productSchema() {
     return {
       name: "product",
-      fields: [{ productId: "id" }, "name", "unit", "price", "ncm", "cfop"],
+      fields: [
+        { productId: "id" },
+        "name",
+        "unit",
+        "price",
+        "ncm",
+        "cfop",
+        "title",
+      ],
       type: "object",
     };
   }
@@ -92,7 +100,15 @@ module.exports = class OrderDao extends (
       .from("orderDetails as d")
       .join("products as p", "d.productId", "p.id")
       .where("d.orderId", orderId)
-      .select("d.*", "p.name", "p.unit", "p.price", "p.ncm", "p.cfop");
+      .select(
+        "d.*",
+        "p.name",
+        "p.unit",
+        "p.price",
+        "p.ncm",
+        "p.cfop",
+        "p.title"
+      );
 
     const transformed = this.structureNestedData(data, this.productSchema);
     return transformed;
