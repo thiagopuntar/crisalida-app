@@ -109,7 +109,7 @@ class Controller {
 
     const actualHour = actualDay.hour();
     const actualMinutes = actualDay.minute();
-    const actualTime = `${actualHour}:${actualMinutes}`;
+    const actualTime = `${actualHour}:${actualMinutes}`.padStart(5, "0");
 
     const { openHour, closeHour } = workingDay;
 
