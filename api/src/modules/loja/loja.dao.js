@@ -1,4 +1,5 @@
 const BaseDao = require("../../infra/database/BaseDao");
+const dayjs = require("dayjs");
 
 module.exports = class LojaDao extends (
   BaseDao
@@ -84,5 +85,16 @@ module.exports = class LojaDao extends (
     }
 
     return false;
+  }
+
+  async getOrderIdByHash(hash) {
+    return this.db("orders")
+      .select("id")
+      .where("hashId", hash)
+      .andWhere(
+        "deliveryDate",
+        ">=",
+        dayjs().subtract(2, "day").format("YYYY-MM-DD")
+      );
   }
 };

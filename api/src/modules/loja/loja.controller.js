@@ -20,6 +20,7 @@ const pagseguroHelper = new PagseguroHelper(
   PAGSEGURO_DOMAIN
 );
 
+const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -121,6 +122,39 @@ class Controller {
     return res.json(response);
   };
 
+  getOrderByHash = async (req, res) => {
+    const { hash } = req.params;
+    const [response] = await lojaDao.getOrderIdByHash(hash);
+
+    if (!response) {
+      res.status(400).json({ message: "Pedido inexistente ou já concluído." });
+    }
+
+    const order = await orderDao.findByPk(response.id);
+
+    const transformed = {
+      cliente: {
+        endereco: {
+          bairro: order.district,
+          cidade: order.city,
+          complemento: order.complement,
+          logradouro: order.address,
+          numero: order.addressNumber,
+        },
+      },
+      taxa: order.orderDeliveryTax,
+      carrinho: order.details.map((x) => ({
+        nome: x.product.name,
+        quantidade: x.qty,
+        valor: x.vl,
+      })),
+      formaPagamento: order.paymentMethod,
+      observacao: order.comments,
+    };
+
+    res.json(transformed);
+  };
+
   addOrder = async (req, res) => {
     try {
       const { carrinho, cliente, ...pedido } = req.body;
@@ -133,7 +167,7 @@ class Controller {
 
       const customerId = await this._getCustomer(cliente);
 
-      const orderId = await this._transformOrder(
+      const orderId = await this._createOrder(
         validProducts,
         customerId,
         cliente.endereco,
@@ -149,10 +183,11 @@ class Controller {
       );
 
       const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
+      const urlPedido = `https://cardapio.crisalidaconfeitaria.com.br/meu-pedido/${savedOrder.hashId}`;
 
       // await this._sendMailNotification(savedOrder, urlCheckout);
 
-      res.json({ urlCheckout, orderId });
+      res.json({ urlCheckout, orderId, urlPedido });
     } catch (error) {
       console.log(error);
     }
@@ -207,7 +242,7 @@ class Controller {
     return newCustomer;
   }
 
-  async _transformOrder(products, customerId, address, order) {
+  async _createOrder(products, customerId, address, order) {
     const tiposEntrega = {
       Retirada: "Retirada",
       Entrega: "Pronta Entrega",
@@ -231,6 +266,8 @@ class Controller {
       discount: 0,
       deliveryTax: 0,
       origin: order.origem,
+      hashId: uuidv4(),
+      paymentMethod: order.formaPagamento,
     };
 
     if (deliveryType !== "Retirada") {
