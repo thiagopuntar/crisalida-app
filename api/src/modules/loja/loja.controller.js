@@ -108,9 +108,9 @@ class Controller {
       return res.json(response);
     }
 
-    const actualHour = actualDay.hour();
-    const actualMinutes = actualDay.minute();
-    const actualTime = `${actualHour}:${actualMinutes}`.padStart(5, "0");
+    const actualHour = actualDay.hour().toString().padStart(2, "0");
+    const actualMinutes = actualDay.minute().toString().padStart(2, "0");
+    const actualTime = `${actualHour}:${actualMinutes}`;
 
     const { openHour, closeHour } = workingDay;
 
@@ -175,19 +175,19 @@ class Controller {
       );
 
       const savedOrder = await orderDao.findByPk(orderId);
-      const transformedToPagseguro = pagseguroHelper.formatOrderBody(
-        savedOrder
-      );
-      const pagseguroCode = await pagseguroHelper.getCheckoutLink(
-        transformedToPagseguro
-      );
+      // const transformedToPagseguro = pagseguroHelper.formatOrderBody(
+      //   savedOrder
+      // );
+      // const pagseguroCode = await pagseguroHelper.getCheckoutLink(
+      //   transformedToPagseguro
+      // );
 
-      const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
+      // const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
       const urlPedido = `https://cardapio.crisalidaconfeitaria.com.br/meu-pedido/${savedOrder.hashId}`;
 
       // await this._sendMailNotification(savedOrder, urlCheckout);
 
-      res.json({ urlCheckout, orderId, urlPedido });
+      res.json({ orderId, urlPedido });
     } catch (error) {
       console.log(error);
     }
