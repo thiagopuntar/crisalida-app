@@ -44,6 +44,15 @@
           <q-btn
             class="q-mx-md"
             size="sm"
+            color="grey-5"
+            icon="receipt"
+            round
+            @click="openComposition(props.row.id)"
+          />
+
+          <q-btn
+            class="q-mx-md"
+            size="sm"
             color="accent"
             icon="file_copy"
             round
@@ -203,6 +212,9 @@ export default {
             color: "negative",
           });
         });
+    },
+    openComposition(id) {
+      this.$router.push({ name: "compositionForm", params: { id } });
     },
   },
 };

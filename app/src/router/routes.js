@@ -144,6 +144,11 @@ const routes = [
                 props: true
               }
             ]
+          },
+          {
+            path: ":id/fichaTecnica",
+            component: () => import("pages/ProductCompositionForm"),
+            name: "compositionForm"
           }
         ]
       },
