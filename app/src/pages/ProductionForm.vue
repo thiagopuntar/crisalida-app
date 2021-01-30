@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
-    <q-btn color="primary" label="Atualizar" @click="updateData" />
+    <div class="flex column items-start q-gutter-sm">
+      <q-btn color="primary" label="Atualizar" @click="updateData" />
+      <q-btn color="primary" label="Incluir estoque" @click="openStockForm" />
+    </div>
     <div class="flex row q-col-gutter-md q-pa-md">
       <q-list class="col-xs-12 col-md-3">
         <q-item>
@@ -68,12 +71,21 @@
             <h2 class="text-h4">Lançar produção</h2>
           </q-card-section>
           <q-card-section>
-            <h3 class="text-h5">{{ productionData.name }}</h3>
+            <h3 v-if="!isCustomProduct" class="text-h5">
+              {{ productionData.name }}
+            </h3>
+            <order-product-select
+              v-else
+              :products="productsToAssign"
+              v-model="productAssigned"
+              ref="productSelect"
+              no-comments
+            />
             <iso1-input
-              autofocus
               type="number"
               v-model.number="productionQty"
               label="Quantidade"
+              v-focus="!isCustomProduct"
               :rules="[(val) => !!val || 'Campo obrigatório']"
             />
           </q-card-section>
@@ -90,14 +102,17 @@
 <script>
 import ProductionService from "../services/ProductionService";
 import StockService from "../services/StockService";
+import ProductService from "../services/ProductService";
 import { date } from "quasar";
 import { formatWeekDay } from "../utils/dateHelper";
 import ProductionFormData from "../models/ProductionFormData.js";
 import Iso1Input from "../components/Iso1Input";
+import OrderProductSelect from "../components/OrderProductSelect";
 
 export default {
   components: {
     Iso1Input,
+    OrderProductSelect,
   },
   data() {
     return {
@@ -106,8 +121,12 @@ export default {
       products: [],
       stock: [],
       productionData: new ProductionFormData(),
+      productService: new ProductService(),
       productionQty: null,
       isOpen: false,
+      productAssigned: null,
+      productsToAssign: [],
+      isCustomProduct: false,
     };
   },
 
@@ -225,8 +244,21 @@ export default {
     },
   },
 
+  directives: {
+    focus: {
+      inserted(el, binding) {
+        if (binding.value) {
+          el.focus();
+        }
+      },
+    },
+  },
+
   created() {
     this.updateData();
+    this.productService
+      .listForProduction()
+      .then((products) => (this.productsToAssign = products));
   },
 
   methods: {
@@ -254,22 +286,42 @@ export default {
         .then((products) => (this.products = products));
     },
     setProductionData(productionData) {
+      this.isCustomProduct = false;
+      this.productAssigned = null;
       this.productionData = productionData;
       this.isOpen = true;
     },
+    openStockForm() {
+      this.isCustomProduct = true;
+      this.isOpen = true;
+      this.$nextTick(() => {
+        this.$refs.productSelect.focus();
+      });
+    },
     save() {
+      if (this.isCustomProduct) {
+        this.productionData.productId = this.productAssigned.id;
+        this.productionData.name = this.productAssigned.name;
+      }
+
       const data = { ...this.productionData, qty: this.productionQty };
 
       this.productionService.post(data).then(() => {
         const product = this.stock.find(
           (x) => x.id === this.productionData.productId
         );
-        product.stockQty += this.productionQty;
+
+        if (product) {
+          product.stockQty += this.productionQty;
+        }
+
         this.$q.notify({
           message: `${this.productionData.name} adicionado ao estoque.`,
           color: "positive",
         });
         this.isOpen = false;
+        this.isCustomProduct = false;
+        this.productAssigned = null;
         this.productionData = new ProductionFormData();
         this.productionQty = null;
       });

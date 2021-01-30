@@ -6,6 +6,7 @@ const router = new Router();
 router.get("/", Controller.list);
 router.get("/forSale", Controller.listForSaleProducts);
 router.get("/materials", Controller.listMaterials);
+router.get("/forProduction", Controller.listForProductionProducts);
 router.post("/", Controller.insert);
 router.post("/changeStatus", Controller.changeStatus);
 

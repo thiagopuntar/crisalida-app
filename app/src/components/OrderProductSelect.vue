@@ -22,13 +22,25 @@
             <q-item-label class="text-italic text-grey q-mb-md">
               Nenhum produto localizado.
             </q-item-label>
-            <a @click="newProduct" class="cursor-pointer text-primary text-italic">Clique para cadastrar um novo</a>
+            <a
+              @click="newProduct"
+              class="cursor-pointer text-primary text-italic"
+              >Clique para cadastrar um novo</a
+            >
           </q-item-section>
         </q-item>
       </template>
 
       <template #append>
-        <q-btn size="xs" round color="accent" icon="note_add" @click="addComment" tabindex="-1">
+        <q-btn
+          v-if="!noComments"
+          size="xs"
+          round
+          color="accent"
+          icon="note_add"
+          @click="addComment"
+          tabindex="-1"
+        >
           <q-tooltip content-class="bg-indigo" :offset="[10, 20]">
             Incluir comentário
           </q-tooltip>
@@ -39,15 +51,11 @@
       <q-card flat class="q-pa-md">
         <q-card-section>
           <h2 class="text-h4">Comentários no produto</h2>
-          <iso1-input 
-            v-model="innerComments"
-            type="textarea"
-            autofocus
-          />
+          <iso1-input v-model="innerComments" type="textarea" autofocus />
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn color="primary" label="Salvar" @click="saveComment"/>
+          <q-btn color="primary" label="Salvar" @click="saveComment" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -55,40 +63,44 @@
 </template>
 
 <script>
-import Iso1Input from '../components/Iso1Input';
+import Iso1Input from "../components/Iso1Input";
 
 export default {
   components: {
-    Iso1Input
+    Iso1Input,
   },
 
   props: {
     products: {
       type: Array,
-      required: true
+      required: true,
     },
     value: {
-      type: Object
+      type: Object,
     },
     comments: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
+    noComments: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  data () {
+  data() {
     return {
       filteredProducts: [],
-      productName: '',
+      productName: "",
       isOpen: false,
-      innerComments: ''
-    }
+      innerComments: "",
+    };
   },
 
   watch: {
     comments(newVal) {
       this.innerComments = newVal;
-    }
+    },
   },
 
   created() {
@@ -97,10 +109,10 @@ export default {
 
   methods: {
     input(val) {
-      this.$emit('input', val);
+      this.$emit("input", val);
     },
     filterProduct(val, update, abort) {
-      if (val === '') {
+      if (val === "") {
         update(() => {
           this.filteredProducts = this.products;
           return;
@@ -109,15 +121,16 @@ export default {
 
       update(() => {
         const needle = val.toLowerCase();
-        this.filteredProducts = this.products
-          .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
-      })
+        this.filteredProducts = this.products.filter(
+          (v) => v.name.toLowerCase().indexOf(needle) > -1
+        );
+      });
     },
     setProductName(val) {
       this.productName = val;
     },
     newProduct() {
-      this.$emit('newProduct', this.productName);
+      this.$emit("newProduct", this.productName);
     },
     focus() {
       this.$refs.input.focus();
@@ -126,9 +139,9 @@ export default {
       this.isOpen = true;
     },
     saveComment() {
-      this.$emit('addComment', this.innerComments);
+      this.$emit("addComment", this.innerComments);
       this.isOpen = false;
-    }
-  }
-}
+    },
+  },
+};
 </script>

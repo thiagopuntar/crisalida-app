@@ -14,6 +14,10 @@ export default class ProductService extends Service {
       });
   }
 
+  listForProduction() {
+    return this._axios.get(`${this._url}/forProduction`).then(res => res.data);
+  }
+
   listMaterials(type) {
     return this._axios
       .get(`${this._url}/materials`, {

@@ -161,4 +161,12 @@ module.exports = class ProductDao extends (
       .where("isActive", 1)
       .orderBy("name");
   }
+
+  async findAllForProduction() {
+    return this.db(this.tableName)
+      .select("id", "name")
+      .whereIn("type", ["Produto", "Granel"])
+      .where("isActive", 1)
+      .orderBy("name");
+  }
 };
