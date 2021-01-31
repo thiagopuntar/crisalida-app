@@ -97,4 +97,8 @@ module.exports = class LojaDao extends (
         dayjs().subtract(2, "day").format("YYYY-MM-DD")
       );
   }
+
+  async getProductCategories() {
+    return this.db("productCategories");
+  }
 };

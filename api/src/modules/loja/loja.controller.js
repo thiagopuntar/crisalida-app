@@ -122,6 +122,11 @@ class Controller {
     return res.json(response);
   };
 
+  async getCategories(req, res) {
+    const categories = await lojaDao.getProductCategories();
+    res.json(categories);
+  }
+
   getOrderByHash = async (req, res) => {
     const { hash } = req.params;
     const [response] = await lojaDao.getOrderIdByHash(hash);
@@ -150,6 +155,9 @@ class Controller {
       })),
       formaPagamento: order.paymentMethod,
       observacao: order.comments,
+      tipoEntrega: order.address ? "Entrega" : "Retirada",
+      troco: order.paymentChange,
+      dataEntrega: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
     };
 
     res.json(transformed);
@@ -257,8 +265,11 @@ class Controller {
     const trx = await lojaDao.getTransaction();
 
     const transformed = {
-      orderDate: dayjs().format("YYYY-MM-DD HH:mm"),
-      deliveryDate: dayjs().format("YYYY-MM-DD HH:mm"),
+      orderDate: dayjs().utc().subtract(3, "hour").format("YYYY-MM-DD HH:mm"),
+      deliveryDate: dayjs()
+        .utc()
+        .subtract(3, "hour")
+        .format("YYYY-MM-DD HH:mm"),
       deliveryType,
       comments: order.observacao,
       status: 0,
@@ -268,6 +279,7 @@ class Controller {
       origin: order.origem,
       hashId: uuidv4(),
       paymentMethod: order.formaPagamento,
+      paymentChange: order.troco,
     };
 
     if (deliveryType !== "Retirada") {

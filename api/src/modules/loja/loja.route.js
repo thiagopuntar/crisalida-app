@@ -4,6 +4,7 @@ const { Router } = require("express");
 const router = new Router();
 
 router.get("/produtos", Controller.listProducts);
+router.get("/categorias", Controller.getCategories);
 router.get("/bairros", Controller.getDistricts);
 router.get("/status", Controller.getStoreStatus);
 router.get("/cep/:cep", Controller.getCep);
