@@ -24,6 +24,8 @@ const pagseguroHelper = new PagseguroHelper(
 const SendgridHelper = require("./sendgrid.helper");
 const sendgridHelper = new SendgridHelper(SENDGRID_TOKEN);
 
+const { QrCodePix } = require("./pix.helper");
+
 const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
 const dayjs = require("dayjs");
@@ -141,6 +143,11 @@ class Controller {
 
     const order = await orderDao.findByPk(response.id);
 
+    let pix;
+    if (order.paymentMethod.toLowerCase() === "pix") {
+      pix = await this._generatePix(order);
+    }
+
     const transformed = {
       cliente: {
         endereco: {
@@ -162,6 +169,7 @@ class Controller {
       tipoEntrega: order.address ? "Entrega" : "Retirada",
       troco: order.paymentChange,
       dataEntrega: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
+      pix,
     };
 
     res.json(transformed);
@@ -196,13 +204,57 @@ class Controller {
 
       // const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
       const urlPedido = `https://cardapio.crisalidaconfeitaria.com.br/meu-pedido/${savedOrder.hashId}`;
+      const response = {
+        orderId,
+        urlPedido,
+      };
+
+      if (savedOrder.paymentMethod.toLowerCase() === "pix") {
+        const pixObject = await this._generatePix(savedOrder);
+        response.pix = pixObject;
+      }
+
       await sendgridHelper.sendOrderConfirmationMail(savedOrder, urlPedido);
 
-      res.json({ orderId, urlPedido });
+      res.json(response);
     } catch (error) {
       console.log(error);
     }
   };
+
+  async _generatePix(order) {
+    const subtotal = order.details.reduce(
+      (acc, cur) => (acc += cur.vl * cur.qty),
+      0.0
+    );
+
+    const value = parseFloat(
+      (subtotal + parseFloat(order.orderDeliveryTax || 0)).toFixed(2)
+    );
+
+    const pixData = {
+      version: "01",
+      key: "2c34c3e2-24bb-418e-bc84-42b1eaf2acf5",
+      city: "Juiz de Fora",
+      name: order.customer.name,
+      value,
+      guid: order.id.toString(),
+      message: `Pedido Crisálida ${order.id}`,
+      cep: "36011011",
+      notRepeatPayment: false,
+      currency: 986,
+      countryCode: "BR",
+    };
+
+    const pix = QrCodePix(pixData);
+    const link = pix.payload();
+    const qrCode = await pix.base64();
+
+    return {
+      link,
+      qrCode,
+    };
+  }
 
   async _validateProducts(products) {
     const promises = products.map(async (x) => {
