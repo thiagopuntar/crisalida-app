@@ -12,6 +12,7 @@ const {
   PAGSEGURO_TOKEN,
   PAGSEGURO_DOMAIN,
   PAGSEGURO_CHECKOUT_SITE,
+  SENDGRID_TOKEN,
 } = process.env;
 const PagseguroHelper = require("./pagseguro.helper");
 const pagseguroHelper = new PagseguroHelper(
@@ -19,6 +20,9 @@ const pagseguroHelper = new PagseguroHelper(
   PAGSEGURO_EMAIL,
   PAGSEGURO_DOMAIN
 );
+
+const SendgridHelper = require("./sendgrid.helper");
+const sendgridHelper = new SendgridHelper(SENDGRID_TOKEN);
 
 const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
@@ -192,16 +196,13 @@ class Controller {
 
       // const urlCheckout = `${PAGSEGURO_CHECKOUT_SITE}?code=${pagseguroCode}`;
       const urlPedido = `https://cardapio.crisalidaconfeitaria.com.br/meu-pedido/${savedOrder.hashId}`;
-
-      // await this._sendMailNotification(savedOrder, urlCheckout);
+      await sendgridHelper.sendOrderConfirmationMail(savedOrder, urlPedido);
 
       res.json({ orderId, urlPedido });
     } catch (error) {
       console.log(error);
     }
   };
-
-  async _sendMailNotification(order, urlCheckout) {}
 
   async _validateProducts(products) {
     const promises = products.map(async (x) => {
