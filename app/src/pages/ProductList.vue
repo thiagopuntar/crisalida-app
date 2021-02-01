@@ -20,6 +20,7 @@
             multiple
             class="col-4"
           />
+          <q-toggle v-model="filter.isLoja" label="Ativo na loja?" />
         </div>
       </template>
     </iso1-collapsible-filter>
@@ -90,7 +91,7 @@ import Iso1Input from "../components/Iso1Input";
 import Iso1Select from "../components/Iso1Select";
 import ProductService from "../services/ProductService";
 import Product from "../models/Product";
-import { isLikeName, isInArray } from "../utils/dataFilterHelper";
+import { isLikeName, isInArray, isValue } from "../utils/dataFilterHelper";
 
 export default {
   components: {
@@ -133,6 +134,7 @@ export default {
         name: "",
         types: [],
         statuses: [],
+        isLoja: false,
       },
       loading: true,
     };
@@ -143,6 +145,7 @@ export default {
       return this.products.filter(
         (p) =>
           isLikeName(this.filter.name)(p.name) &&
+          isValue(this.filter.isLoja)(p.isLoja) &&
           isInArray(this.filter.types)(p.type) &&
           isInArray(this.filter.statuses.map((x) => x.id))(p.isActive)
       );

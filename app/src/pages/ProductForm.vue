@@ -74,7 +74,7 @@
               <iso1-input
                 label="Título cardápio *"
                 v-model="product.title"
-                class="col-6"
+                class="col-2"
                 :rules="[(val) => !!val || 'Campo obrigatório']"
               />
 
@@ -85,6 +85,11 @@
                 v-model="product.description"
                 class="col-6"
                 :rules="[(val) => !!val || 'Campo obrigatório']"
+              />
+              <iso1-input
+                class="col-4"
+                label="Link da Imagem"
+                v-model="product.mainImage"
               />
             </div>
           </div>

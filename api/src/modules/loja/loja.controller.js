@@ -46,6 +46,7 @@ class Controller {
       comentario: x.description,
       valor: x.price,
       un: x.unit,
+      imagem: x.mainImage,
     }));
 
     res.json(toSend);
@@ -150,6 +151,7 @@ class Controller {
 
     const transformed = {
       cliente: {
+        nome: order.customer.name,
         endereco: {
           bairro: order.district,
           cidade: order.city,
@@ -170,6 +172,7 @@ class Controller {
       troco: order.paymentChange,
       dataEntrega: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
       pix,
+      id: order.id,
     };
 
     res.json(transformed);
@@ -207,6 +210,7 @@ class Controller {
       const response = {
         orderId,
         urlPedido,
+        hash: savedOrder.hashId,
       };
 
       if (savedOrder.paymentMethod.toLowerCase() === "pix") {
@@ -236,7 +240,7 @@ class Controller {
       version: "01",
       key: "2c34c3e2-24bb-418e-bc84-42b1eaf2acf5",
       city: "Juiz de Fora",
-      name: order.customer.name,
+      name: "Crisálida Confeitaria",
       value,
       guid: order.id.toString(),
       message: `Pedido Crisálida ${order.id}`,
@@ -325,7 +329,7 @@ class Controller {
         .format("YYYY-MM-DD HH:mm"),
       deliveryType,
       comments: order.observacao,
-      status: 0,
+      status: 1,
       customerId,
       discount: 0,
       deliveryTax: 0,

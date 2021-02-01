@@ -115,6 +115,7 @@ export default class Product {
       this.isLoja = !!product.isLoja;
       this.title = product.title;
       this.description = product.description;
+      this.mainImage = product.mainImage;
     } else {
       this.name = "";
       this._type = "";
@@ -126,6 +127,7 @@ export default class Product {
       this._units = [];
       this.productionYield = 1;
       this.isLoja = false;
+      this.mainImage = "";
     }
   }
 

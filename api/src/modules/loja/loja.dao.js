@@ -12,7 +12,7 @@ module.exports = class LojaDao extends (
     return this.db("products")
       .where("isLoja", true)
       .andWhere("isActive", true)
-      .select("id", "title", "description", "unit", "price");
+      .select("id", "title", "description", "unit", "price", "mainImage");
   }
 
   async getProduct(id) {
