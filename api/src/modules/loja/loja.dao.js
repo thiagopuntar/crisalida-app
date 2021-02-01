@@ -11,6 +11,7 @@ module.exports = class LojaDao extends (
   async listProducts() {
     return this.db("products")
       .where("isLoja", true)
+      .andWhere("isActive", true)
       .select("id", "title", "description", "unit", "price");
   }
 
