@@ -66,6 +66,7 @@ async function getOrder(id) {
     ...formatedData
   } = data;
 
+  formatedData.hasPaymentChange = !!formatedData.paymentChange;
   formatedData.deliveryDate = formatDate(deliveryDate);
   formatedData.deliveryTax = formatCurrency(orderDeliveryTax);
   formatedData.discount = formatCurrency(discount);

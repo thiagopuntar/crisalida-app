@@ -77,6 +77,16 @@
     </div>
     {{/if}}
     <div class="div-header">
+      <span>Forma de pagamento:</span>
+      <span>{{paymentMethod}}</span>
+    </div>
+    {{#if hasPaymentChange}}
+    <div class="div-header">
+      <span>Troco para:</span>
+      <span>{{paymentChange}}</span>
+    </div>
+    {{/if}}
+    <div class="div-header">
       <span>Entrega em:</span>
       <span>{{deliveryDate}}</span>
     </div>
