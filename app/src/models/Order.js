@@ -101,6 +101,8 @@ export default class Order {
       this._totalItens = order.totalItens;
       this._totalPaid = order.totalPaid;
       this.paymentMethod = parseInt(order.paymentMethod);
+      this.paymentMethodChosen = order.paymentMethodChosen;
+      this.paymentChange = order.paymentChange;
       this.numero = order.numero;
       this.serie = order.serie;
       this.xmlPath = order.xmlPath;
@@ -291,11 +293,13 @@ export default class Order {
       _details,
       _payments,
       paymentMethod,
+      paymentMethodChosen,
       xmlPath,
       danfePath,
       ...obj
     } = this;
 
+    obj.paymentMethod = paymentMethodChosen;
     obj.addressId = _addressId;
     obj.customerId = _customer && _customer.id;
     obj.orderDate = dateBuilder(orderDate);

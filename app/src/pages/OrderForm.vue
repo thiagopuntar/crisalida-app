@@ -19,6 +19,12 @@
               ref="inputName"
             />
 
+            <iso1-input
+              label="Forma de pagamento"
+              v-model="order.paymentMethodChosen"
+              class="col-2"
+            />
+
             <iso1-select
               :options="deliveryType"
               v-model="order.deliveryType"

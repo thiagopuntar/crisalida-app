@@ -11,9 +11,9 @@
     @filter="filterCustomer"
     @input-value="setCustomerName"
     input-debounce="0"
-    class="q-mb-sm col-6"
+    class="q-mb-sm col-4"
     ref="select"
-    :rules="[val => !!val || 'Campo obrigatório']"
+    :rules="[(val) => !!val || 'Campo obrigatório']"
     hide-bottom-space
     @dblclick.native="edit"
   >
@@ -32,11 +32,14 @@
     <template #no-option>
       <q-item>
         <q-item-section>
-          <q-item-label class="text-italic text-grey q-mb-sm">Nenhum cliente localizado.</q-item-label>
+          <q-item-label class="text-italic text-grey q-mb-sm"
+            >Nenhum cliente localizado.</q-item-label
+          >
           <a
             @click="newCustomer"
             class="cursor-pointer text-primary text-italic"
-          >Clique para cadastrar um novo</a>
+            >Clique para cadastrar um novo</a
+          >
         </q-item-section>
       </q-item>
     </template>

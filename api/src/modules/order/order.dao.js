@@ -83,6 +83,7 @@ module.exports = class OrderDao extends (
       this.customerDao.findByPk(transformed.customerId),
     ]);
 
+    transformed.paymentMethodChosen = transformed.paymentMethod;
     transformed.deliveryDate = dayjs(transformed.deliveryDate)
       .add(1, "hour")
       .format();
