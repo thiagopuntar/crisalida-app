@@ -14,6 +14,10 @@ export default class Customer {
   }
 
   static formatAddress(data, showDistrict = true) {
+    if (!data) {
+      return null;
+    }
+
     const { address, number, complement, district } = data;
 
     if (!address) {

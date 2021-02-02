@@ -197,6 +197,10 @@ export default {
       this[field] = value;
     },
     formatAddress(order) {
+      if (!order) {
+        return "";
+      }
+
       return Customer.formatAddress(order.address, false);
     },
   },
