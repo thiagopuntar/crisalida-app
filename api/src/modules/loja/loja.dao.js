@@ -20,7 +20,8 @@ module.exports = class LojaDao extends (
         "price",
         "mainImage",
         "categoryId"
-      );
+      )
+      .orderBy(["categoryId", "title"]);
   }
 
   async getProduct(id) {
