@@ -71,6 +71,13 @@ module.exports = class LojaDao extends (
     return data;
   }
 
+  async updateCustomer(customer, id) {
+    const response = await this.db("customers")
+      .update(customer)
+      .where("id", id);
+    return response;
+  }
+
   async createOrder(order, trx) {
     const data = await trx("orders").insert(order);
     return data[0];

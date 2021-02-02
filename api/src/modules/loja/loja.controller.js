@@ -219,7 +219,9 @@ class Controller {
         response.pix = pixObject;
       }
 
-      await sendgridHelper.sendOrderConfirmationMail(savedOrder, urlPedido);
+      sendgridHelper
+        .sendOrderConfirmationMail(savedOrder, urlPedido)
+        .catch((err) => console.log(err.response));
 
       res.json(response);
     } catch (error) {
@@ -293,6 +295,14 @@ class Controller {
     if (!data) {
       return this._createCustomer({ ...customer, phone: phoneOnlyNumbers });
     }
+
+    await lojaDao.updateCustomer(
+      {
+        name: customer.nome,
+        email: customer.email,
+      },
+      data.id
+    );
 
     return data.id;
   }
