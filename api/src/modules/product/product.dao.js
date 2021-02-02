@@ -31,6 +31,14 @@ module.exports = class ProductDao extends (
     };
   }
 
+  get categorySchema() {
+    return {
+      name: "category",
+      type: "object",
+      fields: [{ categoryId: "id" }, { categoryName: "name" }],
+    };
+  }
+
   async findMaterials(types) {
     const materials = await this.db
       .queryBuilder()
@@ -76,12 +84,20 @@ module.exports = class ProductDao extends (
   async findByPk(id) {
     const product = await this.db("products as p")
       .leftJoin("families as f", "p.familyId", "f.id")
-      .select("p.*", "f.id as familyId", "f.name as familyName")
+      .leftJoin("productCategories as c", "c.id", "p.categoryId")
+      .select(
+        "p.*",
+        "f.id as familyId",
+        "f.name as familyName",
+        "c.id as categoryId",
+        "c.name as categoryName"
+      )
       .where("p.id", id);
 
     const [structuredProduct] = this.structureNestedData(
       product,
-      this.familySchema
+      this.familySchema,
+      this.categorySchema
     );
 
     const units = await this.db("productUnits").where("productId", id);

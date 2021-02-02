@@ -116,6 +116,7 @@ export default class Product {
       this.title = product.title;
       this.description = product.description;
       this.mainImage = product.mainImage;
+      this.category = product.category;
     } else {
       this.name = "";
       this._type = "";
@@ -128,6 +129,7 @@ export default class Product {
       this.productionYield = 1;
       this.isLoja = false;
       this.mainImage = "";
+      this.category = null;
     }
   }
 
@@ -231,7 +233,7 @@ export default class Product {
   }
 
   toJSON() {
-    const { _type, _family, _composition, _units, ...obj } = this;
+    const { _type, _family, _composition, _units, category, ...obj } = this;
     obj.type = _type;
     obj.familyId = _family ? _family.id : null;
     obj.composition = _composition.map(x => ({
@@ -239,6 +241,7 @@ export default class Product {
       productId: this.id
     }));
     obj.units = _units.map(x => ({ ...x, productId: this.id }));
+    obj.categoryId = category ? category.id : null;
 
     return obj;
   }

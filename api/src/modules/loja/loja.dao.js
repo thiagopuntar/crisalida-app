@@ -12,7 +12,15 @@ module.exports = class LojaDao extends (
     return this.db("products")
       .where("isLoja", true)
       .andWhere("isActive", true)
-      .select("id", "title", "description", "unit", "price", "mainImage");
+      .select(
+        "id",
+        "title",
+        "description",
+        "unit",
+        "price",
+        "mainImage",
+        "categoryId"
+      );
   }
 
   async getProduct(id) {
@@ -100,6 +108,6 @@ module.exports = class LojaDao extends (
   }
 
   async getProductCategories() {
-    return this.db("productCategories");
+    return this.db("productCategories").orderBy("displayOrder");
   }
 };

@@ -47,6 +47,7 @@ class Controller {
       valor: x.price,
       un: x.unit,
       imagem: x.mainImage,
+      idCategoria: x.categoryId,
     }));
 
     res.json(toSend);
