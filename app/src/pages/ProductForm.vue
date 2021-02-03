@@ -57,11 +57,49 @@
               label="Família"
               :options="families"
               v-model="product.family"
-              class="col-4"
+              class="col-2"
+            />
+
+            <iso1-select
+              v-if="product.isForSale"
+              label="Categoria"
+              :options="categories"
+              v-model="product.category"
+              class="col-2"
             />
 
             <iso1-input label="NCM" v-model="product.ncm" class="col-2" />
             <iso1-input label="CFOP" v-model="product.cfop" class="col-2" />
+          </div>
+
+          <div class="flex row q-col-gutter-sm">
+            <q-toggle
+              tab-index="-1"
+              v-model="product.isLoja"
+              label="Ativo no cardápio?"
+            />
+            <div class="col-10 flex row q-col-gutter-sm" v-if="product.isLoja">
+              <iso1-input
+                label="Título cardápio *"
+                v-model="product.title"
+                class="col-2"
+                :rules="[(val) => !!val || 'Campo obrigatório']"
+              />
+
+              <iso1-input
+                type="textarea"
+                rows="2"
+                label="Descrição *"
+                v-model="product.description"
+                class="col-6"
+                :rules="[(val) => !!val || 'Campo obrigatório']"
+              />
+              <iso1-input
+                class="col-4"
+                label="Link da Imagem"
+                v-model="product.mainImage"
+              />
+            </div>
           </div>
         </q-card-section>
 
@@ -126,6 +164,7 @@ import Product from "../models/Product";
 import ProductService from "../services/ProductService";
 import UnitService from "../services/UnitService";
 import FamilyService from "../services/ProductFamilyService";
+import CategoryService from "../services/ProductCategoryService";
 import FormLink from "../utils/FormLink";
 
 export default {
@@ -153,9 +192,11 @@ export default {
       productService: new ProductService(),
       unitService: new UnitService(),
       familyService: new FamilyService(),
+      categoryService: new CategoryService(),
       types: Product.types,
       units: [],
       families: [],
+      categories: [],
       loading: false,
       hasInnerChanges: false,
       tab: "units",
@@ -184,6 +225,7 @@ export default {
 
     this.unitService.list().then((units) => (this.units = units));
     this.familyService.list().then((families) => (this.families = families));
+    this.categoryService.list().then((categories) => this.categories = categories);
 
     if (id) {
       const product = await this.productService.getById(id);

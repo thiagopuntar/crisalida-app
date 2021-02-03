@@ -15,6 +15,11 @@ class Controller {
     res.json(data);
   }
 
+  async listDistricts(req, res) {
+    const data = await orderDao.listDistricts();
+    res.json(data);
+  }
+
   async insert(req, res) {
     const [data] = await orderDao.insert(req.body);
     res.json(data);

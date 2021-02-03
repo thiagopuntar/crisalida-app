@@ -6,6 +6,7 @@ const router = new Router();
 router.get("/", Controller.list);
 router.post("/", Controller.insert);
 
+router.get("/districts", Controller.listDistricts);
 router.get("/toPick", Controller.getOrdersToPick);
 router.post("/pick/:id", Controller.pickOrder);
 

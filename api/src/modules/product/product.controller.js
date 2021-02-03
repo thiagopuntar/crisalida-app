@@ -68,6 +68,12 @@ class Controller {
 
     res.json(data);
   }
+
+  async listForProductionProducts(req, res) {
+    const data = await productDao.findAllForProduction();
+
+    res.json(data);
+  }
 }
 
 module.exports = new Controller();

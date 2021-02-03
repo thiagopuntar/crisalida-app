@@ -115,14 +115,9 @@
             >{{ props.row.customer.phone }}</q-td
           >
           <q-td key="address" :props="props">{{
-            formatAddress(props.row.address)
+            props.row.formattedAddress()
           }}</q-td>
-          <q-td
-            key="district"
-            :props="props"
-            @dblclick="filterByClick(props.row.address.district, 'address')"
-            >{{ props.row.address.district }}</q-td
-          >
+          <q-td key="district" :props="props">{{ props.row.district }}</q-td>
           <q-td key="deliveryType" :props="props">{{
             props.row.deliveryType
           }}</q-td>
@@ -289,9 +284,8 @@ export default {
           isValue(this.filter.id)(o.id) &&
           (isLikeName(this.filter.name)(o.customer.name) ||
             isLikeName(this.filter.name)(o.customer.phone)) &&
-          o.address &&
-          (isLikeName(this.filter.address)(o.address.address) ||
-            isLikeName(this.filter.address)(o.address.district)) &&
+          (isLikeName(this.filter.address)(o.address) ||
+            isLikeName(this.filter.address)(o.district)) &&
           (this.filter.isNotDelivered ? o.status <= 2 : true) &&
           (this.filter.isNotConfirmed ? o.status === 0 : true) &&
           (this.filter.isNotPicked ? o.status <= 1 : true) &&
@@ -409,13 +403,6 @@ export default {
       ];
 
       return `background-color: ${colors[row.status]}`;
-    },
-    formatAddress(data) {
-      if (!data.address) {
-        return " - ";
-      }
-
-      return Customer.formatAddress(data, false);
     },
     clearDtFilter() {
       this.$set(this.filter, "initialDeliveryDate", "");

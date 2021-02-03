@@ -40,6 +40,10 @@ export default class OrderService extends Service {
       });
   }
 
+  listDistricts() {
+    return this._axios.get(`${this._url}/districts`).then(res => res.data);
+  }
+
   getOrdersToPick(initialDate, finalDate) {
     return this._axios
       .get(

@@ -1,5 +1,6 @@
 const BaseDao = require("../../infra/database/BaseDao");
 const { NF_API_DOMAIN } = process.env;
+const dayjs = require("dayjs");
 
 module.exports = class OrderDao extends (
   BaseDao
@@ -14,7 +15,15 @@ module.exports = class OrderDao extends (
   get productSchema() {
     return {
       name: "product",
-      fields: [{ productId: "id" }, "name", "unit", "price", "ncm", "cfop"],
+      fields: [
+        { productId: "id" },
+        "name",
+        "unit",
+        "price",
+        "ncm",
+        "cfop",
+        "title",
+      ],
       type: "object",
     };
   }
@@ -39,7 +48,6 @@ module.exports = class OrderDao extends (
       .queryBuilder()
       .from(`orderTotal as o`)
       .join("customers as c", "o.customerId", "c.id")
-      .leftJoin("customerAddresses as ca", "o.addressId", "ca.id")
       .select(
         "*",
         "o.id",
@@ -53,6 +61,7 @@ module.exports = class OrderDao extends (
     const data = await this.findOrderTotal;
     const addNfePath = data.map((x) => ({
       ...x,
+      deliveryDate: dayjs(x.deliveryDate).add(1, "hour").format(),
       danfePath: x.caminho_danfe && `${NF_API_DOMAIN}${x.caminho_danfe}`,
       xmlPath:
         x.caminho_xml_nota_fiscal &&
@@ -62,19 +71,11 @@ module.exports = class OrderDao extends (
   }
 
   async findByPk(id) {
-    const data = await this.db
+    const [transformed] = await this.db
       .queryBuilder()
       .from(`${this.tableName} as o`)
-      .leftJoin("customerAddresses as ca", "o.addressId", "ca.id")
       .select("*", "o.id", "o.deliveryTax as orderDeliveryTax", "o.customerId")
       .where("o.id", id);
-
-    const { addressSchema } = this.customerDao;
-    const [transformed] = this.structureNestedData(data, {
-      ...addressSchema,
-      type: "object",
-      name: "address",
-    });
 
     const [details, payments, customer] = await Promise.all([
       this._getOrderDetails(id),
@@ -82,6 +83,10 @@ module.exports = class OrderDao extends (
       this.customerDao.findByPk(transformed.customerId),
     ]);
 
+    transformed.paymentMethodChosen = transformed.paymentMethod;
+    transformed.deliveryDate = dayjs(transformed.deliveryDate)
+      .add(1, "hour")
+      .format();
     transformed.details = details;
     transformed.payments = payments;
     transformed.customer = customer;
@@ -101,7 +106,15 @@ module.exports = class OrderDao extends (
       .from("orderDetails as d")
       .join("products as p", "d.productId", "p.id")
       .where("d.orderId", orderId)
-      .select("d.*", "p.name", "p.unit", "p.price", "p.ncm", "p.cfop");
+      .select(
+        "d.*",
+        "p.name",
+        "p.unit",
+        "p.price",
+        "p.ncm",
+        "p.cfop",
+        "p.title"
+      );
 
     const transformed = this.structureNestedData(data, this.productSchema);
     return transformed;
@@ -127,12 +140,8 @@ module.exports = class OrderDao extends (
   }
 
   async _addCustomerOnStructure(data) {
-    const { addressSchema, customerSchema } = this.customerDao;
-    return this.structureNestedData(
-      data,
-      { ...addressSchema, type: "object", name: "address" },
-      customerSchema
-    );
+    const { customerSchema } = this.customerDao;
+    return this.structureNestedData(data, customerSchema);
   }
 
   async insert(data) {
@@ -236,6 +245,10 @@ module.exports = class OrderDao extends (
     return orders.map((x) => `${NF_API_DOMAIN}/${x.caminho_xml_nota_fiscal}`);
   }
 
+  async listDistricts() {
+    return this.db("districts");
+  }
+
   async getOrdersToPick(initialDate, finalDate) {
     const orders = await this.findOrderTotal
       .where("o.status", 1)
@@ -243,6 +256,7 @@ module.exports = class OrderDao extends (
       .andWhere("o.deliveryDate", "<=", finalDate);
 
     const promises = orders.map(async (x) => {
+      x.deliveryDate = dayjs(x.deliveryDate).add(1, "hour").format();
       x.details = await this._getOrderDetails(x.id);
       return x;
     });

@@ -104,6 +104,7 @@ export default class Product {
       this.cfop = product.cfop;
       this.ncm = product.ncm;
       this._family = product.family;
+      this.prepareMode = product.prepareMode;
       this._composition = product.composition
         ? product.composition.map(
             x => new Material({ parentType: product.type, material: x })
@@ -111,6 +112,11 @@ export default class Product {
         : [];
       this._units = product.units ? product.units.map(x => new Unit(x)) : [];
       this.productionYield = product.productionYield || 1;
+      this.isLoja = !!product.isLoja;
+      this.title = product.title;
+      this.description = product.description;
+      this.mainImage = product.mainImage;
+      this.category = product.category;
     } else {
       this.name = "";
       this._type = "";
@@ -121,6 +127,9 @@ export default class Product {
       this._composition = [];
       this._units = [];
       this.productionYield = 1;
+      this.isLoja = false;
+      this.mainImage = "";
+      this.category = null;
     }
   }
 
@@ -224,7 +233,7 @@ export default class Product {
   }
 
   toJSON() {
-    const { _type, _family, _composition, _units, ...obj } = this;
+    const { _type, _family, _composition, _units, category, ...obj } = this;
     obj.type = _type;
     obj.familyId = _family ? _family.id : null;
     obj.composition = _composition.map(x => ({
@@ -232,6 +241,7 @@ export default class Product {
       productId: this.id
     }));
     obj.units = _units.map(x => ({ ...x, productId: this.id }));
+    obj.categoryId = category ? category.id : null;
 
     return obj;
   }

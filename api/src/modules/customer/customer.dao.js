@@ -1,6 +1,8 @@
 const BaseDao = require("../../infra/database/BaseDao");
 
-module.exports = class CustomerDao extends BaseDao {
+module.exports = class CustomerDao extends (
+  BaseDao
+) {
   constructor() {
     super("customers");
   }
@@ -28,7 +30,14 @@ module.exports = class CustomerDao extends BaseDao {
     return {
       type: "object",
       name: "customer",
-      fields: [{ customerId: "id" }, "name", "phone", "instagram", "cpf_cnpj"],
+      fields: [
+        { customerId: "id" },
+        "name",
+        "phone",
+        "instagram",
+        "cpf_cnpj",
+        "email",
+      ],
     };
   }
 
