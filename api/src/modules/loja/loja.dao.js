@@ -16,7 +16,7 @@ module.exports = class LojaDao extends (
       .where("isLoja", true)
       .andWhere("isActive", true)
       .select(
-        "id",
+        "p.id",
         "title",
         "description",
         "unit",
