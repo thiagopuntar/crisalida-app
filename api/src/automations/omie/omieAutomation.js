@@ -5,7 +5,7 @@ const OmieDao = require("./OmieDao");
 const OrderDao = require("../../modules/order/order.dao");
 const CustomerDao = require("../../modules/customer/customer.dao");
 const orderDt = require("./omieOrderDt");
-const logger = require("../../infra/logger/Logger")("automationLogger");
+const logger = require("../../infra/logger/Logger")("omieLogger");
 const success = require("../../infra/logger/Logger")("successLogger");
 const errorHandler = require("../utils/errorHandler");
 
@@ -21,8 +21,7 @@ class Automation {
       await this.createProducts();
       await this.createOrders();
       // await this.updateOrders();
-      // await this.invoiceOrders();
-      // await this.finishPayments();
+      await this.invoiceOrders();
       console.log("Done");
       process.exit(0);
     } catch (error) {
@@ -131,10 +130,9 @@ class Automation {
   }
 
   async invoiceOrders() {
-    // const ordersId = await omieDao.listOrdersToInvoice();
-    const ordersId = [673];
+    const ordersId = await omieDao.listOrdersToInvoice();
 
-    const ordersSave = ordersId.map(async (id) => {
+    const ordersSave = ordersId.map(async ({ id }) => {
       try {
         await omieService.faturarPedido(id);
 
@@ -142,26 +140,17 @@ class Automation {
           id,
           isOmieFaturado: 1,
         });
+
+        success.info({
+          domain: "invoiceOrder",
+          id,
+        });
       } catch (error) {
-        errorHandler(error, "invoiceOrder");
+        errorHandler(error, "invoiceError", id);
       }
     });
 
     await Promise.all(ordersSave);
-  }
-
-  async finishPayments() {
-    await omieService.getContasReceber(async (contasReceber) => {
-      try {
-        for (const contaReceberOmie of contasReceber) {
-          const pagamentos = await omieDao.listPayments(
-            contaReceberOmie.nCodPedido
-          );
-        }
-      } catch (error) {
-        errorHandler(error, "finishPayments");
-      }
-    });
   }
 }
 

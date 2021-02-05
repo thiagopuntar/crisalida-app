@@ -54,9 +54,11 @@ class OmieDao extends BaseDao {
     return this.db
       .queryBuilder()
       .from("orders as o")
+      .join("orderTotal as t", "t.id", "o.id")
       .whereNull("o.omieId")
-      .andWhere("o.status", ">=", 1)
-      .andWhere("o.deliveryDate", ">=", "2020-10-01")
+      .andWhere("o.status", 3)
+      .andWhere("o.deliveryDate", ">=", "2021-02-02")
+      .andWhereRaw("t.totalPaid >= (t.totalValue + t.deliveryTax - t.discount)")
       .select("o.id");
   }
 
@@ -74,7 +76,8 @@ class OmieDao extends BaseDao {
       .queryBuilder()
       .from("orders as o")
       .whereNull("o.isOmieFaturado")
-      .andWhereRaw("o.idOmie IS NOT NULL")
+      .andWhereRaw("o.omieId IS NOT NULL")
+      .andWhere("o.deliveryDate", ">=", "2021-02-02")
       .andWhere("o.status", 3)
       .select("o.id");
   }

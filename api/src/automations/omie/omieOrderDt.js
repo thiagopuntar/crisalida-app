@@ -1,5 +1,4 @@
 const dayjs = require("dayjs");
-const businessDays = require("../../utils/businessDays");
 
 function _sumTotalOrder(order) {
   const totalProductValue = order.details.reduce(
@@ -63,7 +62,7 @@ module.exports = function _transformOrder(order) {
           "day"
         );
 
-        const data_vencimento = businessDays(vencimento).format("DD/MM/YYYY");
+        const data_vencimento = dayjs(vencimento).format("DD/MM/YYYY");
         const isAdiantamento = payment.date < order.deliveryDate;
 
         return {

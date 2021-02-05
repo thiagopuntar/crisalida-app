@@ -34,7 +34,7 @@ class OmieService {
     do {
       total_de_paginas = await cb(pagina);
       pagina++;
-    } while (pagina < total_de_paginas);
+    } while (pagina <= total_de_paginas);
   }
 
   async insertCustomer(customer) {

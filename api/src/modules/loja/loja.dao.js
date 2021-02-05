@@ -9,7 +9,10 @@ module.exports = class LojaDao extends (
   }
 
   async listProducts() {
-    return this.db("products")
+    return this.db
+      .queryBuilder()
+      .from("products as p")
+      .join("productCategories as pc", "pc.id", "p.categoryId")
       .where("isLoja", true)
       .andWhere("isActive", true)
       .select(
@@ -21,7 +24,7 @@ module.exports = class LojaDao extends (
         "mainImage",
         "categoryId"
       )
-      .orderBy(["categoryId", "title"]);
+      .orderBy(["pc.displayOrder", "title"]);
   }
 
   async getProduct(id) {

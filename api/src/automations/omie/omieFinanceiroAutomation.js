@@ -1,9 +1,11 @@
 require("dotenv").config();
 const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const OmieService = require("./OmieService");
 const OmieDao = require("./OmieDao");
-const logger = require("../../infra/logger/Logger")("automationLogger");
+const logger = require("../../infra/logger/Logger")("omieLogger");
 const success = require("../../infra/logger/Logger")("successLogger");
 const errorHandler = require("../utils/errorHandler");
 
