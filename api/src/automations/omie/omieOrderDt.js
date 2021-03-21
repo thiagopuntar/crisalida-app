@@ -30,7 +30,6 @@ module.exports = function _transformOrder(order) {
   };
 
   let desconto = order.discount;
-  const paidValue = order.payments.reduce((acc, cur) => acc += parseFloat(cur.vl), 0.0);
   const totalOrderValue = parseFloat(_sumTotalOrder(order));
 
   const defaultPayment = {
@@ -47,6 +46,7 @@ module.exports = function _transformOrder(order) {
     order.payments.push(defaultPayment);
   }
 
+  const paidValue = order.payments.reduce((acc, cur) => acc += parseFloat(cur.vl), 0.0);
   const remainingValue = totalOrderValue - paidValue;
 
   if (remainingValue) {

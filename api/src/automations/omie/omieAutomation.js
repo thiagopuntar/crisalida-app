@@ -19,9 +19,9 @@ class Automation {
     try {
       await this.createCustomers();
       await this.createProducts();
-      // await this.createOrders();
+      await this.createOrders();
       await this.updateOrders();
-      // await this.invoiceOrders();
+      await this.invoiceOrders();
       console.log("Done");
       process.exit(0);
     } catch (error) {
@@ -80,8 +80,8 @@ class Automation {
   }
 
   async createOrders() {
-    // const ordersId = await omieDao.listOrdersToInsert();
-    const ordersId = [{ id: "1199"}];
+    const ordersId = await omieDao.listOrdersToInsert();
+    // const ordersId = [{ id: "1200"}];
 
     const ordersSave = ordersId.map(async ({ id }) => {
       try {
@@ -110,8 +110,8 @@ class Automation {
   }
 
   async updateOrders() {
-    // const ordersId = await omieDao.listOrdersToUpdate();
-    const ordersId = [{ id: "1199"}];
+    const ordersId = await omieDao.listOrdersToUpdate();
+    // const ordersId = [{ id: "1200"}];
     
     const ordersSave = ordersId.map(async ({ id }) => {
       try {
@@ -160,27 +160,43 @@ class Automation {
 
   async invoiceOrders() {
     const ordersId = await omieDao.listOrdersToInvoice();
+    const chunks = [];
 
-    const ordersSave = ordersId.map(async ({ id }) => {
-      try {
-        await omieService.faturarPedido(id);
+    while(ordersId.length) {
+      chunks.push(ordersId.splice(0, 10));
+    }
 
-        await omieDao.updateOrder({
-          id,
-          isOmieFaturado: 1,
-        });
+    for (const chunk of chunks) {
+      await sleep();
 
-        success.info({
-          domain: "invoiceOrder",
-          id,
-        });
-      } catch (error) {
-        errorHandler(error, "invoiceError", id);
-      }
-    });
+      const ordersSave = chunk.map(async ({ id }) => {
+        try {
+          await omieService.faturarPedido(id);
+  
+          await omieDao.updateOrder({
+            id,
+            isOmieFaturado: 1,
+          });
+  
+          success.info({
+            domain: "invoiceOrder",
+            id,
+          });
+        } catch (error) {
+          errorHandler(error, "invoiceError", id);
+        }
+      });
+  
+      await Promise.all(ordersSave);
+    }
 
-    await Promise.all(ordersSave);
   }
+}
+
+async function sleep(ms = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
 }
 
 new Automation().run();
