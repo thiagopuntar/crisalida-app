@@ -16,7 +16,7 @@ function _sumTotalOrder(order) {
 module.exports = function _transformOrder(order) {
   const etapas = {
     1: "20",
-    2: "40",
+    2: "70",
     3: "50",
   };
 
@@ -63,7 +63,7 @@ module.exports = function _transformOrder(order) {
         );
 
         const data_vencimento = dayjs(vencimento).format("DD/MM/YYYY");
-        const isAdiantamento = payment.date < order.deliveryDate;
+        const isAdiantamento = payment.date.toISOString() < order.deliveryDate;
 
         return {
           numero_parcela: index + 1,

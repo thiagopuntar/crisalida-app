@@ -168,6 +168,7 @@ module.exports = class OrderDao extends (
   async update(data) {
     const { details = [], payments = [], ...order } = data;
     const trx = await this.db.transaction();
+    // order.isOmieUpdated = null;
 
     const paymentsToIntegrate = payments.map((x) => ({ ...x, omieId: null }));
 

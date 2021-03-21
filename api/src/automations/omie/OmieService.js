@@ -64,6 +64,16 @@ class OmieService {
     return this._post("produtos/pedido/", params);
   }
 
+  async updatePedido(data) {
+    const params = {
+      call: "AlterarPedidoVenda",
+      param: [data],
+    };
+
+    return this._post("produtos/pedido/", params);
+  }
+
+
   async faturarPedido(id) {
     const params = {
       call: "FaturarPedidoVenda",
