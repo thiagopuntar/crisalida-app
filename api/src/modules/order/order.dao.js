@@ -38,6 +38,7 @@ module.exports = class OrderDao extends (
         "bandeira_operadora",
         "tax",
         "deadline",
+        "omieContaId"
       ],
       type: "object",
     };
@@ -132,7 +133,8 @@ module.exports = class OrderDao extends (
         "pt.forma_pagamento",
         "pt.bandeira_operadora",
         "pt.tax",
-        "pt.deadline"
+        "pt.deadline",
+        "pt.omieContaId"
       );
 
     const transformed = this.structureNestedData(data, this.paymentTypeSchema);

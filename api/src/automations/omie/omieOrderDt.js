@@ -13,6 +13,15 @@ function _sumTotalOrder(order) {
   ).toFixed(2);
 }
 
+function _getCodigoContaCorrente(order) {
+  const [ payment ] = order.payments;
+  if (payment.paymentType.id === 1 && order.deliveryType === "Retirada") {
+    return "2137502305";
+  }
+
+  return payment.paymentType.omieContaId;
+}
+
 module.exports = function _transformOrder(order) {
   const etapas = {
     1: "20",
@@ -21,19 +30,35 @@ module.exports = function _transformOrder(order) {
   };
 
   let desconto = order.discount;
+  const paidValue = order.payments.reduce((acc, cur) => acc += parseFloat(cur.vl), 0.0);
+  const totalOrderValue = parseFloat(_sumTotalOrder(order));
+
+  const defaultPayment = {
+    date: dayjs(order.deliveryDate).toDate(),
+    vl: totalOrderValue,
+    paymentType: {
+      id: 1,
+      deadline: 0,
+      tax: 0,
+    },
+  };
 
   if (!order.payments.length) {
-    const defaultPayment = {
-      dt: order.deliveryDate,
-      vl: _sumTotalOrder(order),
-      paymentType: {
-        deadline: 0,
-        tax: 0,
-      },
-    };
-
     order.payments.push(defaultPayment);
   }
+
+  const remainingValue = totalOrderValue - paidValue;
+
+  if (remainingValue) {
+    const remainingPayment = { 
+      ...defaultPayment,
+      vl: remainingValue
+    }
+
+    order.payments.push(remainingPayment);
+  }
+
+  const codigo_conta_corrente = _getCodigoContaCorrente(order);
 
   return {
     cabecalho: {
@@ -51,7 +76,7 @@ module.exports = function _transformOrder(order) {
       veiculo_proprio: "S",
     },
     informacoes_adicionais: {
-      codigo_conta_corrente: 1966403464,
+      codigo_conta_corrente,
       codigo_categoria: "1.01.01",
       consumidor_final: "S",
     },

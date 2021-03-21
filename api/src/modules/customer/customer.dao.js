@@ -37,6 +37,7 @@ module.exports = class CustomerDao extends (
         "instagram",
         "cpf_cnpj",
         "email",
+        "omieId"
       ],
     };
   }

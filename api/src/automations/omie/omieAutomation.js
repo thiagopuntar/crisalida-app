@@ -19,9 +19,9 @@ class Automation {
     try {
       await this.createCustomers();
       await this.createProducts();
-      await this.createOrders();
-      // await this.updateOrders();
-      await this.invoiceOrders();
+      // await this.createOrders();
+      await this.updateOrders();
+      // await this.invoiceOrders();
       console.log("Done");
       process.exit(0);
     } catch (error) {
@@ -80,7 +80,8 @@ class Automation {
   }
 
   async createOrders() {
-    const ordersId = await omieDao.listOrdersToInsert();
+    // const ordersId = await omieDao.listOrdersToInsert();
+    const ordersId = [{ id: "1199"}];
 
     const ordersSave = ordersId.map(async ({ id }) => {
       try {
@@ -92,6 +93,7 @@ class Automation {
         await omieDao.updateOrder({
           id,
           omieId: codigo_pedido,
+          isOmieUpdated: 1
         });
 
         success.info({
@@ -108,25 +110,52 @@ class Automation {
   }
 
   async updateOrders() {
-    const ordersId = await omieDao.listOrdersToUpdate();
-    const ordersSave = ordersId.map(async (id) => {
+    // const ordersId = await omieDao.listOrdersToUpdate();
+    const ordersId = [{ id: "1199"}];
+    
+    const ordersSave = ordersId.map(async ({ id }) => {
       try {
         const order = await orderDao.findByPk(id);
+        const fn = this._removeContasAReceber(order.omieId);
+        await omieService.findContasReceber(fn, order.customer.omieId);
         const transformed = orderDt(order);
 
-        const { codigo_pedido } = await omieService.insertPedido(transformed);
+        await omieService.updatePedido(transformed);
 
         await omieDao.updateOrder({
           id,
-          omieId: codigo_pedido,
-          omieFinanceiroId: 1,
+          isOmieUpdated: 1,
         });
+
+        success.info({
+          domain: "updateOrder",
+          idOmie: order.omieId,
+          id,
+        });
+
       } catch (error) {
         errorHandler(error, "updateOrder", id);
       }
     });
 
     await Promise.all(ordersSave);
+  }
+
+  _removeContasAReceber(omieOrderId) {
+    const fn = async (contasReceber) => {
+      for (const contaReceber of contasReceber) {
+        try {
+          if (contaReceber.nCodPedido == omieOrderId) {
+            await omieService.excluirRecebimento(contaReceber.codigo_lancamento_omie);
+          }
+
+        } catch (error) {
+          errorHandler(error, "removeContasAReceber", contaReceber.codigo_lancamento_omie);
+        }
+      }
+    }
+
+    return fn;
   }
 
   async invoiceOrders() {

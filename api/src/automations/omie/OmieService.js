@@ -120,6 +120,42 @@ class OmieService {
     });
   }
 
+  async findContasReceber(cb, customerId) {
+    await this._paginate(async (pagina) => {
+      const params = {
+        call: "ListarContasReceber",
+        param: [
+          {
+            pagina,
+            registros_por_pagina: 50,
+            apenas_importado_api: "N",
+            filtrar_apenas_titulos_em_aberto: "S",
+            filtrar_cliente: customerId
+          },
+        ],
+      };
+
+      const { total_de_paginas, conta_receber_cadastro } = await this._post(
+        "financas/contareceber/",
+        params
+      );
+
+      await cb(conta_receber_cadastro);
+      return total_de_paginas;
+    });
+  }
+
+  async excluirRecebimento(id) {
+    const params = {
+      call: "ExcluirContaReceber",
+      param: [{
+        chave_lancamento: id
+      }],
+    };
+
+    return this._post("financas/contareceber/", params);
+  }
+
   async lancarRecebimento(data) {
     const params = {
       call: "LancarRecebimento",
