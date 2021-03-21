@@ -87,9 +87,9 @@ class OmieService {
     return this._post("produtos/pedidovendafat/", params);
   }
 
-  async insertContaReceber(data) {
+  async updateContaReceber(data) {
     const params = {
-      call: "UpsertContaReceber",
+      call: "AlterarContaReceber",
       param: [data],
     };
 

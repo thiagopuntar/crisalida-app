@@ -81,7 +81,7 @@ class OmieDao extends BaseDao {
       .whereNull("o.isOmieFaturado")
       .andWhereRaw("o.omieId IS NOT NULL")
       .andWhere("o.deliveryDate", ">=", "2021-02-02")
-      // .andWhereRaw("t.totalPaid >= (t.totalValue + t.deliveryTax - t.discount)")
+      .andWhereRaw("t.totalPaid >= (t.totalValue + t.deliveryTax - t.discount)")
       .andWhere("o.status", 3)
       .select("o.id");
   }
@@ -108,6 +108,11 @@ class OmieDao extends BaseDao {
       .where("o.omieId", omieOrderId)
       .andWhereRaw("p.omieId IS NULL")
       .andWhere("o.deliveryDate", ">=", "2020-10-01");
+  }
+
+  async getOrderByOmieId(omieId) {
+    const [order] = await this.db("orders").where("omieId", omieId);
+    return order;
   }
 
   async updatePayment(data, id) {
