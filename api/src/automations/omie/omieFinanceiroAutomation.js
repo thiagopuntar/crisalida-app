@@ -28,6 +28,16 @@ class Automation {
       for (const contaReceberOmie of contasReceber) {
         try {
 
+          if (!contaReceberOmie.nCodPedido) {
+            success.info({
+              domain: "finishPayment",
+              idOmie: contaReceberOmie.codigo_lancamento_omie,
+              id: null,
+              message: "Título manual, sem id de pedido."
+            });
+            continue;
+          }
+
           const pagamentos = await omieDao.listPayments(
             contaReceberOmie.nCodPedido
           );
@@ -96,12 +106,11 @@ class Automation {
   
       const transformed = {
         codigo_lancamento_omie: contaReceberOmie.codigo_lancamento_omie,
-        data_previsao: dataPagamento,
         data_registro: dataPagamento,
-        data_vencimento: dataPagamento,
         data_emissao: dataPagamento,
         observacao: `${contaReceberOmie.observacao} - Pedido Crisálida id: ${order.id}`,
-        id_conta_corrente: pagamento ? pagamento.omieContaId : contaReceberOmie.id_conta_corrente
+        id_conta_corrente: pagamento ? pagamento.omieContaId : contaReceberOmie.id_conta_corrente,
+        numero_documento: order.id
       }
 
       const response = await omieService.updateContaReceber(transformed);

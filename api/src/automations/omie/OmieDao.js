@@ -69,6 +69,8 @@ class OmieDao extends BaseDao {
       .from("orders as o")
       .whereNull("o.isOmieUpdated")
       .andWhereRaw("o.omieId IS NOT NULL")
+      .andWhereRaw("o.isOmieFaturado IS NULL")
+      .andWhere("o.deliveryDate", ">=", "2021-03-02")
       .andWhere("o.status", ">=", 1)
       .select("o.id");
   }

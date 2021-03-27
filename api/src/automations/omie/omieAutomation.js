@@ -101,6 +101,7 @@ class Automation {
           idOmie: codigo_pedido,
           id,
         });
+
       } catch (error) {
         errorHandler(error, "createOrder", id);
       }
@@ -111,13 +112,12 @@ class Automation {
 
   async updateOrders() {
     const ordersId = await omieDao.listOrdersToUpdate();
-    // const ordersId = [{ id: "1200"}];
     
     const ordersSave = ordersId.map(async ({ id }) => {
       try {
         const order = await orderDao.findByPk(id);
-        const fn = this._removeContasAReceber(order.omieId);
-        await omieService.findContasReceber(fn, order.customer.omieId);
+        // const fn = this._removeContasAReceber(order.omieId);
+        // await omieService.findContasReceber(fn, order.customer.omieId);
         const transformed = orderDt(order);
 
         await omieService.updatePedido(transformed);
@@ -163,11 +163,11 @@ class Automation {
     const chunks = [];
 
     while(ordersId.length) {
-      chunks.push(ordersId.splice(0, 10));
+      chunks.push(ordersId.splice(0, 1));
     }
 
     for (const chunk of chunks) {
-      await sleep();
+      await sleep(3000);
 
       const ordersSave = chunk.map(async ({ id }) => {
         try {

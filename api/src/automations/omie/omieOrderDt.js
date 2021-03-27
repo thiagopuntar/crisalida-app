@@ -39,6 +39,7 @@ module.exports = function _transformOrder(order) {
       id: 1,
       deadline: 0,
       tax: 0,
+      omieContaId: "2137502305"
     },
   };
 
@@ -79,6 +80,7 @@ module.exports = function _transformOrder(order) {
       codigo_conta_corrente,
       codigo_categoria: "1.01.01",
       consumidor_final: "S",
+      numero_pedido_cliente: order.id
     },
     lista_parcelas: {
       parcela: order.payments.map((payment, index) => {
