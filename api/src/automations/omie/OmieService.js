@@ -164,6 +164,24 @@ class OmieService {
 
     return this._post("financas/contareceber/", params);
   }
+
+  async incluirLancamentoCC(data) {
+    const params = {
+      call: "IncluirLancCC",
+      param: [data],
+    };
+
+    return this._post("financas/contacorrentelancamentos/", params);
+  }
+
+  async incluirContaReceber(data) {
+    const params = {
+      call: "IncluirContaReceber",
+      param: [data],
+    };
+
+    return this._post("financas/contareceber/", params);
+  }
 }
 
 module.exports = OmieService;

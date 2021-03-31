@@ -28,7 +28,7 @@ class Automation {
       for (const contaReceberOmie of contasReceber) {
         try {
 
-          if (!contaReceberOmie.nCodPedido) {
+          if (!contaReceberOmie.numero_documento) {
             success.info({
               domain: "finishPayment",
               idOmie: contaReceberOmie.codigo_lancamento_omie,
@@ -38,25 +38,19 @@ class Automation {
             continue;
           }
 
-          const pagamentos = await omieDao.listPayments(
-            contaReceberOmie.nCodPedido
-          );
-
-          const pagamento = pagamentos.find(
-            (x) => parseFloat(x.vl) === contaReceberOmie.valor_documento
-          );
-
-          const alreadyUpdated = contaReceberOmie.observacao && contaReceberOmie.observacao.includes("Pedido Crisálida");
-
-          if (!alreadyUpdated) {
-            await this.updateContaReceber(contaReceberOmie, pagamento);
-          }
-
           if (
             dayjs(contaReceberOmie.data_previsao, "DD/MM/YYYY").isAfter(dayjs())
           ) {
             continue;
           }
+
+          const pagamentos = await omieDao.listPayments(
+            contaReceberOmie.numero_documento
+          );
+
+          const pagamento = pagamentos.find(
+            (x) => parseFloat(x.vl) === contaReceberOmie.valor_documento
+          );
 
           if (!pagamento) {
             throw new Error("Nenhum pagamento encontrado para o lançamento");
@@ -76,7 +70,7 @@ class Automation {
           );
 
           await omieDao.updatePayment(
-            { omieId: codigo_lancamento },
+            { isOmieUsed: 1, omieId: contaReceberOmie.codigo_lancamento_omie },
             pagamento.id
           );
 

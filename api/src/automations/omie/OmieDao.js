@@ -107,9 +107,73 @@ class OmieDao extends BaseDao {
         "pt.omieContaId",
         "p.orderId"
       )
-      .where("o.omieId", omieOrderId)
-      .andWhereRaw("p.omieId IS NULL")
+      .where("o.id", omieOrderId)
+      .andWhereRaw("p.isOmieUsed IS NULL")
       .andWhere("o.deliveryDate", ">=", "2020-10-01");
+  }
+
+  async listPaymentsToCreate() {
+    return this.db
+      .queryBuilder()
+      .from("payments as p")
+      .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
+      .join("orders as o", "o.id", "p.orderId")
+      .join("customers as c", "o.customerId", "c.id")
+      .select(
+        "p.id",
+        "p.vl",
+        "p.date",
+        "p.paymentTypeId",
+        "pt.tax",
+        "pt.deadline",
+        "pt.omieContaId",
+        "p.orderId",
+        "o.deliveryDate",
+        "o.customerId",
+        "o.deliveryType",
+        "c.omieId as customerOmieId"
+      )
+      .whereNull("o.omieFinanceiroId")
+      .andWhereRaw("o.omieId IS NULL")
+      .andWhereRaw("o.isOmieFaturado IS NULL")
+      .andWhereRaw("p.omieId IS NULL")
+      .andWhere("o.deliveryDate", ">=", "2021-03-01");
+  }
+
+  async listPaymentsToInvoice(orderId) {
+    return this.db
+      .queryBuilder()
+      .from("payments as p")
+      .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
+      .join("orders as o", "o.id", "p.orderId")
+      .join("customers as c", "o.customerId", "c.id")
+      .select(
+        "p.id",
+        "p.vl",
+        "p.date",
+        "p.paymentTypeId",
+        "pt.tax",
+        "pt.deadline",
+        "pt.omieContaId",
+        "p.orderId",
+        "o.deliveryDate",
+        "o.customerId",
+        "o.deliveryType"
+      )
+      .where("o.id", orderId);
+  }
+
+  async listOrdersToInvoicePayment() {
+    return this.db
+      .queryBuilder()
+      .from("orders as o")
+      .join("orderTotal as t", "t.id", "o.id")
+      .join("customers as c", "c.id", "o.customerId")
+      .whereNull("o.isOmieFaturado")
+      .andWhereRaw("o.omieId IS NOT NULL")
+      .andWhere("o.deliveryDate", ">=", "2021-02-02")
+      .andWhere("o.status", 3)
+      .select("o.id", "t.totalPaid", "t.totalValue", "t.deliveryTax", "t.discount", "o.customerId");
   }
 
   async getOrderByOmieId(omieId) {
