@@ -241,7 +241,7 @@ class Controller {
 
     const pixData = {
       version: "01",
-      key: "2c34c3e2-24bb-418e-bc84-42b1eaf2acf5",
+      key: "fddec917-75cd-48d4-82bc-b77eb0824b13",
       city: "Juiz de Fora",
       name: "Crisálida Confeitaria",
       value,
