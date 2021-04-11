@@ -170,10 +170,10 @@ class OmieDao extends BaseDao {
       .join("orderTotal as t", "t.id", "o.id")
       .join("customers as c", "c.id", "o.customerId")
       .whereNull("o.isOmieFaturado")
-      .andWhereRaw("o.omieId IS NOT NULL")
+      .andWhereRaw("o.omieId IS NULL")
       .andWhere("o.deliveryDate", ">=", "2021-02-02")
       .andWhere("o.status", 3)
-      .select("o.id", "t.totalPaid", "t.totalValue", "t.deliveryTax", "t.discount", "o.customerId");
+      .select("o.id", "t.totalPaid", "t.totalValue", "t.deliveryTax", "t.discount", "o.customerId", "o.deliveryDate");
   }
 
   async getOrderByOmieId(omieId) {

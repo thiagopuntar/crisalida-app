@@ -147,6 +147,7 @@ class Automation {
           const observacao = `Título referente ao ${order.id}. Pagamento não efetuado no admin da Crisálida`;
     
           const transformed = {
+            codigo_lancamento_integracao: order.id,
             codigo_cliente_fornecedor_integracao: order.customerId,
             data_vencimento: date,
             data_previsao: date,
@@ -193,6 +194,7 @@ class Automation {
         const observacao = `Adiantamento do pedido ${payment.orderId}, id pagamento ${payment.id}`;
   
         const transformed = {
+          codigo_lancamento_integracao: `${payment.id}-FAT`,
           codigo_cliente_fornecedor_integracao: payment.customerId,
           data_vencimento: date,
           data_previsao: date,
@@ -217,6 +219,7 @@ class Automation {
         });
       } catch (error) {
         errorHandler(error, "invoiceOrder", payment.id);
+        throw error;
       }
     }
   }
