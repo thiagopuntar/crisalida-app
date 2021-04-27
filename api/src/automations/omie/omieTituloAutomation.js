@@ -61,7 +61,7 @@ class Automation {
       try {
         const isAdiantamento = payment.date < payment.deliveryDate;
         if (isAdiantamento) {
-          await this._treatAdiantamento(payment);
+          await this._lancaAdiantamentoContaCorrente(payment);
         }
 
         const data_vencimento = dayjs(payment.date).add(payment.deadline, "day");
@@ -109,7 +109,7 @@ class Automation {
     return payment.omieContaId;
   }
 
-  async _treatAdiantamento(payment) {
+  async _lancaAdiantamentoContaCorrente(payment) {
     const transformed = {
       cCodIntLanc: payment.id,
       cabecalho: {
@@ -154,7 +154,7 @@ class Automation {
             data_emissao: date,
             data_registro: date,
             valor_documento: (orderTotal - totalPaid).toFixed(2),
-            codigo_categoria: "1.04.01",
+            codigo_categoria: "1.01.01",
             id_conta_corrente: "1966403980",
             numero_documento: order.id,
             id_origem: "VENR",
@@ -191,7 +191,7 @@ class Automation {
       try {
         
         const date = dayjs(order.deliveryDate).format("DD/MM/YYYY");
-        const observacao = `Adiantamento do pedido ${payment.orderId}, id pagamento ${payment.id}`;
+        const observacao = `Venda do pedido ${payment.orderId}, id pagamento ${payment.id}`;
   
         const transformed = {
           codigo_lancamento_integracao: `${payment.id}-FAT`,
@@ -201,7 +201,7 @@ class Automation {
           data_emissao: date,
           data_registro: date,
           valor_documento: payment.vl,
-          codigo_categoria: "1.04.01",
+          codigo_categoria: "1.01.01",
           id_conta_corrente: "1966403980",
           numero_documento: payment.orderId,
           id_origem: "VENR",
