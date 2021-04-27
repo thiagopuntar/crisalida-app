@@ -98,6 +98,7 @@ class OmieDao extends BaseDao {
       .from("payments as p")
       .join("paymentTypes as pt", "p.paymentTypeId", "pt.id")
       .join("orders as o", "o.id", "p.orderId")
+      .join("customers as c", "c.id", "o.customerId")
       .select(
         "p.id",
         "p.vl",
@@ -105,7 +106,9 @@ class OmieDao extends BaseDao {
         "pt.tax",
         "pt.deadline",
         "pt.omieContaId",
-        "p.orderId"
+        "p.orderId",
+        "o.customerId",
+        "c.name as customerName"
       )
       .where("o.id", omieOrderId)
       .andWhereRaw("p.isOmieUsed IS NULL")
@@ -131,7 +134,8 @@ class OmieDao extends BaseDao {
         "o.deliveryDate",
         "o.customerId",
         "o.deliveryType",
-        "c.omieId as customerOmieId"
+        "c.omieId as customerOmieId",
+        "c.name as customerName"
       )
       .whereNull("o.omieFinanceiroId")
       .andWhereRaw("o.omieId IS NULL")
@@ -173,7 +177,16 @@ class OmieDao extends BaseDao {
       .andWhereRaw("o.omieId IS NULL")
       .andWhere("o.deliveryDate", ">=", "2021-02-02")
       .andWhere("o.status", 3)
-      .select("o.id", "t.totalPaid", "t.totalValue", "t.deliveryTax", "t.discount", "o.customerId", "o.deliveryDate");
+      .select(
+        "o.id", 
+        "t.totalPaid", 
+        "t.totalValue", 
+        "t.deliveryTax", 
+        "t.discount", 
+        "o.customerId", 
+        "o.deliveryDate", 
+        "c.name as customerName"
+      );
   }
 
   async getOrderByOmieId(omieId) {
