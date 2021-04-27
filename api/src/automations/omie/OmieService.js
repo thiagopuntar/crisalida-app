@@ -145,6 +145,30 @@ class OmieService {
     });
   }
 
+  async listAllContas(cb) {
+    await this._paginate(async (pagina) => {
+      const params = {
+        call: "ListarContasReceber",
+        param: [
+          {
+            pagina,
+            registros_por_pagina: 50,
+            apenas_importado_api: "S",
+            "filtrar_conta_corrente": 1966403980
+          },
+        ],
+      };
+
+      const { total_de_paginas, conta_receber_cadastro } = await this._post(
+        "financas/contareceber/",
+        params
+      );
+
+      await cb(conta_receber_cadastro);
+      return total_de_paginas;
+    });
+  }
+
   async excluirRecebimento(id) {
     const params = {
       call: "ExcluirContaReceber",

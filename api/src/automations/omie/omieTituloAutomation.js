@@ -28,6 +28,25 @@ class Automation {
     }
   }
 
+  async changeCategory() {
+    await omieService.listAllContas(async (contasReceber) => {
+      for (const contaReceber of contasReceber) {
+        try {
+          if (contaReceber.codigo_categoria === "1.04.01") {
+            const data = {
+              codigo_lancamento_omie: contaReceber.codigo_lancamento_omie,
+              codigo_categoria: "1.01.01"
+            };
+            const response = await omieService.updateContaReceber(data);
+            console.log(response);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })
+  }
+
   async createCustomers() {
     const customers = await omieDao.listCustomers();
     const customersSave = customers.map(async (customer) => {
