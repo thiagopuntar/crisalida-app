@@ -14,6 +14,7 @@ const family = require("../../modules/family/family.route");
 const production = require("../../modules/production/production.route");
 const stockMovement = require("../../modules/stockMovement/stockMovement.route");
 const category = require("../../modules/category/category.route");
+const integration = require("../../modules/integration/integration.route");
 
 // app.use(`${apiRoute}/login`, Login);
 
@@ -28,5 +29,6 @@ router.use("/families", family);
 router.use("/productions", production);
 router.use("/stock", stockMovement);
 router.use("/categories", category);
+router.use("/integration", integration);
 
 module.exports = router;
