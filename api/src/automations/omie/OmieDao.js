@@ -103,12 +103,14 @@ class OmieDao extends BaseDao {
         "p.id",
         "p.vl",
         "p.date",
+        "p.paymentTypeId",
         "pt.tax",
         "pt.deadline",
         "pt.omieContaId",
         "p.orderId",
         "o.customerId",
-        "c.name as customerName"
+        "c.name as customerName",
+        "o.deliveryType"
       )
       .where("o.id", omieOrderId)
       .andWhereRaw("p.isOmieUsed IS NULL")

@@ -101,7 +101,7 @@ class Automation {
             codigo_lancamento: contaReceberOmie.codigo_lancamento_omie,
             valor: pagamento.vl,
             codigo_baixa_integracao: pagamento.id,
-            codigo_conta_corrente: pagamento.omieContaId,
+            codigo_conta_corrente: this._getCodigoContaCorrente(pagamento),
             data: contaReceberOmie.data_previsao,
             observacao: `Baixado por integração relativo ao pedido ${pagamento.orderId}`,
           };
@@ -180,8 +180,14 @@ class Automation {
         contaReceberOmie.codigo_lancamento_omie
       );
     }
-    
+  }
 
+  _getCodigoContaCorrente(payment) {
+    if (payment.paymentTypeId === 1 && payment.deliveryType === "Retirada") {
+      return "2137502305";
+    }
+  
+    return payment.omieContaId;
   }
 }
 
