@@ -184,6 +184,20 @@ const routes = [
         name: "orderPick",
         title: "Azulejo Pedidos",
         icon: "assignment"
+      },
+      {
+        path: "/integration",
+        component: () => import("pages/IntegrationList.vue"),
+        name: "integration",
+        title: "Integração",
+        icon: "sync",
+        children: [
+          {
+            path: ":id",
+            component: () => import("pages/IntegrationFormDetail.vue"),
+            name: "integrationDetail",
+          }
+        ]
       }
     ]
   }
