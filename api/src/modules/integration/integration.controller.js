@@ -4,12 +4,14 @@ const { spawn } = require("child_process");
 const { resolve } = require("path");
 const flowNames = require("../../automations/utils/flowNames");
 
+const automations = {
+  "titulo": 'auto:omie',
+  "financeiro": 'auto:omie-fin'
+}
+
 class Controller {
   async startAutomation(req, res) {
-    const automations = {
-      "titulo": 'auto:omie',
-      "financeiro": 'auto:omie-fin'
-    }
+    
 
     const { automation } = req.query;
     if (!automation) {
@@ -26,6 +28,8 @@ class Controller {
   
       childProcess.on('error', (err) => console.log('Error on starting ', err));
       childProcess.on('exit', () => console.log('Ended execution.'));
+      childProcess.stdout.on('data', (chunk) => console.log(Buffer.from(chunk).toString()));
+      childProcess.stderr.on('data', (chunk) => console.log('ERROR LINE', Buffer.from(chunk).toString()));
       
     } catch (error) {
       return res.send(error);
@@ -38,6 +42,31 @@ class Controller {
 
   async listFlowNames(req, res) {
     res.json(Object.values(flowNames));
+  }
+
+  async checkIntegrationStatus(req, res) {}
+
+  async listRecords(req, res) {
+    const { flowNames, status } = req.body;
+    const options = {};
+
+    if (flowNames && flowNames.length) {
+      options.flow = { $in: flowNames }
+    }
+
+    if (status) {
+      options.status = status;
+    }
+
+    const logs = await integrationDao.listLogs(options);
+    res.json(logs);
+  }
+
+  async getLogDetail(req, res) {
+    const { id } = req.params;
+    const logDetail = await integrationDao.findLogDetail(id);
+
+    res.json(logDetail);
   }
 }
 

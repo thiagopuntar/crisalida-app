@@ -1,17 +1,11 @@
-const { Schema, model } = require("mongoose");
 const Log = require("../../automations/logger/LogModel");
-
-const IntegrationSchema = new Schema({
-  name: String,
-  status: Boolean
-});
-
-const Integration = model('Integration', IntegrationSchema);
+const dayjs = require("dayjs");
+const Integration = require("./integration.model");
 
 module.exports = class IntegrationDao {
 
   async changeProcessingStatus(name, status) {
-    let integration = await Integration.find({ name });
+    let integration = await Integration.findOne({ name });
 
     if (!integration) {
       integration = new Integration({
@@ -24,11 +18,20 @@ module.exports = class IntegrationDao {
     await integration.save();
   }
 
-  async listLogs(options) {
-    const logs = await Log.find({  }, )
+  async listLogs(options = {}) {
+    if (!options.createdAt) {
+      options.createdAt = { $gte: dayjs().subtract(2, 'day').format("YYYY-MM-DD") };
+    }
+
+    const logs = await Log.find(options)
+      .select('createdAt idPagamento idPedido idCliente nomeCliente valorPagamento flow status _id')
+      .sort('-createdAt')
+      .exec();
+
+    return logs;
   }
 
   async findLogDetail(id) {
-
+    return Log.findById(id);
   }
 };
