@@ -34,4 +34,8 @@ module.exports = class IntegrationDao {
   async findLogDetail(id) {
     return Log.findById(id);
   }
+
+  async listFlowStatus() {
+    return Integration.find().select('name status').exec();
+  }
 };

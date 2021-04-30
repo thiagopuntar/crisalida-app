@@ -2,7 +2,6 @@
   <q-page padding>
     <iso1-collapsible-filter @submit="updateList">
       <template #inputForms>
-        <!-- <iso1-input v-model="filter.name" label="Descrição" clearable /> -->
         <div class="flex row q-col-gutter-sm">
           <iso1-select
             v-model="filter.flowNames"
@@ -20,14 +19,19 @@
             clearable
             class="col-4"
           />
+
+          <iso1-input 
+            v-model="filter.idPedido"
+            label="Id do Pedido"
+          />
         </div>
         
         <div class="q-py-md">
-          <q-btn label="Criar títulos" @click="startProcessing('titulo')"/>
+          <q-btn :disable="processingStatus.titulo" label="Criar títulos" @click="startProcessing('titulo')"/>
         </div>
 
         <div>
-          <q-btn label="Baixar pagamento" @click="startProcessing('financeiro')"/>
+          <q-btn :disable="processingStatus.financeiro" label="Baixar pagamento" @click="startProcessing('financeiro')"/>
         </div>
         
       </template>
@@ -38,15 +42,6 @@
       :columns="columns"
       :loading="loading"
     >
-      <template #body-cell-isActive="props">
-        <q-td :props="props">
-          <q-toggle
-            :value="props.row.isActive"
-            @input="changeStatus(props.row)"
-          />
-        </q-td>
-      </template>
-
       <template #body-cell-btnDetails="props">
         <q-td :props="props">
           <q-btn
@@ -100,7 +95,27 @@ export default {
         flowNames: []
       },
       loading: true,
+      processingStatus: {
+        titulo: true,
+        financeiro: true
+      },
+      intervalId: null
     };
+  },
+
+  computed: {
+    processIdle() {
+      const { titulo, financeiro } = this.processingStatus;
+      return !(titulo && financeiro);
+    }
+  },
+
+  watch: {
+    processIdle(newVal) {
+      if (newVal && this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+    }
   },
 
   async created() {
@@ -112,6 +127,8 @@ export default {
 
   methods: {
     startProcessing(automation) {
+      this.processingStatus[automation] = true;
+
       this.integrationService
         .startAutomation(automation)
         .then(() => {
@@ -119,6 +136,10 @@ export default {
             message: 'Automação iniciando.',
             color: 'positive'
           });
+
+          // setTimeout(() => {
+          //   this.intervalId = setInterval(this.checkAutomationStatus, 2000);
+          // }, 2000);
         })
         .catch(err => {
           this.$q.notify({
@@ -127,12 +148,21 @@ export default {
           });
         })
     },
+    checkAutomationStatus() {
+      return this.integrationService
+        .listAutomationStatus()
+        .then(data => {
+          this.processingStatus = data;
+        })
+    },
     async updateList() {
       this.integrationService
         .listRecords(this.filter)
         .then(results => results.map(x => ({ ...x, createdAt: date.formatDate(x.createdAt, "DD/MM/YYYY HH:mm") })))
         .then(results => this.results = results)
         .finally(() => this.loading = false);
+
+      this.checkAutomationStatus();
       
     },
     edit(row) {

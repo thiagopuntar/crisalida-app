@@ -21,7 +21,7 @@ class Controller {
     const script = automations[automation];
 
     try {
-      await integrationDao.changeProcessingStatus(script, true);
+      await integrationDao.changeProcessingStatus(automation, true);
 
       const npmPath = resolve(__dirname, "../../");
       const childProcess = spawn("npm", ['run', script], { cwd: npmPath } );
@@ -34,7 +34,7 @@ class Controller {
     } catch (error) {
       return res.send(error);
     } finally {
-      await integrationDao.changeProcessingStatus(script, false);
+      await integrationDao.changeProcessingStatus(automation, false);
     }
 
     res.send('Received');
@@ -44,18 +44,30 @@ class Controller {
     res.json(Object.values(flowNames));
   }
 
-  async checkIntegrationStatus(req, res) {}
+  async checkIntegrationStatus(req, res) {
+
+    const flows = await integrationDao.listFlowStatus();
+
+    const data = flows.reduce((acc, cur) => {
+      acc[cur.name] = cur.status;
+      return acc;
+    }, {});
+
+    res.json(data);
+  }
 
   async listRecords(req, res) {
-    const { flowNames, status } = req.body;
-    const options = {};
+    const { flowNames, ...data } = req.body;
+
+    const options = Object.keys(data)
+      .filter(x => data[x])
+      .reduce((obj, x) => {
+        obj[x] = data[x]
+        return obj;
+      }, {});
 
     if (flowNames && flowNames.length) {
       options.flow = { $in: flowNames }
-    }
-
-    if (status) {
-      options.status = status;
     }
 
     const logs = await integrationDao.listLogs(options);

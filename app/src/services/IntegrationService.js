@@ -31,4 +31,10 @@ export default class IntegrationService extends Service {
       .get(`${this._url}/records/${id}`)
       .then(res => res.data);
   }
+
+  listAutomationStatus() {
+    return this._axios
+      .get(`${this._url}/omie/status`)
+      .then(res => res.data);
+  }
 }
