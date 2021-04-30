@@ -118,7 +118,7 @@ class Automation {
 
           await logger.log({
             title: 'Baixa do pagamento - OUTPUT',
-            content: response.data
+            content: response
           });
 
           const { codigo_lancamento } = response;

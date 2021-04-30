@@ -246,6 +246,11 @@ class Automation {
         }
   
         await omieDao.updateOrder({ id: order.id, isOmieFaturado: 1, omieFinanceiroId });
+
+        await logger.log({
+          title: "Pedido Faturado",
+          content: "Status alterado para faturado no Admin"
+        });
   
         success.info({
           domain: "invoiceOrder",
