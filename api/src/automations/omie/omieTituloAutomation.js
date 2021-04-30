@@ -7,6 +7,7 @@ const success = require("../../infra/logger/Logger")("successLogger");
 const errorHandler = require("../utils/errorHandler");
 const dayjs = require("dayjs");
 const businessDays = require("../../utils/businessDays");
+const { createPayments, invoiceOrders } = require("../utils/flowNames");
 const Logger = require('../logger');
 
 const omieService = new OmieService();
@@ -77,7 +78,7 @@ class Automation {
     for (const payment of payments) {
       const logger = new Logger();
       await logger.start({
-        flow: 'Pagamento > Título Omie',
+        flow: createPayments,
         idPedido: payment.orderId,
         idCliente: payment.customerId,
         valorPagamento: payment.vl,
@@ -186,7 +187,7 @@ class Automation {
     for (const order of orders) {
       const logger = new Logger();
       await logger.start({
-        flow: 'Faturamento',
+        flow: invoiceOrders,
         idPedido: order.id,
         idCliente: order.customerId,
         nomeCliente: order.customerName

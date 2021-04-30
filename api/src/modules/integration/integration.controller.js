@@ -2,6 +2,7 @@ const IntegrationDao = require("./integration.dao");
 const integrationDao = new IntegrationDao();
 const { spawn } = require("child_process");
 const { resolve } = require("path");
+const flowNames = require("../../automations/utils/flowNames");
 
 class Controller {
   async startAutomation(req, res) {
@@ -33,6 +34,10 @@ class Controller {
     }
 
     res.send('Received');
+  }
+
+  async listFlowNames(req, res) {
+    res.json(Object.values(flowNames));
   }
 }
 

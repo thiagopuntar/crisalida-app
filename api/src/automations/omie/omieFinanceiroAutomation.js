@@ -9,6 +9,7 @@ const OmieDao = require("./OmieDao");
 const Logger = require('../logger');
 const success = require("../../infra/logger/Logger")("successLogger");
 const errorHandler = require("../utils/errorHandler");
+const { financeiro } = require("../utils/flowNames");
 
 const omieService = new OmieService();
 const omieDao = new OmieDao();
@@ -29,7 +30,7 @@ class Automation {
       for (const contaReceberOmie of contasReceber) {
         const logger = new Logger();
         await logger.start({
-          flow: "Baixa de pagamento",
+          flow: financeiro,
           idPagamento: contaReceberOmie.numero_documento,
           valorPagamento: contaReceberOmie.valor_documento
         });
