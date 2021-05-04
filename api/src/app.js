@@ -12,6 +12,7 @@ const reportRoutes = require("./infra/routes/reports");
 const appRoute = require("./infra/routes/app");
 const loginRoute = require("./infra/login/login");
 const cardapioRoute = require("./modules/loja/loja.route");
+const omieRoute = require("./modules/omie/omie.route");
 const authMiddleware = require("./infra/middlewares/authetication");
 
 require("./infra/database");
@@ -30,6 +31,7 @@ const limiter = rateLimit({
 });
 
 app.use("/api/v1/cardapio", limiter, cardapioRoute);
+app.use("/api/v1/omie", omieRoute);
 app.use("/api/v1/login", loginRoute);
 app.use("/api/v1", authMiddleware, apiRoutes);
 app.use("/reports", authMiddleware, reportRoutes);
