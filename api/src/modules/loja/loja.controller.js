@@ -48,6 +48,7 @@ class Controller {
       un: x.unit,
       imagem: x.mainImage,
       idCategoria: x.categoryId,
+      nomeCategoria: x.categoryName
     }));
 
     res.json(toSend);

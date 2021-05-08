@@ -22,7 +22,8 @@ module.exports = class LojaDao extends (
         "unit",
         "price",
         "mainImage",
-        "categoryId"
+        "categoryId",
+        "pc.name as categoryName"
       )
       .orderBy(["pc.displayOrder", "title"]);
   }
