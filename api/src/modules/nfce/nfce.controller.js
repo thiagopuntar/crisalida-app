@@ -136,7 +136,7 @@ class Controller {
   }
 
   static async _saveXml(xmlPath, zipFile) {
-    const [, fileName] = /\/(\w+)-nfe/.exec(xmlPath);
+    const fileName = path.basename(xmlPath);
 
     const response = await axios({
       url: xmlPath,
@@ -144,7 +144,7 @@ class Controller {
       responseType: "arraybuffer",
     });
 
-    zipFile.addFile(`${fileName}.xml`, response.data);
+    zipFile.addFile(fileName, response.data);
   }
 }
 
