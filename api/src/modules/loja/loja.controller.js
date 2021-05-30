@@ -240,9 +240,11 @@ class Controller {
       (subtotal + parseFloat(order.orderDeliveryTax || 0)).toFixed(2)
     );
 
+    const chavePix = "fddec917-75cd-48d4-82bc-b77eb0824b13";
+
     const pixData = {
       version: "01",
-      key: "fddec917-75cd-48d4-82bc-b77eb0824b13",
+      key: chavePix,
       city: "Juiz de Fora",
       name: "Crisálida Confeitaria",
       value,
@@ -261,6 +263,7 @@ class Controller {
     return {
       link,
       qrCode,
+      chave: chavePix
     };
   }
 
