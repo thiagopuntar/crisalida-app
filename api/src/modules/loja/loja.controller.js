@@ -175,6 +175,7 @@ class Controller {
       dataEntrega: dayjs(order.deliveryDate).format("DD/MM/YYYY"),
       pix,
       id: order.id,
+      horarioEntrega: order.deliveryTime
     };
 
     res.json(transformed);
@@ -352,6 +353,7 @@ class Controller {
       hashId: uuidv4(),
       paymentMethod: order.formaPagamento,
       paymentChange: order.troco,
+      deliveryTime: order.horarioEntrega
     };
 
     if (deliveryType !== "Retirada") {
