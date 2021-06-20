@@ -123,6 +123,10 @@ function formatAddress(val) {
 
   const { address, addressNumber, complement, district } = val;
 
+  if (!address) {
+    return null;
+  }
+
   let formated = address;
   formated += addressNumber ? `, ${addressNumber}` : "";
   formated += complement ? ` ${complement}` : "";
