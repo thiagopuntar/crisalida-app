@@ -113,6 +113,7 @@ export default class Order {
       this.district = order.district;
       this.city = order.city;
       this.state = order.state;
+      this.deliveryTime = order.deliveryTime
     } else {
       this._customer = null;
       this.deliveryTax = 0.0;
@@ -130,6 +131,7 @@ export default class Order {
       this.district = null;
       this.city = null;
       this.state = null;
+      this.deliveryTime = null;
     }
   }
 

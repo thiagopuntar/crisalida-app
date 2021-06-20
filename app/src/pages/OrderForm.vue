@@ -29,14 +29,21 @@
               :options="deliveryType"
               v-model="order.deliveryType"
               label="Tipo de entrega *"
-              class="col-3"
+              class="col-2"
               :rules="[(val) => !!val || 'Campo obrigatório']"
             />
 
             <iso1-date-input
               label="Data de entrega"
               v-model="order.deliveryDate"
-              class="col-3"
+              class="col-2"
+            />
+
+            <iso1-input
+              label="Horário entrega"
+              v-model="order.deliveryTime"
+              class="col-2"
+              mask="##:##"
             />
           </div>
 
