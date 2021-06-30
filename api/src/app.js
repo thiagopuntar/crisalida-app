@@ -1,6 +1,6 @@
 require("express-async-errors");
 require("dotenv").config();
-require("./automations/utils/mongoDb");
+// require("./automations/utils/mongoDb");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
