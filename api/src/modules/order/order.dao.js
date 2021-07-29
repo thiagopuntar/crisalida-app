@@ -62,7 +62,7 @@ module.exports = class OrderDao extends (
     const data = await this.findOrderTotal;
     const addNfePath = data.map((x) => ({
       ...x,
-      deliveryDate: dayjs(x.deliveryDate).add(1, "hour").format(),
+      deliveryDate: dayjs(x.deliveryDate).add(3, "hour").format(),
       danfePath: x.caminho_danfe && `${NF_API_DOMAIN}${x.caminho_danfe}`,
       xmlPath:
         x.caminho_xml_nota_fiscal &&
@@ -86,7 +86,7 @@ module.exports = class OrderDao extends (
 
     transformed.paymentMethodChosen = transformed.paymentMethod;
     transformed.deliveryDate = dayjs(transformed.deliveryDate)
-      .add(1, "hour")
+      .add(3, "hour")
       .format();
     transformed.details = details;
     transformed.payments = payments;
@@ -259,7 +259,7 @@ module.exports = class OrderDao extends (
       .andWhere("o.deliveryDate", "<=", finalDate);
 
     const promises = orders.map(async (x) => {
-      x.deliveryDate = dayjs(x.deliveryDate).add(1, "hour").format();
+      x.deliveryDate = dayjs(x.deliveryDate).add(3, "hour").format();
       x.details = await this._getOrderDetails(x.id);
       return x;
     });
