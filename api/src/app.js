@@ -1,6 +1,6 @@
 require("express-async-errors");
 require("dotenv").config();
-// require("./automations/utils/mongoDb");
+require("./automations/utils/mongoDb");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -30,11 +30,14 @@ const limiter = rateLimit({
   max: 60,
 });
 
+app.get("/", (req, res) => {
+  res.send('Ok')
+})
 app.use("/api/v1/cardapio", limiter, cardapioRoute);
 app.use("/api/v1/omie", omieRoute);
 app.use("/api/v1/login", loginRoute);
 app.use("/api/v1", authMiddleware, apiRoutes);
 app.use("/reports", authMiddleware, reportRoutes);
-app.use(appRoute);
+// app.use(appRoute);
 
 module.exports = app;
