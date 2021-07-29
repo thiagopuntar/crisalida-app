@@ -4,3 +4,7 @@ coverege
 # infra/config/dev.js
 .env
 logs
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
