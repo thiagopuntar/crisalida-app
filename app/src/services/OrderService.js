@@ -41,7 +41,10 @@ export default class OrderService extends Service {
   }
 
   listDistricts() {
-    return this._axios.get(`${this._url}/districts`).then(res => res.data);
+    return this._axios
+      .get(`${this._url}/districts`)
+      .then(res => res.data)
+      .then(districts => districts.sort((a,b) => (a.name > b.name) ? 1 : -1));
   }
 
   getOrdersToPick(initialDate, finalDate) {
