@@ -3,6 +3,7 @@ node_modules
 coverege
 # infra/config/dev.js
 .env
+*.env
 logs
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
