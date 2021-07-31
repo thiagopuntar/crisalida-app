@@ -68,11 +68,23 @@
           </div>
 
           <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
-            <iso1-input label="Logradouro" v-model="order.address" />
-            <iso1-input label="Número" v-model="order.addressNumber" />
-            <iso1-input label="Complemento" v-model="order.complement" />
+            <iso1-input 
+              label="Logradouro *" 
+              v-model="order.address" 
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+            />
+            <iso1-input 
+              label="Número *" 
+              v-model="order.addressNumber" 
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+            />
+            <iso1-input 
+              label="Complemento *" 
+              v-model="order.complement" 
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+            />
             <iso1-select
-              label="Bairro"
+              label="Bairro *"
               :value="order.district"
               @input="setDistrict"
               :options="districtOptions"

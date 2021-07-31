@@ -129,8 +129,8 @@ export default class Order {
       this.addressNumber = null;
       this.complement = null;
       this.district = null;
-      this.city = null;
-      this.state = null;
+      this.city = 'Juiz de Fora';
+      this.state = 'MG';
       this.deliveryTime = null;
     }
   }
