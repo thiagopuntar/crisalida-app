@@ -35,14 +35,14 @@
       <template #no-option>
         <q-item>
           <q-item-section>
-            <q-item-label class="text-italic text-grey q-mb-sm"
+            <q-item-label class="text-italic text-grey q-mb-sm q-pa-md"
               >Nenhum cliente localizado.</q-item-label
             >
-            <a
+            <q-btn 
               @click="newCustomer"
-              class="cursor-pointer text-primary text-italic"
-              >Clique para cadastrar um novo</a
-            >
+              class="cursor-pointer bg-green-5 text-white"
+              label="Adicionar novo cliente"
+            />
           </q-item-section>
         </q-item>
       </template>
