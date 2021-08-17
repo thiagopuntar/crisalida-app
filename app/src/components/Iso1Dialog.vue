@@ -1,9 +1,9 @@
 <template>
   <q-dialog persistent :value="value" @input="input" :maximized="maximized">
-    <q-layout view="Lhh lpR fff" container class="bg-grey-3 layout-dialog">
+    <q-layout view="Lhh lpR fff" container class="bg-grey-4 layout-dialog">
       <q-header class="bg-primary">
         <q-toolbar class="glossy">
-          <q-toolbar-title>
+          <q-toolbar-title class="dialog-title">
             {{ title }}
           </q-toolbar-title>
           <q-space />
@@ -57,6 +57,14 @@ export default {
 <style>
   .layout-dialog {
     min-width: 60%;
+  }
+
+  .dialog-title {
+    font-family: Roboto;
+    font-weight: bold;
+    font-size: 12sp;
+    line-height: 14sp;
+    vertical-align: top;
   }
 
 </style>
