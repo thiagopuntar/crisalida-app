@@ -1,21 +1,26 @@
 <template>
-  <q-select
-    outlined
-    class="q-mb-sm"
-    :value="value"
-    @input="input"
-    hide-bottom-space
-    :option-label="optionLabel"
-    :option-value="optionValue"
-    v-bind="$attrs"
-    ref="select"
-  >
-    <template v-slot:no-option>
-      <q-item>
-        <q-item-section @click="newOption" class="text-italic text-grey">{{ noOption }}</q-item-section>
-      </q-item>
-    </template>
-  </q-select>
+  <div>
+    <label class="text-bold text-subtitle2">{{ label }}</label>
+    <q-select
+      outlined
+      class="q-mb-sm"
+      :value="value"
+      @input="input"
+      hide-bottom-space
+      :option-label="optionLabel"
+      :option-value="optionValue"
+      v-bind="$attrs"
+      ref="select"
+      dense
+      bg-color="grey-2"
+    >
+      <template v-slot:no-option>
+        <q-item>
+          <q-item-section @click="newOption" class="text-italic text-grey">{{ noOption }}</q-item-section>
+        </q-item>
+      </template>
+    </q-select>
+  </div>
 </template>
 
 <script>
@@ -25,6 +30,7 @@ export default {
       type: String,
       default: "Nenhum registro disponível",
     },
+    label: String,
     value: {
       type: [String, Number, Array, Object],
     },
