@@ -2,50 +2,19 @@
   <iso1-dialog v-model="isOpen" maximized title="Adicionar Novo Pedido" @close="close">
     <q-form @submit="save" ref="orderForm">
       <q-card class="q-pa-md" flat>
-        <h2 class="text-h5">Dados do Pedido</h2>
-        <div class="flex row q-gutter-lg">
-          <order-customer-select
-            v-model="order.customer"
-            :customers="customers"
-            autofocus
-            @newCustomer="newCustomer"
-            @editCustomer="editCustomer"
-            ref="inputName"
-            class="col-5"
-          />
-          <iso1-input
-            label="Forma de pagamento"
-            v-model="order.paymentMethodChosen"
-            class="col-2"
-          />
-
-          <iso1-date-input
-            label="Data de entrega"
-            v-model="order.deliveryDate"
-            class="col-2"
-          />
-
-          <iso1-input
-            label="Horário entrega"
-            v-model="order.deliveryTime"
-            class="col-2"
-            mask="##:##"
-          />
-        </div>
-      </q-card>
-      <q-card class="q-pa-md" flat>
         <q-card-section>
-          <iso1-date-input
-            label="Data do pedido *"
-            v-model="order.orderDate"
-            :rules="[(val) => !!val || 'Campo obrigatório']"
-          />
-
-          <div class="flex row q-col-gutter-sm">
+          <h2 class="text-h5">Dados do Pedido</h2>
+          <div class="flex row q-col-gutter-lg">
+            <order-customer-select
+              v-model="order.customer"
+              :customers="customers"
+              autofocus
+              @newCustomer="newCustomer"
+              @editCustomer="editCustomer"
+              ref="inputName"
+              class="col-4"
+            />
             
-
-            
-
             <iso1-select
               :options="deliveryType"
               v-model="order.deliveryType"
@@ -54,29 +23,46 @@
               :rules="[(val) => !!val || 'Campo obrigatório']"
             />
 
-            
+            <iso1-date-input
+              label="Data de entrega"
+              v-model="order.deliveryDate"
+              class="col-2"
+            />
+
+            <iso1-input
+              label="Horário entrega"
+              v-model="order.deliveryTime"
+              class="col-2"
+              mask="##:##"
+            />
+            <iso1-input
+              label="Forma de pagamento"
+              v-model="order.paymentMethodChosen"
+              class="col-2"
+            />
           </div>
 
-          <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
+          <div class="flex row q-col-gutter-lg">
             <iso1-select
+              v-if="order.hasDelivery"
               :options="addresses"
               v-model="order.addressId"
               label="Endereço cliente"
               option-value="id"
               option-label="address"
-              class="col-8"
+              class="col-10"
             />
 
             <iso1-input
+              v-if="order.hasDelivery"
               label="Taxa de entrega"
               v-model="order.deliveryTax"
               mask="#.##"
               reverse-fill-mask
               fill-mask="0"
-              class="col-4"
+              class="col-2"
             />
           </div>
-
           <div v-if="order.hasDelivery" class="flex row q-col-gutter-sm">
             <iso1-input 
               label="Logradouro *" 
@@ -102,6 +88,13 @@
             <iso1-input label="Cidade" v-model="order.city" />
             <iso1-input label="UF" v-model="order.state" />
           </div>
+        </q-card-section>
+        
+      </q-card>
+      <q-card class="q-pa-md" flat>
+        <q-card-section>
+
+          
 
           <iso1-input
             label="Observações"
