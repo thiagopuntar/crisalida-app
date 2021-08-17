@@ -1,20 +1,29 @@
 <template>
-  <q-input outlined :value="value" @input="input" :label="label" class="q-mb-sm"
-    v-bind="$attrs"
-    mask="##/##/####"
-    hide-bottom-space
-    @change="change"
-    error-message="Insira uma data válida"
-    :error="hasError"
-  >
-    <template v-slot:append>
-      <q-icon name="event" class="cursor-pointer">
-        <q-popup-proxy ref="inputDate" transition-show="scale" transition-hide="scale">
-          <q-date :value="value" @input="inputDate" mask="DD/MM/YYYY" />
-        </q-popup-proxy>
-      </q-icon>
-    </template>
-  </q-input>
+  <div>
+    <label class="text-bold text-subtitle2">{{ label }}</label>
+    <q-input 
+      outlined 
+      :value="value" 
+      @input="input" 
+      class="q-mb-sm"
+      v-bind="$attrs"
+      mask="##/##/####"
+      hide-bottom-space
+      @change="change"
+      error-message="Insira uma data válida"
+      :error="hasError"
+      dense
+      bg-color="grey-2"
+    >
+      <template v-slot:append>
+        <q-icon name="event" class="cursor-pointer">
+          <q-popup-proxy ref="inputDate" transition-show="scale" transition-hide="scale">
+            <q-date :value="value" @input="inputDate" mask="DD/MM/YYYY" />
+          </q-popup-proxy>
+        </q-icon>
+      </template>
+    </q-input>
+  </div>
 </template>
 
 <script>

@@ -1,23 +1,29 @@
 <template>
-  <q-input 
-    outlined
-    class="q-mb-sm"
-    hide-bottom-space
-    :value="value"
-    @input="input"
-    v-bind="$attrs"
-    ref="input"
-  >
-    <slot></slot>
-    <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
-      <slot :name="slot" v-bind="scope"/>
-    </template>
-  </q-input>
+  <div>
+    <label class="text-bold text-subtitle2">{{ label }}</label>
+    <q-input 
+      outlined
+      class="q-mb-sm"
+      hide-bottom-space
+      :value="value"
+      @input="input"
+      v-bind="$attrs"
+      ref="input"
+      dense
+      bg-color="grey-2"
+      standout
+    >
+      <slot></slot>
+      <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
+        <slot :name="slot" v-bind="scope"/>
+      </template>
+    </q-input>
+  </div>
 </template>
 
 <script>
 export default {
-  props: ['value'],
+  props: ['value', 'label'],
   data () {
     return {}
   },
