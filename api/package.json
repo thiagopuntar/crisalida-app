@@ -10,7 +10,8 @@
     "auto:omie-fin": "node ./src/automations/omie/omieFinanceiroAutomation.js",
     "devtest": "node server-test.js",
     "build": "babel src -d dist --copy-files",
-    "start": "node ./src/index.js"
+    "start": "node ./src/index.js",
+    "deploy": "eb deploy"
   },
   "author": "",
   "license": "ISC",

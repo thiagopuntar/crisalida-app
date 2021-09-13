@@ -241,7 +241,8 @@ class Controller {
       (subtotal + parseFloat(order.orderDeliveryTax || 0)).toFixed(2)
     );
 
-    const chavePix = "fddec917-75cd-48d4-82bc-b77eb0824b13";
+    // const chavePix = "fddec917-75cd-48d4-82bc-b77eb0824b13"; // PF
+    const chavePix = "31634776000197"; // PJ
 
     const pixData = {
       version: "01",
